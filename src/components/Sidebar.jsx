@@ -9,6 +9,7 @@ import {
   Settings,
   Zap,
   BrainCircuit,
+  FileText,
 } from "lucide-react";
 
 const navItems = [
@@ -18,6 +19,7 @@ const navItems = [
   { to: "/competition", label: "Concorrência", icon: LineChart },
   { to: "/reports", label: "Relatórios", icon: BarChart3 },
   { to: "/ai", label: "Vikingo Brain IA", icon: BrainCircuit, highlight: true },
+  { to: "/listing", label: "Criar Listing", icon: FileText, highlight: true },
   { to: "/settings", label: "Configurações", icon: Settings },
 ];
 

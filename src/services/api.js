@@ -1,4 +1,12 @@
 import axios from "axios";
+import {
+  dashboardMetrics,
+  campaigns as mockCampaigns,
+  keywords as mockKeywords,
+  competitionKeywords as mockCompetition,
+  spendChartData,
+  weeklyData,
+} from "../data/mockData";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
@@ -22,29 +30,172 @@ api.interceptors.response.use(
   }
 );
 
-// Campaigns
-export const getCampaigns = () => api.get("/campaigns");
-export const updateCampaign = (id, data) => api.put(`/campaigns/${id}`, data);
-export const createCampaign = (data) => api.post("/campaigns", data);
+// ─── Adapters (backend field names → frontend field names) ───────────────────
 
-// Keywords
-export const getKeywords = (campaignId) =>
-  api.get("/keywords", { params: { campaignId } });
-export const updateKeyword = (id, data) => api.put(`/keywords/${id}`, data);
-export const createKeyword = (data) => api.post("/keywords", data);
-export const deleteKeyword = (id) => api.delete(`/keywords/${id}`);
+function adaptCampaign(c) {
+  return {
+    ...c,
+    // backend uses 'enabled', frontend uses 'active'
+    status: c.status === "enabled" ? "active" : c.status,
+    // ensure numeric defaults for metrics that may be missing
+    revenue: c.revenue ?? 0,
+    roas: c.roas ?? 0,
+    acos: c.acos ?? 0,
+    orders: c.orders ?? 0,
+    clicks: c.clicks ?? 0,
+    impressions: c.impressions ?? 0,
+    ctr: c.ctr ?? 0,
+    cpc: c.cpc ?? 0,
+    budget: c.budget ?? 0,
+    spend: c.spend ?? 0,
+    type: c.type ?? "Sponsored Products",
+    name: c.name ?? c.id,
+  };
+}
 
-// Competition
-export const getCompetitionData = (keyword) =>
-  api.get("/competition", { params: { keyword } });
-export const getCompetitorProducts = () => api.get("/competition/products");
+function adaptKeyword(k) {
+  return {
+    ...k,
+    // backend uses 'text', frontend uses 'keyword'
+    keyword: k.keyword ?? k.text ?? "",
+    // backend uses 'bids', frontend uses 'bid'
+    bid: k.bid ?? k.bids ?? 0,
+    suggestedBid: k.suggestedBid ?? 0,
+    status: k.status === "enabled" ? "active" : (k.status ?? "active"),
+    matchType: k.matchType ?? "broad",
+    campaignName: k.campaignName ?? "",
+    impressions: k.impressions ?? 0,
+    clicks: k.clicks ?? 0,
+    ctr: k.ctr ?? 0,
+    orders: k.orders ?? 0,
+    spend: k.spend ?? 0,
+    revenue: k.revenue ?? 0,
+    acos: k.acos ?? 0,
+    roas: k.roas ?? 0,
+  };
+}
 
-// Reports
-export const getReports = (params) => api.get("/reports", { params });
-export const getDashboardMetrics = () => api.get("/reports/dashboard");
+// ─── Campaigns ───────────────────────────────────────────────────────────────
 
-// Settings
-export const getSettings = () => api.get("/settings");
-export const saveSettings = (data) => api.put("/settings", data);
+export async function getCampaigns() {
+  try {
+    const data = await api.get("/ads/campaigns");
+    const list = data?.campaigns ?? data ?? [];
+    return Array.isArray(list) ? list.map(adaptCampaign) : mockCampaigns;
+  } catch {
+    return mockCampaigns;
+  }
+}
+
+export async function updateCampaign(id, payload) {
+  try {
+    return await api.put(`/ads/campaigns/${id}`, payload);
+  } catch {
+    return null;
+  }
+}
+
+export async function createCampaign(payload) {
+  try {
+    return await api.post("/ads/campaigns", payload);
+  } catch {
+    return null;
+  }
+}
+
+// ─── Keywords ────────────────────────────────────────────────────────────────
+
+export async function getKeywords(campaignId) {
+  try {
+    const url = campaignId ? `/ads/keywords/${campaignId}` : "/ads/keywords/all";
+    const data = await api.get(url);
+    const list = data?.keywords ?? data ?? [];
+    return Array.isArray(list) ? list.map(adaptKeyword) : mockKeywords;
+  } catch {
+    return mockKeywords;
+  }
+}
+
+export async function applyBids(bids) {
+  // bids: [{ keywordId, newBid }]
+  try {
+    return await api.post("/ads/bids/apply", { bids });
+  } catch {
+    return null;
+  }
+}
+
+export async function updateKeyword(id, payload) {
+  try {
+    return await api.put(`/ads/keywords/${id}`, payload);
+  } catch {
+    return null;
+  }
+}
+
+export async function createKeyword(payload) {
+  try {
+    return await api.post("/ads/keywords", payload);
+  } catch {
+    return null;
+  }
+}
+
+export async function deleteKeyword(id) {
+  try {
+    return await api.delete(`/ads/keywords/${id}`);
+  } catch {
+    return null;
+  }
+}
+
+// ─── Competition ─────────────────────────────────────────────────────────────
+
+export async function getCompetitionData(keyword) {
+  try {
+    const data = await api.get("/competition", { params: { keyword } });
+    return data ?? mockCompetition;
+  } catch {
+    return mockCompetition;
+  }
+}
+
+// ─── Reports / Dashboard ─────────────────────────────────────────────────────
+
+export async function getDashboardMetrics() {
+  try {
+    const data = await api.get("/reports/dashboard");
+    return data ?? dashboardMetrics;
+  } catch {
+    return dashboardMetrics;
+  }
+}
+
+export async function getReports(params) {
+  try {
+    const data = await api.get("/reports", { params });
+    return data ?? { spendChartData, weeklyData };
+  } catch {
+    return { spendChartData, weeklyData };
+  }
+}
+
+// ─── Settings ────────────────────────────────────────────────────────────────
+
+export async function getSettings() {
+  try {
+    return await api.get("/settings");
+  } catch {
+    return null;
+  }
+}
+
+export async function saveSettings(payload) {
+  try {
+    return await api.put("/settings", payload);
+  } catch {
+    return null;
+  }
+}
 
 export default api;

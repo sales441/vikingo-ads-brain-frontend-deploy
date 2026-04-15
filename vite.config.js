@@ -4,7 +4,6 @@ import autoprefixer from "autoprefixer";
 
 /** @type {import("vite").UserConfig} */
 export default {
-  base: "/vikingo-ads-brain-frontend-deploy/",
   plugins: [react()],
   css: { postcss: { plugins: [tailwindcss(), autoprefixer()] } },
   server: { host: true, port: 5174, strictPort: false, hmr: { overlay: true } },

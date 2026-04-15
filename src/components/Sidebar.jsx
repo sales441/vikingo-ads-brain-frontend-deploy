@@ -8,6 +8,7 @@ import {
   BarChart3,
   Settings,
   Zap,
+  BrainCircuit,
 } from "lucide-react";
 
 const navItems = [
@@ -16,6 +17,7 @@ const navItems = [
   { to: "/keywords", label: "Keywords", icon: KeyRound },
   { to: "/competition", label: "Concorrência", icon: LineChart },
   { to: "/reports", label: "Relatórios", icon: BarChart3 },
+  { to: "/ai", label: "Vikingo Brain IA", icon: BrainCircuit, highlight: true },
   { to: "/settings", label: "Configurações", icon: Settings },
 ];
 
@@ -35,7 +37,7 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {navItems.map(({ to, label, icon: Icon }) => (
+        {navItems.map(({ to, label, icon: Icon, highlight }) => (
           <NavLink
             key={to}
             to={to}
@@ -43,12 +45,15 @@ export default function Sidebar() {
               `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 isActive
                   ? "bg-orange-500 text-white"
+                  : highlight
+                  ? "text-orange-300 hover:bg-slate-800 hover:text-orange-200"
                   : "text-slate-400 hover:bg-slate-800 hover:text-white"
               }`
             }
           >
             <Icon size={18} />
-            {label}
+            <span className="flex-1">{label}</span>
+            {highlight && <span className="text-xs bg-orange-500 text-white px-1.5 py-0.5 rounded-full">IA</span>}
           </NavLink>
         ))}
       </nav>

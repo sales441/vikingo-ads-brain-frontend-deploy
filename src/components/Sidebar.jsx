@@ -20,6 +20,7 @@ const navItems = [
   { to: "/reports", label: "Relatórios", icon: BarChart3 },
   { to: "/ai", label: "Vikingo Brain IA", icon: BrainCircuit, highlight: true },
   { to: "/listing", label: "Criar Listing", icon: FileText, highlight: true },
+  { to: "/ads", label: "Criar Ads", icon: Megaphone, highlight: true },
   { to: "/settings", label: "Configurações", icon: Settings },
 ];
 

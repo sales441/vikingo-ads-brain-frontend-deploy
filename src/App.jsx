@@ -9,6 +9,7 @@ import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import AIAssistant from "./pages/AIAssistant";
 import ListingCreator from "./pages/ListingCreator";
+import AdsCreator from "./pages/AdsCreator";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="reports" element={<Reports />} />
         <Route path="ai" element={<AIAssistant />} />
         <Route path="listing" element={<ListingCreator />} />
+        <Route path="ads" element={<AdsCreator />} />
         <Route path="settings" element={<Settings />} />
       </Route>
     </Routes>

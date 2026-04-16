@@ -24,6 +24,7 @@ const titles = {
   "/trends":        "Seasonal Trends",
   "/abtest":        "Listing A/B Test",
   "/discover":      "Product Discovery",
+  "/products":      "My Products",
   "/companies":     "Companies",
   "/users":         "Users",
 };

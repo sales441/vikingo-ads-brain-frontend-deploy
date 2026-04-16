@@ -4,8 +4,9 @@ import {
   BrainCircuit, Settings, ShoppingBag, Star, Target, Zap,
   Check, AlertTriangle, TrendingUp, Eye, MousePointerClick,
   DollarSign, RefreshCw, ArrowLeft, ArrowRight, Megaphone,
-  CheckCircle, Trash2, Edit3, Package,
+  CheckCircle, Trash2, Edit3, Package, ChevronDown,
 } from "lucide-react";
+import { useProducts } from "../context/ProductsContext";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
@@ -95,9 +96,153 @@ function StepModeType({ mode, setMode, campaignType, setCampaignType, onNext }) 
   );
 }
 
+/* ─── Registered Products Picker ─────────────────────────────────────────── */
+function RegisteredProductPicker({ selectedId, onSelect }) {
+  const { products } = useProducts();
+  const [open, setOpen] = useState(false);
+  const selected = products.find((p) => p.id === selectedId);
+
+  if (products.length === 0) {
+    return (
+      <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 flex items-start gap-3">
+        <BrainCircuit size={16} className="text-orange-500 flex-shrink-0 mt-0.5" />
+        <div className="flex-1">
+          <p className="text-sm font-semibold text-orange-800">
+            No products registered yet
+          </p>
+          <p className="text-xs text-orange-700 mt-0.5">
+            Register a product first so Vikingo Brain™ can study the competition and pre-fill this form with accurate data.
+          </p>
+          <Link
+            to="/products"
+            className="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-orange-700 hover:text-orange-900"
+          >
+            Go to My Products → register by ASIN
+          </Link>
+          <p className="text-xs text-gray-500 mt-2">
+            Or continue below to create a campaign manually (without AI competitor context).
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white border-2 border-orange-200 rounded-xl p-4">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <BrainCircuit size={15} className="text-orange-500" />
+          <span className="text-sm font-semibold text-gray-800">Select a registered product</span>
+          <span className="text-xs bg-orange-100 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full font-medium">
+            AI-protected
+          </span>
+        </div>
+        <Link to="/products" className="text-xs text-orange-600 hover:text-orange-800 font-medium">
+          Manage products →
+        </Link>
+      </div>
+
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setOpen((s) => !s)}
+          className="w-full flex items-center justify-between border border-gray-300 rounded-lg px-3 py-2.5 text-sm hover:border-orange-400 transition-colors bg-white"
+        >
+          {selected ? (
+            <span className="flex items-center gap-2 min-w-0">
+              <span className="w-6 h-6 rounded bg-orange-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                {selected.asin?.slice(-2) || "??"}
+              </span>
+              <span className="truncate text-gray-800">{selected.name}</span>
+              <span className="text-xs text-gray-400 font-mono flex-shrink-0">{selected.asin}</span>
+            </span>
+          ) : (
+            <span className="text-gray-400">Pick a product to auto-fill…</span>
+          )}
+          <ChevronDown size={14} className="text-gray-400" />
+        </button>
+
+        {open && (
+          <>
+            <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+            <div className="absolute left-0 right-0 top-full mt-1 z-20 bg-white border border-gray-200 rounded-xl shadow-lg py-1 max-h-72 overflow-y-auto">
+              <button
+                onClick={() => { onSelect(null); setOpen(false); }}
+                className="w-full text-left px-4 py-2 text-xs text-gray-500 hover:bg-gray-50"
+              >
+                — Enter product manually —
+              </button>
+              <div className="border-t border-gray-100" />
+              {products.map((p) => {
+                const score = p.competitorAnalysis?.opportunityScore ?? 0;
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => { onSelect(p.id); setOpen(false); }}
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-orange-50 ${selectedId === p.id ? "bg-orange-50" : ""}`}
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-orange-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                      {p.asin?.slice(-2) || "??"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-800 truncate">{p.name}</p>
+                      <p className="text-xs text-gray-400 font-mono">{p.asin} • {p.category}</p>
+                    </div>
+                    <span className={`text-xs font-bold ${score >= 80 ? "text-green-600" : score >= 60 ? "text-orange-500" : "text-red-500"}`}>
+                      {score}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        )}
+      </div>
+
+      {selected && (
+        <div className="mt-3 pt-3 border-t border-gray-100 grid grid-cols-3 gap-2">
+          <div className="text-xs">
+            <p className="text-gray-500">Opportunity</p>
+            <p className="font-bold text-gray-800">{selected.competitorAnalysis?.opportunityScore ?? 0}/100</p>
+          </div>
+          <div className="text-xs">
+            <p className="text-gray-500">AI keywords</p>
+            <p className="font-bold text-gray-800">{selected.competitorAnalysis?.suggestedKeywords?.length ?? 0}</p>
+          </div>
+          <div className="text-xs">
+            <p className="text-gray-500">Competitors</p>
+            <p className="font-bold text-gray-800">{selected.competitorAnalysis?.topCompetitors?.length ?? 0}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─── STEP 2: Product form ───────────────────────────────────────────────── */
 function StepProduct({ form, setForm, mode, campaignType, onBack, onGenerate, loading, error }) {
+  const { getProduct } = useProducts();
   const ch = (e) => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+
+  const selectProduct = (productId) => {
+    if (!productId) {
+      setForm((f) => ({ ...f, productId: null }));
+      return;
+    }
+    const p = getProduct(productId);
+    if (!p) return;
+    const a = p.competitorAnalysis || {};
+    setForm((f) => ({
+      ...f,
+      productId: p.id,
+      productName: p.name,
+      asin: p.asin,
+      category: p.category,
+      features: p.notes || f.features,
+      competitors: (a.topCompetitors || []).map((c) => c.name).join(", "),
+    }));
+  };
+
   return (
     <div className="space-y-4">
       {error && (
@@ -105,6 +250,10 @@ function StepProduct({ form, setForm, mode, campaignType, onBack, onGenerate, lo
           <AlertTriangle size={14} /> {error}
         </div>
       )}
+
+      {/* NEW: registered product picker */}
+      <RegisteredProductPicker selectedId={form.productId} onSelect={selectProduct} />
+
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">Product Name <span className="text-red-400">*</span></label>
@@ -515,7 +664,7 @@ export default function AdsCreator() {
 
   const handleReset = () => {
     setStep("mode_type"); setMode(null); setCampaignType(null);
-    setForm({ productName:"", asin:"", category:"", marketplace:"US", budget:50, targetAcos:20, features:"", competitors:"" });
+    setForm({ productId:null, productName:"", asin:"", category:"", marketplace:"US", budget:50, targetAcos:20, features:"", competitors:"" });
     setCampaign(null); setResult(null); setError(null);
   };
 

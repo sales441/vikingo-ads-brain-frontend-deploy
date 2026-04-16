@@ -29,6 +29,7 @@ const groups = [
     label: "Home",
     items: [
       { to: "/dashboard",  label: "Dashboard",     icon: LayoutDashboard },
+      { to: "/products",   label: "My Products",   icon: Package,      highlight: true },
       { to: "/pnl",        label: "P&L",           icon: DollarSign },
       { to: "/reports",    label: "Reports",       icon: BarChart3 },
     ],

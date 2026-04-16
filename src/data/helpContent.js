@@ -236,4 +236,241 @@ export const helpTopics = [
       },
     ],
   },
+
+  /* ───────────────────────────── CAMPAIGNS ──────────────────────────── */
+  {
+    id: "campaigns",
+    title: "Campaigns (view & manage)",
+    icon: "Megaphone",
+    summary: "Read your live Amazon campaigns, see AI diagnostics per campaign, and act with one click.",
+    sections: [
+      {
+        id: "connection-banner",
+        title: "Reading the connection banner",
+        paragraphs: [
+          "The top of the Campaigns page always shows a status banner. The color tells you where the data comes from:",
+        ],
+        definitions: [
+          { term: "Green — Live data", body: "Amazon Ads API responded. Vikingo Brain™ is analyzing your real campaigns and will refresh every time you open the page or click Sync from Amazon." },
+          { term: "Orange — Demo mode (credentials OK)", body: "You have credentials saved, but the API is unreachable right now. The error message is shown under the banner. Try Sync in a minute or check Amazon's API status page." },
+          { term: "Yellow — Not connected", body: "No Amazon credentials yet. Click the inline link to go to Companies and connect — or continue exploring with demo data." },
+        ],
+      },
+      {
+        id: "sync-button",
+        title: "Sync from Amazon (manual refresh)",
+        paragraphs: [
+          "The 'Sync from Amazon' button forces an immediate pull of all campaigns. Use it after you made changes in Seller Central / Amazon Ads Console and want Vikingo to catch up instantly.",
+          "Normal automatic sync runs whenever the page is opened and whenever the selected company changes.",
+        ],
+        tip: "AI tip: Amazon caches campaign stats for ~5 minutes. If you just changed something there, give it a couple of minutes before clicking Sync.",
+      },
+      {
+        id: "ai-attention-panel",
+        title: "'Campaigns needing attention' panel",
+        paragraphs: [
+          "Right below the banner, Vikingo Brain™ highlights up to 4 campaigns that need action. Each card shows:",
+        ],
+        steps: [
+          { title: "Severity badge", body: "Critical (red) means act now — losing money or missing impressions. Warning (orange) means watch closely. OK campaigns are hidden from this panel." },
+          { title: "Issues list", body: "Plain-English diagnosis: e.g. 'ACoS 38% is 1.5× your target (25%)' or 'Only 18% of budget used — bids might be too low.'" },
+          { title: "One-click action buttons", body: "The AI proposes 1–3 concrete fixes per campaign. Clicking applies the change to the local copy (demo) or sends it to the Amazon Ads API (live)." },
+        ],
+        tip: "AI tip: when multiple actions are suggested, the first one is always the highest-impact. Apply it, re-sync after 24h, and reassess.",
+      },
+      {
+        id: "available-actions",
+        title: "What each action does",
+        definitions: [
+          { term: "Pause until ROAS improves", body: "Triggered when ROAS < 3×. Stops spending until you investigate root cause (bad keywords, wrong price, weak listing)." },
+          { term: "Lower top keyword bids 20%", body: "For critical ACoS overruns. Cuts bids on the 10 highest-spend keywords to reduce CPC immediately." },
+          { term: "Tune bids down on weak keywords", body: "For moderate ACoS overruns. Touches only the keywords with ACoS above target, leaving profitable ones alone." },
+          { term: "Raise bids 10–15%", body: "When budget is underused. Bumps bids on the top-performing keywords to win more impressions." },
+          { term: "Raise daily budget 25%", body: "When budget is exhausted before end of day. Gives the campaign more runway without changing bids." },
+          { term: "Review keyword relevance", body: "When CTR < 0.3% with many impressions. Flags the campaign for manual keyword review — often signals a search-term mismatch." },
+        ],
+      },
+      {
+        id: "table-columns",
+        title: "Reading the campaign table",
+        paragraphs: [
+          "Every row represents one campaign. The AI column shows a 1-word status (Act / Watch / OK) — hover for the full diagnosis. Other columns: Type (SP/SB/SD), Status (Active/Paused), Daily Budget, Spend, Revenue, ROAS, ACoS, Orders, Impressions, Clicks, CTR.",
+          "Click a column header to sort. The AI column is non-sortable but you can filter using the status buttons above the table (All / Active / Paused).",
+        ],
+      },
+      {
+        id: "toggle-pause",
+        title: "Pause or activate a campaign",
+        paragraphs: [
+          "Click the small pause/play icon on the right of any row. In demo mode the change is local; in live mode it's pushed to Amazon immediately (takes ~2 minutes to propagate).",
+        ],
+        tip: "AI tip: pausing a campaign stops spend but keeps history. Deleting loses the learning data Amazon's algorithm collected. Prefer pause over delete.",
+      },
+      {
+        id: "edit-budget",
+        title: "Change the daily budget inline",
+        paragraphs: [
+          "Click the pencil icon next to the budget value. Type the new number and press OK. The AI warns you if the new budget is below the average daily spend — that would cap the campaign every morning.",
+        ],
+      },
+    ],
+  },
+
+  /* ────────────────────────── CREATE ADS ────────────────────────────── */
+  {
+    id: "create-ads",
+    title: "Create Ads",
+    icon: "Megaphone",
+    summary: "Guided campaign builder with AI safeguards. From scratch to launched in 4 steps.",
+    sections: [
+      {
+        id: "intro",
+        title: "Before you start",
+        paragraphs: [
+          "The Ads Creator is a 4-step flow: Mode → Product setup → AI generates → Review & launch. Every decision is accompanied by AI guidance — the system warns when you pick a risky option and shows the 'AI pick' badge on its recommendation.",
+          "For best results, register the product in My Products first. The Ads Creator will offer it in a dropdown and pre-fill 90% of the form.",
+        ],
+      },
+      {
+        id: "step1-mode",
+        title: "Step 1 — Mode, Program, Campaign Type",
+        steps: [
+          {
+            title: "Pick a creation mode",
+            body: "Automatic AI — Vikingo builds every setting (keywords, bids, match types, strategy) in one click. Best for new users. Manual + Assisted — you configure each field, the AI adds warnings and recommendations on top.",
+            tip: "AI tip: start with Automatic for your first 2–3 campaigns. Once you understand the logic, switch to Manual for fine control.",
+          },
+          {
+            title: "Pick an advertising program",
+            body: "Amazon Retail (B2C — the usual Amazon.com shoppers — supports SP/SB/SD). Amazon Business (B2B — higher average order value, bulk buyers — supports SP/SB). Amazon Beyond (DSP-style reach off-Amazon — supports SD only).",
+            tip: "AI tip: Amazon Retail has the largest audience and is the default pick. Amazon Business requires a Business-registered Amazon account.",
+          },
+          {
+            title: "Pick a campaign type",
+            body: "SP (Sponsored Products) — ads in search results or product pages. Cheapest CPCs, best for proven ASINs. SB (Sponsored Brands) — headline/video at the top of search, requires brand registration. SD (Sponsored Display) — banners on Amazon and off-Amazon via DSP, best for retargeting.",
+          },
+        ],
+      },
+      {
+        id: "step2-product",
+        title: "Step 2 — Product & Campaign setup",
+        steps: [
+          {
+            title: "Select a registered product (or enter manually)",
+            body: "The dropdown lists everything from My Products with its AI opportunity score. Picking a product auto-fills: name, ASIN, category, top competitors, AI-suggested keywords, notes.",
+          },
+          {
+            title: "Adjust daily budget and target ACoS",
+            body: "Daily budget is how much the campaign can spend per day before Amazon pauses it. Target ACoS is what you're willing to pay for sales — Vikingo uses this to calibrate bid suggestions.",
+            tip: "AI tip: target ACoS should be below your profit margin. If your margin is 25%, target 15–20% ACoS to stay profitable.",
+          },
+          {
+            title: "Campaign Schedule",
+            body: "Campaign Name — leave blank and the AI auto-generates one (e.g. 'SP - Product | Exact | Main'). Start Date — defaults to today. End Date — optional; leave empty to run indefinitely.",
+          },
+          {
+            title: "Default Bid",
+            body: "Used for any keyword added without a specific bid. The AI triggers a red safeguard if you pick a default above the category's 90th percentile (~$3).",
+          },
+          {
+            title: "Targeting Type",
+            body: "Manual — you pick keywords (best for established products). Automatic — Amazon picks keywords for you from the listing (useful for research in the first 2 weeks, then switch to Manual).",
+          },
+          {
+            title: "Bidding Strategy",
+            body: "Dynamic bids - down only (AI pick for new campaigns) — Amazon only lowers bids when conversion is unlikely. Safest. Dynamic bids - up and down — can raise bids up to +100% on hot placements; higher risk of overspend. Fixed bids — your bid never changes automatically; maximum manual control.",
+            tip: "AI tip: stick with Down only for the first 4 weeks. Move to Up-and-down once you have data and know which keywords convert.",
+          },
+        ],
+      },
+      {
+        id: "step3-loading",
+        title: "Step 3 — AI generates (no user input)",
+        paragraphs: [
+          "Vikingo Brain™ does: researches competitors for the ASIN, analyzes search volume, calculates bid ranges per keyword, groups keywords by match type, and picks a campaign structure. Takes ~15–30s in production.",
+        ],
+      },
+      {
+        id: "step4-review",
+        title: "Step 4 — Review & launch",
+        steps: [
+          {
+            title: "ACoS alert banner",
+            body: "If the estimated ACoS is above your target, a red banner appears explaining what to change (usually lower bids on high-competition keywords or raise your price).",
+          },
+          {
+            title: "Keywords table",
+            body: "Checkbox to exclude a keyword. Click the bid to edit. The 'AI Bid' pill shows the suggested bid — click it to snap your bid to the AI's number. Up-arrow orange = raise bid. Down-arrow blue = lower bid. Green check = on target.",
+          },
+          {
+            title: "Upload keywords (paste in bulk)",
+            body: "Click 'Upload keywords' to paste a list separated by commas, semicolons or newlines. Each added keyword uses the default bid and Broad match type.",
+          },
+          {
+            title: "Negative keyword targeting",
+            body: "Words that should NEVER trigger your ad. Add 'free', 'cheap', competitor names, or anything off-brand. Use Exact (blocks only the exact phrase) or Phrase (blocks any phrase containing the term).",
+          },
+          {
+            title: "Negative product targeting",
+            body: "Block specific ASINs or brands. Useful in SB/SD campaigns to stop showing on a specific competitor's listing (or prevent them from showing on yours, once they reciprocate).",
+          },
+          {
+            title: "Automation rules",
+            body: "Pick from 4 templates: raise bids during high-traffic hours, weekend budget boost, auto-pause keywords above 40% ACoS, auto-pause when inventory drops below 15 days. Toggle them on/off per campaign.",
+          },
+          {
+            title: "Launch",
+            body: "Click 'Create Campaign on Amazon'. In demo mode you get a simulated campaign ID. In live mode the campaign is pushed to Amazon Ads and takes ~5 minutes to become active.",
+          },
+        ],
+      },
+      {
+        id: "best-practices",
+        title: "AI-recommended best practices",
+        definitions: [
+          { term: "1 product per campaign", body: "Don't mix ASINs in the same campaign. You won't know which product is winning or losing." },
+          { term: "Split by match type", body: "Separate Exact, Phrase, and Broad into their own campaigns. Different strategies require different bids." },
+          { term: "Start with branded keywords", body: "Your own brand name is cheap and converts well. Run it as its own SB 'Brand Defense' campaign." },
+          { term: "Let it run 14 days before judging", body: "Amazon's algorithm needs 7–14 days to learn. Don't pause based on day 3 data." },
+          { term: "Budget ≥ target ACoS × 20", body: "Rule of thumb: if target ACoS is 25%, daily budget should be at least $25 × 20 = $500... or you won't gather enough data." },
+        ],
+      },
+    ],
+  },
+
+  /* ───────────────────────────── KEYWORDS ───────────────────────────── */
+  {
+    id: "keywords",
+    title: "Keywords",
+    icon: "KeyRound",
+    summary: "Inspect and optimize every keyword in your live campaigns. Edit bids, pause weak ones, catch opportunities.",
+    sections: [
+      {
+        id: "overview",
+        title: "What you see",
+        paragraphs: [
+          "The Keywords page lists every keyword across all your campaigns. Four KPI cards at the top summarize the state: total keywords, active, high ACoS (alert), and 'Bid below suggested' (opportunities).",
+          "Filters let you narrow by status (Active/Paused), match type (Exact/Phrase/Broad), and free-text search on the keyword or campaign name.",
+        ],
+      },
+      {
+        id: "inline-edit",
+        title: "Editing a bid inline",
+        paragraphs: [
+          "Click the pencil icon next to any bid. Type a new value and press Enter or click OK. The change is local in demo mode and pushed to Amazon immediately in live mode.",
+          "If your bid is more than 5% below the suggested bid, an orange up-arrow appears — Vikingo's hint to consider raising it.",
+        ],
+      },
+      {
+        id: "alerts",
+        title: "What the alerts mean",
+        definitions: [
+          { term: "High ACoS (>10%)", body: "On its own this might be fine — depends on your margin. But if more than 3 keywords trigger this, the campaign structure is off." },
+          { term: "Bid below suggested", body: "Amazon's suggested bid is typically the median winning bid for that keyword. Below it, you're losing the auction more often." },
+          { term: "Warning triangle on a row", body: "Shown when ACoS > 10% OR ROAS < 10×. Hover to see which one." },
+        ],
+        tip: "AI tip: a handful of keywords with very high ACoS are often responsible for 60–80% of the waste. Sort by Spend descending and fix the top 5 first.",
+      },
+    ],
+  },
 ];

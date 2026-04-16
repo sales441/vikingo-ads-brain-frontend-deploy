@@ -1037,4 +1037,185 @@ export const helpTopics = [
       },
     ],
   },
+
+  /* ──────────────────── COMPETITOR MONITOR ──────────────────────────── */
+  {
+    id: "competitor-monitor",
+    title: "Competitor Monitor",
+    icon: "Eye",
+    summary: "Real-time alerts when competitors drop price, run out of stock, or change rating — so you can react in minutes.",
+    sections: [
+      {
+        id: "why",
+        title: "Why monitor competitors",
+        paragraphs: [
+          "Amazon is a price/stock auction. When a competitor runs out or cuts price, the Buy Box shifts — you can grab thousands of extra sales in 48 hours if you raise bids at the right moment.",
+          "Without monitoring, you miss these windows. Vikingo polls tracked competitors every 30 minutes and raises alerts.",
+        ],
+      },
+      {
+        id: "adding",
+        title: "Adding a competitor",
+        steps: [
+          { title: "Paste the ASIN", body: "Grab the 10-char ID from any Amazon listing URL." },
+          { title: "Click Monitor", body: "Vikingo starts polling price, stock, rating, review count, and BSR." },
+        ],
+        tip: "AI tip: track 3–7 direct competitors per SKU. More than that creates noise.",
+      },
+      {
+        id: "alerts",
+        title: "Alerts to watch",
+        definitions: [
+          { term: "Price drop (green)", body: "Match or undercut if margin allows. Or raise bids on shared keywords to steal traffic." },
+          { term: "Out of stock (blue)", body: "The highest-value alert. Raise your bids +30–50% for 24–48h to capture their Buy Box." },
+          { term: "Price up (orange)", body: "Your relative position improved. Consider raising your own price slightly — the market just shifted up." },
+          { term: "BSR drop", body: "Competitor gaining rank. Investigate what changed (new creative, deal, review burst)." },
+        ],
+      },
+      {
+        id: "table",
+        title: "Reading the competitor table",
+        paragraphs: [
+          "Each row has: product name, price (today), price change %, stock badge, rating + review count, BSR + delta, and per-product alert toggles.",
+          "Toggle the bell icon to enable/disable price alerts. Toggle the package icon to enable/disable stock alerts.",
+        ],
+      },
+    ],
+  },
+
+  /* ──────────────────── RANKING TRACKER ─────────────────────────────── */
+  {
+    id: "ranking-tracker",
+    title: "Ranking Tracker",
+    icon: "Award",
+    summary: "Track your organic and paid rank for specific keywords over 30 days. Spot wins and regressions immediately.",
+    sections: [
+      {
+        id: "organic-vs-paid",
+        title: "Organic vs Paid ranking",
+        paragraphs: [
+          "Organic rank: your natural position in search results, driven by sales velocity, CTR, and conversions.",
+          "Paid rank: where your Sponsored ad appears for that keyword. Driven by your bid and relevance.",
+          "Both matter. Good SEO (organic) means cheaper traffic. Good bid management (paid) means guaranteed presence.",
+        ],
+      },
+      {
+        id: "tracking",
+        title: "Tracking a keyword",
+        steps: [
+          { title: "Type keyword", body: "The exact phrase you want to rank for. Start with 3–5 main terms." },
+          { title: "Click Track", body: "Vikingo polls your rank every 12 hours and plots the history." },
+          { title: "Remove with trash icon", body: "Stop tracking anytime. History is preserved." },
+        ],
+      },
+      {
+        id: "reading-chart",
+        title: "Reading the chart",
+        paragraphs: [
+          "Y-axis is inverted: #1 is the TOP of the chart. Line going UP = rank improving. Line going DOWN = slipping.",
+          "Toggle Organic / Paid view at the top right to switch between the two. Compare both for the same keyword to understand how ads are affecting organic.",
+        ],
+        tip: "AI tip: after 7 days of running ads on a keyword, check if the organic line also improved. That's a sign the Amazon algorithm is rewarding you.",
+      },
+      {
+        id: "deltas",
+        title: "Ranking deltas (KPI cards)",
+        paragraphs: [
+          "Each KPI card shows current rank + 7-day delta. Green arrow = climbed. Red arrow = slipped. Flat = stable.",
+        ],
+      },
+    ],
+  },
+
+  /* ───────────────────── INVENTORY ALERTS ───────────────────────────── */
+  {
+    id: "inventory",
+    title: "Inventory Alerts",
+    icon: "Package",
+    summary: "Automatic ad pause when stock runs low — protects your listing from the out-of-stock ranking penalty.",
+    sections: [
+      {
+        id: "why",
+        title: "Why this matters",
+        paragraphs: [
+          "Amazon PUNISHES listings that run out of stock. Your organic rank drops, and you can lose a #1 position it took months to earn.",
+          "Worse: if your ads keep running while you have no stock, you pay for clicks that can't convert. Double whammy.",
+          "Auto-pause prevents both. When stock dips below threshold, Vikingo pauses the ads automatically.",
+        ],
+      },
+      {
+        id: "adding",
+        title: "Registering a product",
+        steps: [
+          { title: "Click Add Product", body: "A form opens." },
+          { title: "Fill Name, ASIN, Current Stock, Minimum Stock, Daily Sales", body: "Daily Sales is the average units sold per day — used to calculate days-remaining." },
+          { title: "Toggle 'Pause ads automatically'", body: "If on, Vikingo pauses when stock < minimum. If off, you only get a notification." },
+        ],
+      },
+      {
+        id: "status",
+        title: "Status meanings",
+        definitions: [
+          { term: "Stock OK (green)", body: "Stock is above minimum. Days left is shown per card." },
+          { term: "Low Stock (yellow)", body: "Below minimum but not zero. Time to reorder or start a replenishment shipment." },
+          { term: "Critical (red)", body: "Zero or nearly zero. If auto-pause is on, ads are stopped. If off, decide urgently." },
+        ],
+      },
+      {
+        id: "best-practices",
+        title: "AI-recommended thresholds",
+        paragraphs: [
+          "Minimum Stock should equal 'days to next shipment' × average daily sales. If your supplier ships in 30 days and you sell 10/day, set min = 300.",
+          "For FBA, factor in inbound time (another 2–5 days) and add a buffer of 20%.",
+        ],
+      },
+    ],
+  },
+
+  /* ───────────────────── SEASONAL TRENDS ────────────────────────────── */
+  {
+    id: "seasonal",
+    title: "Seasonal Trends",
+    icon: "Calendar",
+    summary: "Annual demand calendar + upcoming shopping events. Plan inventory and ad budgets 30 / 60 / 90 days out.",
+    sections: [
+      {
+        id: "why",
+        title: "Why seasonality matters",
+        paragraphs: [
+          "Amazon traffic swings 2–3× between low and high seasons for many categories. If you treat December the same as March, you're leaving money on the table (or overspending in slow months).",
+          "This page helps plan both inventory (so you don't stock out in peak) and ad budget (so you don't burn money in dead months).",
+        ],
+      },
+      {
+        id: "current-month",
+        title: "Current Month card",
+        paragraphs: [
+          "The dark card at the top shows the current month's Demand Index (0–100), estimated average CPC, estimated conversion rate, and opportunity index. Use as a baseline.",
+        ],
+      },
+      {
+        id: "upcoming-events",
+        title: "Upcoming events (next 3 months)",
+        paragraphs: [
+          "Color-coded by impact. Red = very high (Black Friday, Christmas). Orange = high (Prime Day, Mother's Day). Yellow = medium. Each event has a concrete tip — e.g. 'Start advertising 3 weeks before, raise budget 3× during event week.'",
+        ],
+        tip: "AI tip: send your FBA inventory 45 days before peak events. Amazon's inbound warehouses get clogged in Oct–Dec.",
+      },
+      {
+        id: "annual-chart",
+        title: "Annual Demand Calendar chart",
+        paragraphs: [
+          "Toggle Demand / CPC / Conversion at the top right to switch the metric. Bar heights let you compare every month at a glance.",
+        ],
+      },
+      {
+        id: "all-events-table",
+        title: "All Events table",
+        paragraphs: [
+          "The full-year calendar — month, event, impact, and specific tip per event. Use this to lay out your marketing calendar for the year.",
+        ],
+      },
+    ],
+  },
 ];

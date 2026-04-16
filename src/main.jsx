@@ -5,16 +5,19 @@ import App from "./App";
 import { AuthProvider } from "./context/AuthContext";
 import { CompaniesProvider } from "./context/CompaniesContext";
 import { ProductsProvider } from "./context/ProductsContext";
+import ErrorBoundary from "./components/ErrorBoundary";
 import "./index.css";
 
 createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
-    <AuthProvider>
-      <CompaniesProvider>
-        <ProductsProvider>
-          <App />
-        </ProductsProvider>
-      </CompaniesProvider>
-    </AuthProvider>
-  </BrowserRouter>
+  <ErrorBoundary>
+    <BrowserRouter>
+      <AuthProvider>
+        <CompaniesProvider>
+          <ProductsProvider>
+            <App />
+          </ProductsProvider>
+        </CompaniesProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  </ErrorBoundary>
 );

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Zap, Eye, EyeOff, AlertCircle, RefreshCw } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import VikingShip from "../components/VikingShip";
@@ -92,6 +92,12 @@ export default function Login() {
               </div>
             </div>
 
+            <div className="flex justify-end -mt-1">
+              <Link to="/forgot-password" className="text-xs text-slate-400 hover:text-orange-400">
+                Forgot password?
+              </Link>
+            </div>
+
             <button
               type="submit"
               disabled={loading}
@@ -104,6 +110,11 @@ export default function Login() {
               )}
             </button>
           </form>
+
+          <p className="text-center text-xs text-slate-400 mt-6">
+            No account yet?{" "}
+            <Link to="/signup" className="text-orange-400 hover:underline font-semibold">Create one</Link>
+          </p>
         </div>
 
         <p className="text-center text-slate-600 text-xs mt-6">

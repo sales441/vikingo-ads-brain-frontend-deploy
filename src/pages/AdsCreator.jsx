@@ -23,6 +23,31 @@ const CAMPAIGN_TYPES = [
   { id:"SD", label:"Sponsored Display",  desc:"Display and retargeting",     icon:Target,      color:"green" },
 ];
 
+const PROGRAMS = [
+  {
+    id: "retail",
+    label: "Amazon Retail",
+    desc: "Standard Amazon.com shoppers (B2C)",
+    aiNote: "Best for most sellers. Largest audience. Works with SP, SB and SD.",
+    supportedTypes: ["SP", "SB", "SD"],
+    recommended: true,
+  },
+  {
+    id: "business",
+    label: "Amazon Business",
+    desc: "B2B buyers on amazon.com/business",
+    aiNote: "Higher AOV, bulk purchases. Requires a Business-registered account. Works with SP and SB.",
+    supportedTypes: ["SP", "SB"],
+  },
+  {
+    id: "beyond",
+    label: "Amazon Beyond",
+    desc: "Audiences off-Amazon (DSP / third-party sites)",
+    aiNote: "Reaches shoppers outside Amazon through DSP. Best for retargeting with SD.",
+    supportedTypes: ["SD"],
+  },
+];
+
 const MATCH_COLORS = { broad:"bg-blue-100 text-blue-700", phrase:"bg-orange-100 text-orange-700", exact:"bg-green-100 text-green-700" };
 const MATCH_LABELS = { broad:"Broad", phrase:"Phrase", exact:"Exact" };
 
@@ -49,8 +74,20 @@ function ProgressBar({ step }) {
   );
 }
 
-/* ─── STEP 1: Mode + Type ────────────────────────────────────────────────── */
-function StepModeType({ mode, setMode, campaignType, setCampaignType, onNext }) {
+/* ─── STEP 1: Mode + Program + Type ──────────────────────────────────────── */
+function StepModeType({ mode, setMode, program, setProgram, campaignType, setCampaignType, onNext }) {
+  const currentProgram = PROGRAMS.find((p) => p.id === program);
+  const availableTypes = currentProgram
+    ? CAMPAIGN_TYPES.filter((t) => currentProgram.supportedTypes.includes(t.id))
+    : CAMPAIGN_TYPES;
+
+  // Clear selected type if it's no longer supported by the new program
+  React.useEffect(() => {
+    if (currentProgram && campaignType && !currentProgram.supportedTypes.includes(campaignType)) {
+      setCampaignType(null);
+    }
+  }, [program]);
+
   return (
     <div className="space-y-6">
       <div>
@@ -72,10 +109,50 @@ function StepModeType({ mode, setMode, campaignType, setCampaignType, onNext }) 
         </div>
       </div>
 
+      {/* NEW: Program selector */}
       <div>
-        <h2 className="text-sm font-semibold text-gray-700 mb-3">Campaign type</h2>
+        <div className="flex items-center gap-2 mb-3">
+          <h2 className="text-sm font-semibold text-gray-700">Advertising program</h2>
+          <span className="text-xs bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+            <BrainCircuit size={10} /> AI recommends Amazon Retail
+          </span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {PROGRAMS.map((p) => {
+            const active = program === p.id;
+            return (
+              <button key={p.id} type="button" onClick={() => setProgram(p.id)}
+                className={`relative p-4 rounded-xl border-2 text-left transition-all ${active ? "border-orange-400 bg-orange-50" : "border-gray-200 hover:border-gray-300 bg-white"}`}>
+                {p.recommended && (
+                  <span className="absolute top-2 right-2 text-xs bg-green-100 text-green-700 border border-green-200 px-1.5 py-0.5 rounded-full font-semibold flex items-center gap-0.5">
+                    <BrainCircuit size={9} /> AI pick
+                  </span>
+                )}
+                <p className={`text-sm font-bold ${active ? "text-orange-700" : "text-gray-800"}`}>{p.label}</p>
+                <p className="text-xs text-gray-600 font-medium">{p.desc}</p>
+                <p className="text-xs text-blue-600 mt-2 flex items-start gap-1">
+                  <BrainCircuit size={10} className="flex-shrink-0 mt-0.5" /><span>{p.aiNote}</span>
+                </p>
+                <p className="text-xs text-gray-400 mt-2">
+                  Supports: {p.supportedTypes.join(", ")}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div>
+        <h2 className="text-sm font-semibold text-gray-700 mb-3">
+          Campaign type{" "}
+          {currentProgram && (
+            <span className="text-xs text-gray-400 font-normal">
+              (filtered by {currentProgram.label})
+            </span>
+          )}
+        </h2>
         <div className="grid grid-cols-3 gap-4">
-          {CAMPAIGN_TYPES.map(({ id, label, desc, icon: Icon, color }) => (
+          {availableTypes.map(({ id, label, desc, icon: Icon, color }) => (
             <button key={id} onClick={() => setCampaignType(id)}
               className={`p-4 rounded-xl border-2 text-left transition-all ${campaignType === id ? "border-orange-400 shadow-md" : "border-gray-200 hover:border-gray-300"}`}>
               <div className={`w-8 h-8 rounded-lg bg-${color}-100 flex items-center justify-center mb-2`}>
@@ -89,7 +166,7 @@ function StepModeType({ mode, setMode, campaignType, setCampaignType, onNext }) 
         </div>
       </div>
 
-      <button disabled={!mode || !campaignType} onClick={onNext}
+      <button disabled={!mode || !program || !campaignType} onClick={onNext}
         className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-200 disabled:text-gray-400 text-white font-semibold py-3 rounded-xl transition-colors text-sm">
         Continue <ArrowRight size={16} />
       </button>
@@ -736,6 +813,7 @@ function StepSuccess({ result, form, campaignType, onReset }) {
 export default function AdsCreator() {
   const [step, setStep] = useState("mode_type");
   const [mode, setMode] = useState(null);
+  const [program, setProgram] = useState("retail");
   const [campaignType, setCampaignType] = useState(null);
   const [form, setForm] = useState({ productName:"", asin:"", category:"", marketplace:"US", budget:50, targetAcos:20, features:"", competitors:"" });
   const [campaign, setCampaign] = useState(null);
@@ -760,6 +838,13 @@ export default function AdsCreator() {
         competitors: form.competitors.split(",").map(s => s.trim()).filter(Boolean),
         campaignType,
         mode,
+        program,
+        campaignName: form.campaignName,
+        startDate: form.startDate,
+        endDate: form.endDate,
+        defaultBid: form.defaultBid,
+        targetingType: form.targetingType,
+        biddingStrategy: form.biddingStrategy,
       };
       const res = await fetch(`${BASE_URL}/ai/ads/suggest`, {
         method: "POST",
@@ -807,7 +892,7 @@ export default function AdsCreator() {
   };
 
   const handleReset = () => {
-    setStep("mode_type"); setMode(null); setCampaignType(null);
+    setStep("mode_type"); setMode(null); setProgram("retail"); setCampaignType(null);
     setForm({ productId:null, productName:"", asin:"", category:"", marketplace:"US", budget:50, targetAcos:20, features:"", competitors:"", campaignName:"", startDate: new Date().toISOString().slice(0,10), endDate:"", defaultBid: 0.75, targetingType: "manual", biddingStrategy: "dynamic_down" });
     setCampaign(null); setResult(null); setError(null);
   };
@@ -827,7 +912,7 @@ export default function AdsCreator() {
 
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
         <ProgressBar step={step} />
-        {step === "mode_type" && <StepModeType mode={mode} setMode={setMode} campaignType={campaignType} setCampaignType={setCampaignType} onNext={() => setStep("product")} />}
+        {step === "mode_type" && <StepModeType mode={mode} setMode={setMode} program={program} setProgram={setProgram} campaignType={campaignType} setCampaignType={setCampaignType} onNext={() => setStep("product")} />}
         {step === "product"   && <StepProduct form={form} setForm={setForm} mode={mode} campaignType={campaignType} onBack={() => setStep("mode_type")} onGenerate={handleGenerate} loading={loading} error={error} />}
         {step === "loading"   && <StepLoading />}
         {step === "review"    && campaign && <StepReview campaign={campaign} setCampaign={setCampaign} campaignType={campaignType} form={form} onBack={() => setStep("product")} onCreate={handleCreate} creating={creating} error={error} />}

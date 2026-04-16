@@ -1,8 +1,140 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Bell, RefreshCw, Calendar, LogOut, User, Building2, ChevronDown, Check, Plus, HelpCircle } from "lucide-react";
+import { Bell, RefreshCw, Calendar, LogOut, User, Building2, ChevronDown, Check, Plus, HelpCircle, AlertTriangle, Package, BrainCircuit, CheckCheck, Trash2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useCompanies } from "../context/CompaniesContext";
+import { useNotifications } from "../context/NotificationsContext";
+
+function formatRelative(iso) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return "just now";
+  if (min < 60) return `${min}m ago`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}h ago`;
+  const d = Math.floor(hr / 24);
+  return `${d}d ago`;
+}
+
+const NOTIF_ICONS = {
+  acos_alert: AlertTriangle,
+  stock_alert: Package,
+  ai_insight: BrainCircuit,
+  info: Bell,
+};
+
+const NOTIF_COLORS = {
+  critical: "text-red-500 bg-red-50",
+  warning:  "text-orange-500 bg-orange-50",
+  info:     "text-blue-500 bg-blue-50",
+};
+
+function NotificationsBell() {
+  const { notifications, unreadCount, markRead, markAllRead, remove } = useNotifications();
+  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleClick = (n) => {
+    markRead(n.id);
+    if (n.route) {
+      navigate(n.route);
+      setOpen(false);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen((s) => !s)}
+        className="relative w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors"
+        title="Notifications"
+      >
+        <Bell size={16} />
+        {unreadCount > 0 && (
+          <span className="absolute top-1 right-1 min-w-[16px] h-[16px] rounded-full bg-orange-500 text-white text-[10px] font-bold flex items-center justify-center px-1">
+            {unreadCount > 9 ? "9+" : unreadCount}
+          </span>
+        )}
+      </button>
+
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 top-10 z-20 w-96 max-w-[calc(100vw-2rem)] bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
+            <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-bold text-gray-800">Notifications</p>
+                <p className="text-xs text-gray-500">{unreadCount} unread</p>
+              </div>
+              {unreadCount > 0 && (
+                <button
+                  onClick={markAllRead}
+                  className="text-xs text-orange-600 hover:underline flex items-center gap-1"
+                >
+                  <CheckCheck size={11} /> Mark all read
+                </button>
+              )}
+            </div>
+
+            <div className="max-h-[60vh] overflow-y-auto">
+              {notifications.length === 0 ? (
+                <div className="px-4 py-10 text-center text-sm text-gray-400">
+                  You're all caught up.
+                </div>
+              ) : (
+                <ul className="divide-y divide-gray-100">
+                  {notifications.map((n) => {
+                    const Icon = NOTIF_ICONS[n.type] || Bell;
+                    const colors = NOTIF_COLORS[n.severity] || NOTIF_COLORS.info;
+                    return (
+                      <li
+                        key={n.id}
+                        className={`px-4 py-3 flex gap-3 hover:bg-gray-50 transition-colors ${!n.read ? "bg-orange-50/30" : ""}`}
+                      >
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${colors}`}>
+                          <Icon size={14} />
+                        </div>
+                        <button
+                          onClick={() => handleClick(n)}
+                          className="flex-1 text-left min-w-0"
+                        >
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <p className={`text-sm font-semibold truncate ${!n.read ? "text-gray-900" : "text-gray-700"}`}>
+                              {n.title}
+                            </p>
+                            {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-orange-500 flex-shrink-0" />}
+                          </div>
+                          <p className="text-xs text-gray-600 line-clamp-2">{n.message}</p>
+                          <p className="text-xs text-gray-400 mt-1">{formatRelative(n.createdAt)}</p>
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); remove(n.id); }}
+                          className="text-gray-300 hover:text-red-500 self-start"
+                          title="Dismiss"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+
+            <div className="px-4 py-2 border-t border-gray-100 text-center">
+              <button
+                onClick={() => { navigate("/alerts"); setOpen(false); }}
+                className="text-xs text-orange-600 hover:underline font-medium"
+              >
+                View all alerts →
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 const titles = {
   "/dashboard":     "Dashboard",
@@ -155,10 +287,7 @@ export default function Header() {
           <RefreshCw size={16} />
         </button>
 
-        <button className="relative w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors" title="Notifications">
-          <Bell size={16} />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-orange-500 rounded-full" />
-        </button>
+        <NotificationsBell />
 
         {/* User menu */}
         <div className="relative">

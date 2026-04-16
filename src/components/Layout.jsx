@@ -3,10 +3,12 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import VikingShip from "./VikingShip";
+import OnboardingWizard from "./OnboardingWizard";
 
 export default function Layout() {
   return (
     <div className="min-h-screen bg-gray-50">
+      <OnboardingWizard />
       <Sidebar />
       <Header />
       <main className="ml-64 pt-16 min-h-screen flex flex-col">

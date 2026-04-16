@@ -5,6 +5,7 @@ import App from "./App";
 import { AuthProvider } from "./context/AuthContext";
 import { CompaniesProvider } from "./context/CompaniesContext";
 import { ProductsProvider } from "./context/ProductsContext";
+import { NotificationsProvider } from "./context/NotificationsContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import "./index.css";
 
@@ -14,7 +15,9 @@ createRoot(document.getElementById("root")).render(
       <AuthProvider>
         <CompaniesProvider>
           <ProductsProvider>
-            <App />
+            <NotificationsProvider>
+              <App />
+            </NotificationsProvider>
           </ProductsProvider>
         </CompaniesProvider>
       </AuthProvider>

@@ -25,6 +25,9 @@ import ABTest from "./pages/ABTest";
 import ProductDiscovery from "./pages/ProductDiscovery";
 import Products from "./pages/Products";
 import Help from "./pages/Help";
+import Landing from "./pages/Landing";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Terms from "./pages/Terms";
 import { useAuth } from "./context/AuthContext";
 
 function ProtectedRoute({ children }) {
@@ -36,12 +39,15 @@ function ProtectedRoute({ children }) {
       </div>
     );
   }
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  return isAuthenticated ? children : <Navigate to="/welcome" replace />;
 }
 
 export default function App() {
   return (
     <Routes>
+      <Route path="/welcome" element={<Landing />} />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
+      <Route path="/terms" element={<Terms />} />
       <Route path="/login" element={<Login />} />
       <Route
         path="/"

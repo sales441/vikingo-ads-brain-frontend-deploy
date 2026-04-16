@@ -1,7 +1,13 @@
-import React, { useState, useMemo } from "react";
-import { Search, Filter, PauseCircle, PlayCircle, Edit2, Plus, ChevronUp, ChevronDown } from "lucide-react";
+import React, { useState, useMemo, useEffect } from "react";
+import { Link } from "react-router-dom";
+import {
+  Search, Filter, PauseCircle, PlayCircle, Edit2, Plus, ChevronUp, ChevronDown,
+  RefreshCw, Cloud, CloudOff, BrainCircuit, AlertTriangle, CheckCircle,
+} from "lucide-react";
 import StatusBadge from "../components/StatusBadge";
 import { campaigns as initialCampaigns } from "../data/mockData";
+import { syncCampaignsFromAmazon } from "../services/api";
+import { useCompanies } from "../context/CompaniesContext";
 
 const fmt = (v, type = "currency") => {
   if (type === "currency") return `$${Number(v).toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
@@ -22,12 +28,37 @@ function SortIcon({ col, sortCol, sortDir }) {
 }
 
 export default function Campaigns() {
+  const { selectedCompany } = useCompanies();
   const [campaigns, setCampaigns] = useState(initialCampaigns);
+  const [sync, setSync] = useState({ source: "demo", syncedAt: null, error: null, syncing: false });
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
   const [sortCol, setSortCol] = useState("revenue");
   const [sortDir, setSortDir] = useState("desc");
+
+  // Is Amazon Ads API configured for the selected company?
+  const credentialsOk = Boolean(
+    selectedCompany?.profileId && selectedCompany?.clientId && selectedCompany?.clientSecret
+  );
+
+  const runSync = async () => {
+    setSync((s) => ({ ...s, syncing: true, error: null }));
+    const result = await syncCampaignsFromAmazon();
+    setCampaigns(result.campaigns);
+    setSync({
+      source: result.source,
+      syncedAt: result.syncedAt,
+      error: result.error || null,
+      syncing: false,
+    });
+  };
+
+  // Auto-sync on mount and whenever selected company changes
+  useEffect(() => {
+    runSync();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCompany?.id]);
   const [editBudget, setEditBudget] = useState(null); // { id, value }
 
   const filtered = useMemo(() => {
@@ -80,6 +111,77 @@ export default function Campaigns() {
 
   return (
     <div className="space-y-5">
+      {/* Amazon Ads connection status */}
+      <div className={`border-2 rounded-xl p-4 ${
+        sync.source === "live"
+          ? "bg-green-50 border-green-200"
+          : credentialsOk
+          ? "bg-orange-50 border-orange-200"
+          : "bg-yellow-50 border-yellow-200"
+      }`}>
+        <div className="flex items-start gap-3 flex-wrap">
+          {sync.source === "live" ? (
+            <Cloud size={20} className="text-green-600 flex-shrink-0 mt-0.5" />
+          ) : (
+            <CloudOff size={20} className={`${credentialsOk ? "text-orange-500" : "text-yellow-500"} flex-shrink-0 mt-0.5`} />
+          )}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="text-sm font-bold text-gray-800">
+                {sync.source === "live" ? "Live data from Amazon Ads" : "Demo mode"}
+              </p>
+              <span className={`text-xs px-2 py-0.5 rounded-full font-semibold border flex items-center gap-1 ${
+                sync.source === "live"
+                  ? "bg-green-100 text-green-700 border-green-200"
+                  : "bg-yellow-100 text-yellow-700 border-yellow-200"
+              }`}>
+                {sync.source === "live" ? <CheckCircle size={10} /> : <AlertTriangle size={10} />}
+                {sync.source === "live" ? "Connected" : "Not connected"}
+              </span>
+              {sync.syncedAt && (
+                <span className="text-xs text-gray-500">
+                  • last sync {new Date(sync.syncedAt).toLocaleString("en-US")}
+                </span>
+              )}
+            </div>
+
+            {sync.source === "live" ? (
+              <p className="text-xs text-gray-600 mt-1 flex items-start gap-1">
+                <BrainCircuit size={11} className="text-orange-500 flex-shrink-0 mt-0.5" />
+                <span>
+                  Vikingo Brain™ is analyzing your {campaigns.length} live campaigns and
+                  will surface bid/budget recommendations as they change.
+                </span>
+              </p>
+            ) : credentialsOk ? (
+              <p className="text-xs text-orange-700 mt-1">
+                Credentials are set but the Amazon Ads API is not reachable. Showing demo data —
+                the AI won't act on real numbers until the API responds.
+                {sync.error && <span className="block text-gray-500 mt-0.5">API said: {sync.error}</span>}
+              </p>
+            ) : (
+              <p className="text-xs text-yellow-800 mt-1">
+                Connect your Amazon Ads account so the AI can read your real campaigns,
+                spend, and ACoS.
+                {" "}
+                <Link to="/companies" className="font-semibold underline hover:text-yellow-900">
+                  Add credentials in Companies →
+                </Link>
+              </p>
+            )}
+          </div>
+
+          <button
+            onClick={runSync}
+            disabled={sync.syncing}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-gray-50 border border-gray-300 text-sm text-gray-700 rounded-lg font-medium disabled:opacity-50"
+          >
+            <RefreshCw size={13} className={sync.syncing ? "animate-spin" : ""} />
+            {sync.syncing ? "Syncing..." : "Sync from Amazon"}
+          </button>
+        </div>
+      </div>
+
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-48">

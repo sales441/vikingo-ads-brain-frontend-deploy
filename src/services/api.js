@@ -87,6 +87,28 @@ export async function getCampaigns() {
   }
 }
 
+// Like getCampaigns but returns metadata so the UI can tell the user
+// whether the data comes from the live Amazon Ads API or the fallback
+// demo set. Shape: { campaigns, source: "live" | "demo", error?, syncedAt }.
+export async function syncCampaignsFromAmazon() {
+  const syncedAt = new Date().toISOString();
+  try {
+    const data = await api.get("/ads/campaigns");
+    const list = data?.campaigns ?? data ?? [];
+    if (Array.isArray(list) && list.length > 0) {
+      return { campaigns: list.map(adaptCampaign), source: "live", syncedAt };
+    }
+    return { campaigns: mockCampaigns, source: "demo", syncedAt, error: "Backend responded without campaigns — showing demo data." };
+  } catch (e) {
+    return {
+      campaigns: mockCampaigns,
+      source: "demo",
+      syncedAt,
+      error: e?.message || "Could not reach Amazon Ads API. Showing demo data.",
+    };
+  }
+}
+
 export async function updateCampaign(id, payload) {
   try {
     return await api.put(`/ads/campaigns/${id}`, payload);

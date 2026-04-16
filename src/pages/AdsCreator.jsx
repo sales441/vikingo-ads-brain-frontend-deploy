@@ -23,6 +23,39 @@ const CAMPAIGN_TYPES = [
   { id:"SD", label:"Sponsored Display",  desc:"Display and retargeting",     icon:Target,      color:"green" },
 ];
 
+// AI-suggested automation rule templates. Users can toggle them on
+// and the AI will schedule the underlying bid/budget changes.
+const RULE_TEMPLATES = [
+  {
+    id: "highTrafficBidUp",
+    name: "Raise bids 20% during high-traffic hours",
+    desc: "6 PM – 11 PM every day, bump bids +20% on the top 10 keywords.",
+    aiNote: "Works well for consumer goods. The AI will reset bids back to baseline at midnight.",
+    color: "orange",
+  },
+  {
+    id: "weekendBoost",
+    name: "Weekend budget boost +30%",
+    desc: "Saturday and Sunday, raise daily budget by 30%.",
+    aiNote: "Recommended for Home & Kitchen and Pet categories where weekend traffic spikes.",
+    color: "purple",
+  },
+  {
+    id: "acosGuard",
+    name: "Pause keywords when ACoS > 40%",
+    desc: "Daily check. Pauses any keyword whose 7-day ACoS exceeds 40%.",
+    aiNote: "AI safeguard — protects margin automatically. You can whitelist keywords in the table.",
+    color: "red",
+  },
+  {
+    id: "lowInventoryPause",
+    name: "Pause ads when inventory < 15 days",
+    desc: "Pauses the campaign automatically when stock runs low to avoid out-of-stock ads.",
+    aiNote: "Prevents Amazon from demoting your listing due to out-of-stock flags.",
+    color: "blue",
+  },
+];
+
 const PROGRAMS = [
   {
     id: "retail",
@@ -561,6 +594,42 @@ function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreat
   const [uploadText, setUploadText] = useState("");
   const [showNegAdd, setShowNegAdd] = useState(false);
   const [negInput, setNegInput] = useState({ keyword: "", matchType: "exact" });
+  const [showNegProdAdd, setShowNegProdAdd] = useState(false);
+  const [negProdInput, setNegProdInput] = useState({ type: "asin", value: "" });
+  const [showRuleAdd, setShowRuleAdd] = useState(false);
+
+  const negProducts = campaign.negativeProducts ?? [];
+  const addNegProduct = () => {
+    if (!negProdInput.value.trim()) return;
+    const next = [...negProducts, { type: negProdInput.type, value: negProdInput.value.trim() }];
+    setCampaign((c) => ({ ...c, negativeProducts: next }));
+    setNegProdInput({ type: "asin", value: "" });
+    setShowNegProdAdd(false);
+  };
+  const removeNegProduct = (i) => {
+    const next = negProducts.filter((_, idx) => idx !== i);
+    setCampaign((c) => ({ ...c, negativeProducts: next }));
+  };
+
+  const rules = campaign.automationRules ?? [];
+  const addRule = (template) => {
+    // Prevent duplicate rules by template id
+    if (rules.some((r) => r.id === template.id)) {
+      setShowRuleAdd(false);
+      return;
+    }
+    const next = [...rules, { ...template, enabled: true }];
+    setCampaign((c) => ({ ...c, automationRules: next }));
+    setShowRuleAdd(false);
+  };
+  const toggleRule = (i) => {
+    const next = rules.map((r, idx) => (idx === i ? { ...r, enabled: !r.enabled } : r));
+    setCampaign((c) => ({ ...c, automationRules: next }));
+  };
+  const removeRule = (i) => {
+    const next = rules.filter((_, idx) => idx !== i);
+    setCampaign((c) => ({ ...c, automationRules: next }));
+  };
 
   const toggleKw = (i) => {
     const kws = [...campaign.keywords];
@@ -868,6 +937,126 @@ function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreat
             ) : (
               <p className="text-xs text-gray-400 italic">
                 No negative keywords yet. Adding terms like "free", "cheap" or competitor brands prevents wasted clicks.
+              </p>
+            )}
+          </div>
+
+          {/* Negative product targeting */}
+          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-gray-700">Negative Product Targeting</h3>
+                <span className="text-xs bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                  <BrainCircuit size={10} /> AI blocks your ad from showing on these ASINs
+                </span>
+              </div>
+              <button onClick={() => setShowNegProdAdd((s) => !s)}
+                className="flex items-center gap-1 text-xs px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium">
+                <Plus size={11} /> Add ASIN / brand
+              </button>
+            </div>
+
+            {showNegProdAdd && (
+              <div className="flex items-center gap-2 mb-3 flex-wrap">
+                <input
+                  value={negProdInput.value}
+                  onChange={(e) => setNegProdInput((n) => ({ ...n, value: e.target.value }))}
+                  placeholder={negProdInput.type === "asin" ? "B0XXXXXXXXX" : "Brand name"}
+                  className="flex-1 min-w-32 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 font-mono"
+                />
+                <select
+                  value={negProdInput.type}
+                  onChange={(e) => setNegProdInput((n) => ({ ...n, type: e.target.value }))}
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
+                >
+                  <option value="asin">ASIN</option>
+                  <option value="brand">Brand</option>
+                </select>
+                <button onClick={addNegProduct} disabled={!negProdInput.value.trim()}
+                  className="px-3 py-2 text-sm bg-red-500 hover:bg-red-600 disabled:bg-gray-300 text-white rounded-lg font-medium">
+                  Add
+                </button>
+              </div>
+            )}
+
+            {negProducts.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {negProducts.map((p, i) => (
+                  <span key={i} className="flex items-center gap-1 text-xs bg-red-50 border border-red-200 text-red-700 px-2 py-1 rounded-full">
+                    <span className="font-mono">{p.value}</span>
+                    <span className="text-red-400">({p.type})</span>
+                    <button onClick={() => removeNegProduct(i)} className="ml-0.5 hover:text-red-900"><Trash2 size={10} /></button>
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-gray-400 italic">
+                Add competitor ASINs or brands here to stop your ad from appearing on their listings (and vice versa).
+              </p>
+            )}
+          </div>
+
+          {/* Automation rules */}
+          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-gray-700">Automation Rules</h3>
+                <span className="text-xs bg-orange-50 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                  <BrainCircuit size={10} /> AI-assisted
+                </span>
+              </div>
+              <button onClick={() => setShowRuleAdd((s) => !s)}
+                className="flex items-center gap-1 text-xs px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium">
+                <Plus size={11} /> Create rule
+              </button>
+            </div>
+
+            <p className="text-xs text-gray-500 mb-3">
+              Automate manual tasks and optimize performance. AI-recommended templates below — pick one or write your own.
+            </p>
+
+            {/* Templates */}
+            {showRuleAdd && (
+              <div className="space-y-2 mb-3">
+                {RULE_TEMPLATES.map((tpl) => (
+                  <button key={tpl.id} onClick={() => addRule(tpl)}
+                    className="w-full flex items-start gap-3 p-3 rounded-lg border border-gray-200 hover:border-orange-400 hover:bg-orange-50 text-left transition-colors">
+                    <div className={`w-7 h-7 rounded-lg bg-${tpl.color}-100 flex items-center justify-center flex-shrink-0`}>
+                      <Zap size={14} className={`text-${tpl.color}-600`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-800">{tpl.name}</p>
+                      <p className="text-xs text-gray-500">{tpl.desc}</p>
+                      <p className="text-xs text-blue-600 mt-1 flex items-start gap-1">
+                        <BrainCircuit size={10} className="flex-shrink-0 mt-0.5" />
+                        <span>{tpl.aiNote}</span>
+                      </p>
+                    </div>
+                    <Plus size={14} className="text-orange-500 flex-shrink-0 mt-1" />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Active rules */}
+            {rules.length > 0 ? (
+              <div className="space-y-1.5">
+                {rules.map((r, i) => (
+                  <div key={i} className="flex items-center gap-3 p-2 bg-orange-50 border border-orange-200 rounded-lg">
+                    <input type="checkbox" checked={r.enabled} onChange={() => toggleRule(i)} className="rounded accent-orange-500" />
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-medium ${r.enabled ? "text-gray-800" : "text-gray-400 line-through"}`}>{r.name}</p>
+                      <p className="text-xs text-gray-500">{r.desc}</p>
+                    </div>
+                    <button onClick={() => removeRule(i)} className="text-gray-400 hover:text-red-500">
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-gray-400 italic">
+                No automation rules yet. Click "Create rule" to pick a template — e.g. raise bids during high-traffic hours.
               </p>
             )}
           </div>

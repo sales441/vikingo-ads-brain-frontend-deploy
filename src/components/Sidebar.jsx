@@ -13,6 +13,7 @@ import {
   Calculator,
   TrendingUp,
   Users,
+  Building2,
   Star,
   Tag,
   Package,
@@ -68,9 +69,11 @@ const groups = [
     ],
   },
   {
-    label: null,
+    label: "Conta",
     items: [
-      { to: "/settings", label: "Configurações", icon: Settings },
+      { to: "/companies", label: "Empresas",      icon: Building2 },
+      { to: "/users",     label: "Usuários",      icon: Users },
+      { to: "/settings",  label: "Configurações", icon: Settings },
     ],
   },
 ];

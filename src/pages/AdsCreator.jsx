@@ -557,6 +557,10 @@ function StepLoading() {
 /* ─── STEP 4: Review ─────────────────────────────────────────────────────── */
 function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreate, creating, error }) {
   const [editingBid, setEditingBid] = useState(null);
+  const [showUpload, setShowUpload] = useState(false);
+  const [uploadText, setUploadText] = useState("");
+  const [showNegAdd, setShowNegAdd] = useState(false);
+  const [negInput, setNegInput] = useState({ keyword: "", matchType: "exact" });
 
   const toggleKw = (i) => {
     const kws = [...campaign.keywords];
@@ -568,6 +572,47 @@ function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreat
     const kws = [...campaign.keywords];
     kws[i] = { ...kws[i], bid: parseFloat(val) || kws[i].bid };
     setCampaign(c => ({ ...c, keywords: kws }));
+  };
+
+  // AI bid suggestion based on volume + competition + target ACoS
+  const bidSuggestion = (kw) => {
+    const bid = Number(kw.bid) || 0;
+    const targetAcos = Number(form.targetAcos) / 100 || 0.25;
+    // Ideal bid = CPC the seller can afford given target ACoS
+    const ideal = 0.35 + (kw.volume === "high" ? 0.3 : kw.volume === "medium" ? 0.15 : 0) +
+                  (kw.competition === "high" ? 0.3 : kw.competition === "medium" ? 0.1 : 0);
+    const min = ideal * 0.7;
+    const max = ideal * 1.3;
+    if (bid < min) return { action: "up", to: ideal, reason: `Below suggested range — raise to $${ideal.toFixed(2)} to stay competitive.` };
+    if (bid > max) return { action: "down", to: ideal, reason: `Above suggested range — lower to $${ideal.toFixed(2)} to protect ACoS.` };
+    return { action: "ok", to: bid, reason: "Within the AI-recommended range." };
+  };
+
+  const uploadKeywords = () => {
+    const parsed = uploadText
+      .split(/[\n,;]+/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((keyword) => ({
+        keyword,
+        matchType: "broad",
+        bid: Number(form.defaultBid) || 0.75,
+        volume: "medium",
+        competition: "medium",
+        _userUploaded: true,
+      }));
+    if (parsed.length === 0) return;
+    setCampaign((c) => ({ ...c, keywords: [...(c.keywords || []), ...parsed] }));
+    setUploadText("");
+    setShowUpload(false);
+  };
+
+  const addNegative = () => {
+    if (!negInput.keyword.trim()) return;
+    const next = [...negKeywords, { keyword: negInput.keyword.trim(), matchType: negInput.matchType }];
+    setCampaign((c) => ({ ...c, negativeKeywords: next, keywordsNegativas: next }));
+    setNegInput({ keyword: "", matchType: "exact" });
+    setShowNegAdd(false);
   };
 
   const negKeywords = campaign.negativeKeywords ?? campaign.keywordsNegativas ?? [];
@@ -590,11 +635,30 @@ function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreat
   const alerts = campaign.alerts ?? campaign.alertas;
   const strategyDescription = campaign.strategyDescription ?? campaign.descricaoEstrategia;
 
+  const targetAcos = Number(form.targetAcos) || 0;
+  const acosOverrun = estimatedAcos && targetAcos && estimatedAcos > targetAcos;
+
   return (
     <div className="space-y-4">
       {error && (
         <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
           <AlertTriangle size={14} /> {error}
+        </div>
+      )}
+
+      {/* AI ACoS alert banner */}
+      {acosOverrun && (
+        <div className="flex items-start gap-3 bg-red-50 border-2 border-red-300 rounded-xl px-4 py-3">
+          <AlertTriangle size={18} className="text-red-500 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-bold text-red-700 mb-0.5 flex items-center gap-1">
+              <BrainCircuit size={13} /> AI alert — estimated ACoS above your target
+            </p>
+            <p className="text-xs text-red-700">
+              Estimated ACoS is <strong>{estimatedAcos}%</strong> but your target is <strong>{targetAcos}%</strong>.
+              The AI suggests lowering bids on high-competition keywords, removing low-converting ones, or raising your selling price.
+            </p>
+          </div>
         </div>
       )}
 
@@ -646,10 +710,46 @@ function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreat
 
           {/* Keywords table */}
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-gray-700">Keywords</h3>
-              <span className="text-xs text-gray-500">{selected.length} of {campaign.keywords?.length || 0} selected</span>
+            <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-gray-700">Keywords</h3>
+                <span className="text-xs bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                  <BrainCircuit size={10} /> AI bid guidance
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">{selected.length} of {campaign.keywords?.length || 0} selected</span>
+                <button onClick={() => setShowUpload((s) => !s)}
+                  className="flex items-center gap-1 text-xs px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium">
+                  <Plus size={11} /> Upload keywords
+                </button>
+              </div>
             </div>
+
+            {/* Upload panel */}
+            {showUpload && (
+              <div className="px-4 py-3 bg-orange-50 border-b border-orange-100 space-y-2">
+                <p className="text-xs text-gray-700">
+                  Paste keywords (comma, semicolon or newline-separated). Each will be added as Broad match using the default bid (${Number(form.defaultBid).toFixed(2)}).
+                </p>
+                <textarea
+                  rows={3}
+                  value={uploadText}
+                  onChange={(e) => setUploadText(e.target.value)}
+                  placeholder={"stainless pressure cooker\n6 quart electric cooker\ninstant cooker"}
+                  className="w-full border border-orange-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none bg-white"
+                />
+                <div className="flex justify-end gap-2">
+                  <button onClick={() => { setShowUpload(false); setUploadText(""); }}
+                    className="px-3 py-1 text-xs border border-gray-300 rounded-lg">Cancel</button>
+                  <button onClick={uploadKeywords} disabled={!uploadText.trim()}
+                    className="px-3 py-1 text-xs bg-orange-500 hover:bg-orange-600 disabled:bg-gray-300 text-white rounded-lg font-medium">
+                    Add to campaign
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
                 <thead>
@@ -658,6 +758,7 @@ function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreat
                     <th className="px-3 py-2 text-left text-gray-500 font-medium">Keyword</th>
                     <th className="px-3 py-2 text-left text-gray-500 font-medium">Type</th>
                     <th className="px-3 py-2 text-left text-gray-500 font-medium">Bid</th>
+                    <th className="px-3 py-2 text-left text-gray-500 font-medium">AI Bid</th>
                     <th className="px-3 py-2 text-left text-gray-500 font-medium">Volume</th>
                     <th className="px-3 py-2 text-left text-gray-500 font-medium">Comp.</th>
                   </tr>
@@ -666,12 +767,16 @@ function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreat
                   {(campaign.keywords || []).map((kw, i) => {
                     const volume = kw.volume;
                     const competition = kw.competition ?? kw.competicao;
+                    const sug = bidSuggestion(kw);
                     return (
                       <tr key={i} className={`hover:bg-gray-50 ${kw._excluded ? "opacity-40" : ""}`}>
                         <td className="px-3 py-2">
                           <input type="checkbox" checked={!kw._excluded} onChange={() => toggleKw(i)} className="rounded accent-orange-500" />
                         </td>
-                        <td className="px-3 py-2 font-medium text-gray-800 max-w-[160px] truncate">{kw.keyword}</td>
+                        <td className="px-3 py-2 font-medium text-gray-800 max-w-[160px] truncate">
+                          {kw.keyword}
+                          {kw._userUploaded && <span className="ml-1 text-xs text-gray-400">(uploaded)</span>}
+                        </td>
                         <td className="px-3 py-2">
                           <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${MATCH_COLORS[kw.matchType] || "bg-gray-100 text-gray-600"}`}>
                             {MATCH_LABELS[kw.matchType] || kw.matchType}
@@ -689,6 +794,20 @@ function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreat
                             </button>
                           )}
                         </td>
+                        <td className="px-3 py-2">
+                          <button onClick={() => updateBid(i, sug.to.toFixed(2))}
+                            title={sug.reason}
+                            className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium transition-colors ${
+                              sug.action === "up" ? "bg-orange-100 text-orange-700 hover:bg-orange-200" :
+                              sug.action === "down" ? "bg-blue-100 text-blue-700 hover:bg-blue-200" :
+                              "bg-green-100 text-green-700"
+                            }`}>
+                            {sug.action === "up" && <TrendingUp size={10} />}
+                            {sug.action === "down" && <TrendingDown size={10} />}
+                            {sug.action === "ok" && <Check size={10} />}
+                            ${sug.to.toFixed(2)}
+                          </button>
+                        </td>
                         <td className={`px-3 py-2 font-medium ${VOL_COLORS[volume] || "text-gray-500"}`}>{volume}</td>
                         <td className={`px-3 py-2 font-medium ${COMP_COLORS[competition] || "text-gray-500"}`}>{competition}</td>
                       </tr>
@@ -699,10 +818,45 @@ function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreat
             </div>
           </div>
 
-          {/* Negative keywords */}
-          {negKeywords.length > 0 && (
-            <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">Negative Keywords</h3>
+          {/* Negative keywords — always shown, expandable */}
+          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-gray-700">Negative Keyword Targeting</h3>
+                <span className="text-xs bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                  <BrainCircuit size={10} /> AI blocks irrelevant traffic
+                </span>
+              </div>
+              <button onClick={() => setShowNegAdd((s) => !s)}
+                className="flex items-center gap-1 text-xs px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium">
+                <Plus size={11} /> Add negative
+              </button>
+            </div>
+
+            {showNegAdd && (
+              <div className="flex items-center gap-2 mb-3 flex-wrap">
+                <input
+                  value={negInput.keyword}
+                  onChange={(e) => setNegInput((n) => ({ ...n, keyword: e.target.value }))}
+                  placeholder="negative keyword..."
+                  className="flex-1 min-w-32 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                />
+                <select
+                  value={negInput.matchType}
+                  onChange={(e) => setNegInput((n) => ({ ...n, matchType: e.target.value }))}
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
+                >
+                  <option value="exact">Exact</option>
+                  <option value="phrase">Phrase</option>
+                </select>
+                <button onClick={addNegative} disabled={!negInput.keyword.trim()}
+                  className="px-3 py-2 text-sm bg-red-500 hover:bg-red-600 disabled:bg-gray-300 text-white rounded-lg font-medium">
+                  Add
+                </button>
+              </div>
+            )}
+
+            {negKeywords.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {negKeywords.map((kw, i) => (
                   <span key={i} className="flex items-center gap-1 text-xs bg-red-50 border border-red-200 text-red-700 px-2 py-1 rounded-full">
@@ -711,8 +865,12 @@ function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreat
                   </span>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <p className="text-xs text-gray-400 italic">
+                No negative keywords yet. Adding terms like "free", "cheap" or competitor brands prevents wasted clicks.
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Right: Performance + Insights + Create */}

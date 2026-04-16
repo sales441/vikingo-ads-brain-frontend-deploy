@@ -1,3 +1,3 @@
 # Vikingo Ads Brain
 
-Sistema completo de gestao de Amazon Ads.
+Complete Amazon Ads management platform built for the US marketplace.

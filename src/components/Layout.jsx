@@ -20,7 +20,7 @@ export default function Layout() {
             <VikingShip size={40} />
             <div>
               <p className="text-xs font-bold text-gray-700">Vikingo Ads Brain™</p>
-              <p className="text-xs text-gray-400">Navegando rumo às vendas</p>
+              <p className="text-xs text-gray-400">Sailing toward sales</p>
             </div>
           </div>
           <p className="text-xs text-gray-400">v2.0.0 • Amazon Ads Manager • {new Date().getFullYear()}</p>

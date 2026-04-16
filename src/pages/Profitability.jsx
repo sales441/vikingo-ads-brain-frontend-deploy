@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { DollarSign, Package, TrendingUp, Percent, Calculator, ChevronDown, ChevronUp, AlertCircle, CheckCircle } from "lucide-react";
 
-const FEE_RATES = { BR: 0.15, US: 0.15, MX: 0.15 };
-const FBA_RATES = { small: 12.5, medium: 18.5, large: 28.0, xlarge: 45.0 };
+const FEE_RATES = { US: 0.15, CA: 0.15, MX: 0.15 };
+const FBA_RATES = { small: 3.22, medium: 5.40, large: 8.60, xlarge: 15.20 };
 
-function Num({ label, name, value, onChange, prefix = "R$", min = 0, step = "0.01", hint }) {
+function Num({ label, name, value, onChange, prefix = "$", min = 0, step = "0.01", hint }) {
   return (
     <div>
       <label className="block text-xs font-semibold text-gray-600 mb-1">{label}</label>
@@ -20,8 +20,8 @@ function Num({ label, name, value, onChange, prefix = "R$", min = 0, step = "0.0
 
 export default function Profitability() {
   const [form, setForm] = useState({
-    price: 89.90, cost: 25.00, fbaSize: "medium", marketplace: "BR",
-    adsSpend: 8.50, otherCosts: 3.00, taxRate: 6.0, units: 100,
+    price: 29.99, cost: 8.00, fbaSize: "medium", marketplace: "US",
+    adsSpend: 2.50, otherCosts: 1.00, taxRate: 0.0, units: 100,
   });
   const [showAdvanced, setShowAdvanced] = useState(false);
 
@@ -43,69 +43,69 @@ export default function Profitability() {
 
   const status = margin >= 25 ? "great" : margin >= 15 ? "ok" : margin >= 0 ? "low" : "loss";
   const statusConfig = {
-    great: { label: "Excelente", color: "text-green-600", bg: "bg-green-50 border-green-200" },
-    ok:    { label: "Aceitável", color: "text-blue-600",  bg: "bg-blue-50 border-blue-200" },
-    low:   { label: "Margem baixa", color: "text-orange-600", bg: "bg-orange-50 border-orange-200" },
-    loss:  { label: "Prejuízo", color: "text-red-600", bg: "bg-red-50 border-red-200" },
+    great: { label: "Excellent", color: "text-green-600", bg: "bg-green-50 border-green-200" },
+    ok:    { label: "Acceptable", color: "text-blue-600",  bg: "bg-blue-50 border-blue-200" },
+    low:   { label: "Low margin", color: "text-orange-600", bg: "bg-orange-50 border-orange-200" },
+    loss:  { label: "Losing money", color: "text-red-600", bg: "bg-red-50 border-red-200" },
   }[status];
 
   const breakdown = [
-    { label: "Preço de Venda", value: price, color: "text-green-600", positive: true },
-    { label: "Custo do Produto", value: -cost, color: "text-red-500" },
+    { label: "Selling Price", value: price, color: "text-green-600", positive: true },
+    { label: "Product Cost", value: -cost, color: "text-red-500" },
     { label: `FBA Fee (${form.fbaSize})`, value: -fbaFee, color: "text-red-500" },
-    { label: "Taxa Amazon (15%)", value: -amazonFee, color: "text-red-500" },
-    { label: `Imposto (${form.taxRate}%)`, value: -tax, color: "text-red-500" },
-    { label: "Investimento em Ads", value: -adsSpend, color: "text-orange-500" },
-    { label: "Outros Custos", value: -otherCosts, color: "text-orange-500" },
-    { label: "Lucro Líquido", value: profit, color: profit >= 0 ? "text-green-700" : "text-red-700", bold: true },
+    { label: "Amazon Referral Fee (15%)", value: -amazonFee, color: "text-red-500" },
+    { label: `Tax (${form.taxRate}%)`, value: -tax, color: "text-red-500" },
+    { label: "Ad Spend", value: -adsSpend, color: "text-orange-500" },
+    { label: "Other Costs", value: -otherCosts, color: "text-orange-500" },
+    { label: "Net Profit", value: profit, color: profit >= 0 ? "text-green-700" : "text-red-700", bold: true },
   ];
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center"><Calculator size={20} className="text-emerald-600" /></div>
-        <div><h1 className="text-xl font-bold text-gray-900">Calculadora de Rentabilidade</h1>
-          <p className="text-sm text-gray-500">Calcule o lucro real por produto após todas as taxas</p></div>
+        <div><h1 className="text-xl font-bold text-gray-900">Profitability Calculator</h1>
+          <p className="text-sm text-gray-500">Calculate real profit per product after all fees</p></div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Form */}
         <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-4">
-          <h2 className="text-sm font-semibold text-gray-700">Dados do Produto</h2>
+          <h2 className="text-sm font-semibold text-gray-700">Product Data</h2>
           <div className="grid grid-cols-2 gap-3">
-            <Num label="Preço de Venda" name="price" value={form.price} onChange={ch} />
-            <Num label="Custo do Produto" name="cost" value={form.cost} onChange={ch} />
+            <Num label="Selling Price" name="price" value={form.price} onChange={ch} />
+            <Num label="Product Cost" name="cost" value={form.cost} onChange={ch} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Tamanho FBA</label>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">FBA Size</label>
               <select name="fbaSize" value={form.fbaSize} onChange={ch} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
-                <option value="small">Pequeno — R$12,50</option>
-                <option value="medium">Médio — R$18,50</option>
-                <option value="large">Grande — R$28,00</option>
-                <option value="xlarge">Extra Grande — R$45,00</option>
+                <option value="small">Small — $3.22</option>
+                <option value="medium">Medium — $5.40</option>
+                <option value="large">Large — $8.60</option>
+                <option value="xlarge">Extra Large — $15.20</option>
               </select>
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">Marketplace</label>
               <select name="marketplace" value={form.marketplace} onChange={ch} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
-                <option value="BR">Amazon BR</option>
                 <option value="US">Amazon US</option>
+                <option value="CA">Amazon CA</option>
                 <option value="MX">Amazon MX</option>
               </select>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <Num label="Gasto com Ads (por unid.)" name="adsSpend" value={form.adsSpend} onChange={ch} />
-            <Num label="Unidades/mês (estimativa)" name="units" value={form.units} onChange={ch} prefix="" step="1" />
+            <Num label="Ad Spend (per unit)" name="adsSpend" value={form.adsSpend} onChange={ch} />
+            <Num label="Units/month (estimate)" name="units" value={form.units} onChange={ch} prefix="" step="1" />
           </div>
           <button onClick={() => setShowAdvanced(s => !s)} className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700">
-            {showAdvanced ? <ChevronUp size={13} /> : <ChevronDown size={13} />} Configurações avançadas
+            {showAdvanced ? <ChevronUp size={13} /> : <ChevronDown size={13} />} Advanced settings
           </button>
           {showAdvanced && (
             <div className="grid grid-cols-2 gap-3 pt-1">
-              <Num label="Outros Custos (embalagem, etc)" name="otherCosts" value={form.otherCosts} onChange={ch} />
-              <Num label="Alíquota de Imposto (%)" name="taxRate" value={form.taxRate} onChange={ch} prefix="%" step="0.1" />
+              <Num label="Other Costs (packaging, etc)" name="otherCosts" value={form.otherCosts} onChange={ch} />
+              <Num label="Tax Rate (%)" name="taxRate" value={form.taxRate} onChange={ch} prefix="%" step="0.1" />
             </div>
           )}
         </div>
@@ -120,10 +120,10 @@ export default function Profitability() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               {[
-                { label: "Lucro por unidade", value: `R$ ${profit.toFixed(2)}`, color: profit >= 0 ? "text-green-700" : "text-red-600" },
-                { label: "Margem líquida", value: `${margin.toFixed(1)}%`, color: margin >= 15 ? "text-green-700" : "text-red-600" },
+                { label: "Profit per unit", value: `$${profit.toFixed(2)}`, color: profit >= 0 ? "text-green-700" : "text-red-600" },
+                { label: "Net margin", value: `${margin.toFixed(1)}%`, color: margin >= 15 ? "text-green-700" : "text-red-600" },
                 { label: "ROI", value: `${roi.toFixed(0)}%`, color: "text-blue-700" },
-                { label: "Lucro mensal est.", value: `R$ ${monthlyProfit.toFixed(2)}`, color: "text-emerald-700" },
+                { label: "Est. monthly profit", value: `$${monthlyProfit.toFixed(2)}`, color: "text-emerald-700" },
               ].map(({ label, value, color }) => (
                 <div key={label} className="bg-white/70 rounded-lg p-2.5">
                   <p className="text-xs text-gray-500">{label}</p>
@@ -135,13 +135,13 @@ export default function Profitability() {
 
           {/* Breakdown */}
           <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Composição de Custos</h3>
+            <h3 className="text-sm font-semibold text-gray-700 mb-3">Cost Breakdown</h3>
             <div className="space-y-2">
               {breakdown.map(({ label, value, color, bold }) => (
                 <div key={label} className={`flex justify-between items-center py-1.5 border-b border-gray-50 last:border-0 ${bold ? "border-t border-gray-200 pt-2 mt-1" : ""}`}>
                   <span className={`text-xs ${bold ? "font-bold text-gray-800" : "text-gray-600"}`}>{label}</span>
                   <span className={`text-sm font-${bold ? "bold" : "medium"} ${color}`}>
-                    {value >= 0 ? "+" : ""}R$ {Math.abs(value).toFixed(2)}
+                    {value >= 0 ? "+" : ""}${Math.abs(value).toFixed(2)}
                   </span>
                 </div>
               ))}
@@ -150,9 +150,9 @@ export default function Profitability() {
 
           {/* Breakeven */}
           <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-            <h3 className="text-sm font-semibold text-gray-700 mb-2">Preço de Equilíbrio (Break-even)</h3>
-            <p className="text-2xl font-bold text-orange-600">R$ {breakeven.toFixed(2)}</p>
-            <p className="text-xs text-gray-500 mt-1">Abaixo deste preço você tem prejuízo. Seu preço atual é <span className="font-semibold text-gray-700">R$ {price.toFixed(2)}</span> ({profit >= 0 ? "+" : ""}{(((price - breakeven) / breakeven) * 100).toFixed(1)}% acima do break-even).</p>
+            <h3 className="text-sm font-semibold text-gray-700 mb-2">Break-even Price</h3>
+            <p className="text-2xl font-bold text-orange-600">${breakeven.toFixed(2)}</p>
+            <p className="text-xs text-gray-500 mt-1">Below this price you'll lose money. Your current price is <span className="font-semibold text-gray-700">${price.toFixed(2)}</span> ({profit >= 0 ? "+" : ""}{(((price - breakeven) / breakeven) * 100).toFixed(1)}% above break-even).</p>
           </div>
         </div>
       </div>

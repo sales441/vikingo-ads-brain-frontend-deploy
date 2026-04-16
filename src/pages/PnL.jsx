@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Percent, Award } from "lucide-react";
 
-const MONTHS = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const now = new Date();
 
 function genMonths(n) {
@@ -23,7 +23,7 @@ const pnlData = months.map((m, i) => {
   const gross = revenue[i];
   const totalCosts = adSpend[i] + cogs[i] + fees[i] + taxes[i];
   const net = gross - totalCosts;
-  return { month: m, receita: gross, custos: totalCosts, lucro: net, adSpend: adSpend[i], cogs: cogs[i], fees: fees[i] };
+  return { month: m, revenue: gross, costs: totalCosts, profit: net, adSpend: adSpend[i], cogs: cogs[i], fees: fees[i] };
 });
 
 const totalRevenue = revenue.reduce((a, b) => a + b, 0);
@@ -35,7 +35,7 @@ const totalCosts = totalAds + totalCOGS + totalFees + totalTax;
 const totalNet = totalRevenue - totalCosts;
 const avgMargin = (totalNet / totalRevenue) * 100;
 
-const fmt = v => `R$ ${Number(v).toLocaleString("pt-BR", { minimumFractionDigits: 0 })}`;
+const fmt = v => `$${Number(v).toLocaleString("en-US", { minimumFractionDigits: 0 })}`;
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -54,19 +54,19 @@ export default function PnL() {
   const n = parseInt(period);
   const slice = pnlData.slice(-n);
   const sliceRev = revenue.slice(-n).reduce((a, b) => a + b, 0);
-  const sliceNet = slice.reduce((a, s) => a + s.lucro, 0);
+  const sliceNet = slice.reduce((a, s) => a + s.profit, 0);
   const sliceMargin = (sliceNet / sliceRev) * 100;
   const lastMonth = slice[slice.length - 1];
   const prevMonth = slice[slice.length - 2];
-  const revDelta = prevMonth ? ((lastMonth.receita - prevMonth.receita) / prevMonth.receita * 100).toFixed(1) : null;
+  const revDelta = prevMonth ? ((lastMonth.revenue - prevMonth.revenue) / prevMonth.revenue * 100).toFixed(1) : null;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center"><TrendingUp size={20} className="text-green-600" /></div>
-          <div><h1 className="text-xl font-bold text-gray-900">Dashboard P&L</h1>
-            <p className="text-sm text-gray-500">Lucros e Perdas — visão completa do negócio</p></div>
+          <div><h1 className="text-xl font-bold text-gray-900">P&L Dashboard</h1>
+            <p className="text-sm text-gray-500">Profit and Loss — full business view</p></div>
         </div>
         <div className="flex gap-2">
           {["3","6","12"].map(p => (
@@ -81,10 +81,10 @@ export default function PnL() {
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Receita Total", value: fmt(sliceRev), icon: DollarSign, color: "text-green-600", bg: "bg-green-50" },
-          { label: "Lucro Líquido", value: fmt(sliceNet), icon: TrendingUp, color: sliceNet >= 0 ? "text-emerald-600" : "text-red-500", bg: sliceNet >= 0 ? "bg-emerald-50" : "bg-red-50" },
-          { label: "Margem Média", value: `${sliceMargin.toFixed(1)}%`, icon: Percent, color: sliceMargin >= 20 ? "text-blue-600" : "text-orange-600", bg: "bg-blue-50" },
-          { label: "Var. últ. mês", value: revDelta ? `${revDelta > 0 ? "+" : ""}${revDelta}%` : "—", icon: revDelta > 0 ? TrendingUp : TrendingDown, color: revDelta > 0 ? "text-green-600" : "text-red-500", bg: "bg-gray-50" },
+          { label: "Total Revenue", value: fmt(sliceRev), icon: DollarSign, color: "text-green-600", bg: "bg-green-50" },
+          { label: "Net Profit", value: fmt(sliceNet), icon: TrendingUp, color: sliceNet >= 0 ? "text-emerald-600" : "text-red-500", bg: sliceNet >= 0 ? "bg-emerald-50" : "bg-red-50" },
+          { label: "Average Margin", value: `${sliceMargin.toFixed(1)}%`, icon: Percent, color: sliceMargin >= 20 ? "text-blue-600" : "text-orange-600", bg: "bg-blue-50" },
+          { label: "Last month change", value: revDelta ? `${revDelta > 0 ? "+" : ""}${revDelta}%` : "—", icon: revDelta > 0 ? TrendingUp : TrendingDown, color: revDelta > 0 ? "text-green-600" : "text-red-500", bg: "bg-gray-50" },
         ].map(({ label, value, icon: Icon, color, bg }) => (
           <div key={label} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
             <div className={`w-8 h-8 ${bg} rounded-lg flex items-center justify-center mb-2`}><Icon size={16} className={color} /></div>
@@ -96,17 +96,17 @@ export default function PnL() {
 
       {/* Revenue vs Costs chart */}
       <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-        <h2 className="text-sm font-semibold text-gray-700 mb-4">Receita vs Custos vs Lucro</h2>
+        <h2 className="text-sm font-semibold text-gray-700 mb-4">Revenue vs Costs vs Profit</h2>
         <ResponsiveContainer width="100%" height={240}>
           <BarChart data={slice} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#9ca3af" }} tickLine={false} />
-            <YAxis tick={{ fontSize: 10, fill: "#9ca3af" }} tickLine={false} axisLine={false} tickFormatter={v => `R$${(v/1000).toFixed(0)}k`} />
+            <YAxis tick={{ fontSize: 10, fill: "#9ca3af" }} tickLine={false} axisLine={false} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
             <Tooltip content={<CustomTooltip />} />
             <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11 }} />
-            <Bar dataKey="receita" name="Receita" fill="#22c55e" radius={[3,3,0,0]} />
-            <Bar dataKey="custos" name="Custos" fill="#f97316" radius={[3,3,0,0]} />
-            <Bar dataKey="lucro" name="Lucro" fill="#3b82f6" radius={[3,3,0,0]} />
+            <Bar dataKey="revenue" name="Revenue" fill="#22c55e" radius={[3,3,0,0]} />
+            <Bar dataKey="costs" name="Costs" fill="#f97316" radius={[3,3,0,0]} />
+            <Bar dataKey="profit" name="Profit" fill="#3b82f6" radius={[3,3,0,0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -114,12 +114,12 @@ export default function PnL() {
       {/* Cost breakdown + table */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-gray-700 mb-4">Composição de Custos ({period}m)</h2>
+          <h2 className="text-sm font-semibold text-gray-700 mb-4">Cost Breakdown ({period}m)</h2>
           {[
-            { label: "Custo dos Produtos (COGS)", value: cogs.slice(-n).reduce((a,b)=>a+b,0), color: "bg-red-400" },
+            { label: "Cost of Goods (COGS)", value: cogs.slice(-n).reduce((a,b)=>a+b,0), color: "bg-red-400" },
             { label: "Amazon Fees (15%)", value: fees.slice(-n).reduce((a,b)=>a+b,0), color: "bg-orange-400" },
-            { label: "Investimento em Ads", value: adSpend.slice(-n).reduce((a,b)=>a+b,0), color: "bg-yellow-400" },
-            { label: "Impostos", value: taxes.slice(-n).reduce((a,b)=>a+b,0), color: "bg-purple-400" },
+            { label: "Ad Spend", value: adSpend.slice(-n).reduce((a,b)=>a+b,0), color: "bg-yellow-400" },
+            { label: "Taxes", value: taxes.slice(-n).reduce((a,b)=>a+b,0), color: "bg-purple-400" },
           ].map(({ label, value, color }) => {
             const total = cogs.slice(-n).reduce((a,b)=>a+b,0) + fees.slice(-n).reduce((a,b)=>a+b,0) + adSpend.slice(-n).reduce((a,b)=>a+b,0) + taxes.slice(-n).reduce((a,b)=>a+b,0);
             const pct = ((value / total) * 100).toFixed(1);
@@ -139,22 +139,22 @@ export default function PnL() {
 
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-100">
-            <h2 className="text-sm font-semibold text-gray-700">P&L por Mês</h2>
+            <h2 className="text-sm font-semibold text-gray-700">Monthly P&L</h2>
           </div>
           <div className="overflow-y-auto max-h-64">
             <table className="w-full text-xs">
               <thead><tr className="bg-gray-50">
-                {["Mês","Receita","Custos","Lucro","Margem"].map(h => <th key={h} className="px-3 py-2 text-left text-gray-500 font-medium">{h}</th>)}
+                {["Month","Revenue","Costs","Profit","Margin"].map(h => <th key={h} className="px-3 py-2 text-left text-gray-500 font-medium">{h}</th>)}
               </tr></thead>
               <tbody className="divide-y divide-gray-50">
                 {[...slice].reverse().map(row => {
-                  const m = (row.lucro / row.receita * 100).toFixed(1);
+                  const m = (row.profit / row.revenue * 100).toFixed(1);
                   return (
                     <tr key={row.month} className="hover:bg-gray-50">
                       <td className="px-3 py-2 font-medium text-gray-700">{row.month}</td>
-                      <td className="px-3 py-2 text-green-600">{fmt(row.receita)}</td>
-                      <td className="px-3 py-2 text-red-500">{fmt(row.custos)}</td>
-                      <td className={`px-3 py-2 font-semibold ${row.lucro >= 0 ? "text-blue-600" : "text-red-600"}`}>{fmt(row.lucro)}</td>
+                      <td className="px-3 py-2 text-green-600">{fmt(row.revenue)}</td>
+                      <td className="px-3 py-2 text-red-500">{fmt(row.costs)}</td>
+                      <td className={`px-3 py-2 font-semibold ${row.profit >= 0 ? "text-blue-600" : "text-red-600"}`}>{fmt(row.profit)}</td>
                       <td className={`px-3 py-2 ${+m >= 15 ? "text-green-600" : "text-orange-600"}`}>{m}%</td>
                     </tr>
                   );

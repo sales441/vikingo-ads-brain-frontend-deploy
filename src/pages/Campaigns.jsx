@@ -4,7 +4,7 @@ import StatusBadge from "../components/StatusBadge";
 import { campaigns as initialCampaigns } from "../data/mockData";
 
 const fmt = (v, type = "currency") => {
-  if (type === "currency") return `R$ ${Number(v).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+  if (type === "currency") return `$${Number(v).toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
   if (type === "percent") return `${Number(v).toFixed(2)}%`;
   return v;
 };
@@ -62,13 +62,13 @@ export default function Campaigns() {
   };
 
   const cols = [
-    { key: "spend", label: "Gasto" },
-    { key: "revenue", label: "Receita" },
+    { key: "spend", label: "Spend" },
+    { key: "revenue", label: "Revenue" },
     { key: "roas", label: "ROAS" },
     { key: "acos", label: "ACoS" },
-    { key: "orders", label: "Pedidos" },
-    { key: "impressions", label: "Impressões" },
-    { key: "clicks", label: "Cliques" },
+    { key: "orders", label: "Orders" },
+    { key: "impressions", label: "Impressions" },
+    { key: "clicks", label: "Clicks" },
     { key: "ctr", label: "CTR" },
   ];
 
@@ -86,7 +86,7 @@ export default function Campaigns() {
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
-            placeholder="Buscar campanha..."
+            placeholder="Search campaign..."
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
@@ -97,7 +97,7 @@ export default function Campaigns() {
             <button key={s}
               onClick={() => setStatusFilter(s)}
               className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${statusFilter === s ? "bg-white shadow text-gray-800" : "text-gray-500 hover:text-gray-700"}`}>
-              {s === "all" ? "Todos" : s === "active" ? "Ativos" : "Pausados"}
+              {s === "all" ? "All" : s === "active" ? "Active" : "Paused"}
             </button>
           ))}
         </div>
@@ -107,23 +107,23 @@ export default function Campaigns() {
             <button key={t}
               onClick={() => setTypeFilter(t)}
               className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${typeFilter === t ? "bg-white shadow text-gray-800" : "text-gray-500 hover:text-gray-700"}`}>
-              {t === "all" ? "Todos" : t}
+              {t === "all" ? "All" : t}
             </button>
           ))}
         </div>
 
         <button className="flex items-center gap-1.5 px-3 py-2 bg-orange-500 text-white text-sm rounded-lg hover:bg-orange-600 transition-colors ml-auto">
           <Plus size={15} />
-          Nova Campanha
+          New Campaign
         </button>
       </div>
 
       {/* Summary bar */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: "Gasto Total (filtrado)", val: fmt(summary.spend) },
-          { label: "Receita Total (filtrado)", val: fmt(summary.revenue) },
-          { label: "Pedidos (filtrado)", val: summary.orders.toLocaleString("pt-BR") },
+          { label: "Total Spend (filtered)", val: fmt(summary.spend) },
+          { label: "Total Revenue (filtered)", val: fmt(summary.revenue) },
+          { label: "Orders (filtered)", val: summary.orders.toLocaleString("en-US") },
         ].map(({ label, val }) => (
           <div key={label} className="bg-white rounded-xl border border-gray-200 px-5 py-3 flex items-center justify-between shadow-sm">
             <span className="text-xs text-gray-500">{label}</span>
@@ -135,16 +135,16 @@ export default function Campaigns() {
       {/* Table */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-          <span className="text-sm text-gray-500">{filtered.length} campanha(s)</span>
+          <span className="text-sm text-gray-500">{filtered.length} campaign(s)</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs min-w-max">
             <thead>
               <tr className="bg-gray-50">
-                <th className="text-left px-4 py-3 text-gray-500 font-medium">Campanha</th>
-                <th className="text-left px-4 py-3 text-gray-500 font-medium">Tipo</th>
+                <th className="text-left px-4 py-3 text-gray-500 font-medium">Campaign</th>
+                <th className="text-left px-4 py-3 text-gray-500 font-medium">Type</th>
                 <th className="text-left px-4 py-3 text-gray-500 font-medium">Status</th>
-                <th className="text-right px-4 py-3 text-gray-500 font-medium">Orçamento/dia</th>
+                <th className="text-right px-4 py-3 text-gray-500 font-medium">Daily Budget</th>
                 {cols.map(({ key, label }) => (
                   <th key={key}
                     onClick={() => handleSort(key)}
@@ -155,7 +155,7 @@ export default function Campaigns() {
                     </span>
                   </th>
                 ))}
-                <th className="px-4 py-3 text-gray-500 font-medium">Ações</th>
+                <th className="px-4 py-3 text-gray-500 font-medium">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -192,20 +192,20 @@ export default function Campaigns() {
                       {fmt(c.acos, "percent")}
                     </td>
                     <td className="px-4 py-3 text-right text-gray-700">{c.orders}</td>
-                    <td className="px-4 py-3 text-right text-gray-600">{c.impressions.toLocaleString("pt-BR")}</td>
-                    <td className="px-4 py-3 text-right text-gray-600">{c.clicks.toLocaleString("pt-BR")}</td>
+                    <td className="px-4 py-3 text-right text-gray-600">{c.impressions.toLocaleString("en-US")}</td>
+                    <td className="px-4 py-3 text-right text-gray-600">{c.clicks.toLocaleString("en-US")}</td>
                     <td className="px-4 py-3 text-right text-gray-600">{fmt(c.ctr, "percent")}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2 justify-center">
                         <button
                           onClick={() => toggleStatus(c.id)}
-                          title={c.status === "active" ? "Pausar" : "Ativar"}
+                          title={c.status === "active" ? "Pause" : "Activate"}
                           className={`hover:opacity-70 transition-opacity ${c.status === "active" ? "text-yellow-500" : "text-green-500"}`}>
                           {c.status === "active" ? <PauseCircle size={16} /> : <PlayCircle size={16} />}
                         </button>
                         <button
                           onClick={() => setEditBudget({ id: c.id, value: c.budget })}
-                          title="Editar orçamento"
+                          title="Edit budget"
                           className="text-gray-400 hover:text-gray-700 transition-colors">
                           <Edit2 size={15} />
                         </button>
@@ -219,7 +219,7 @@ export default function Campaigns() {
         </div>
         {filtered.length === 0 && (
           <div className="text-center py-12 text-gray-400 text-sm">
-            Nenhuma campanha encontrada com os filtros aplicados.
+            No campaigns found with the applied filters.
           </div>
         )}
       </div>

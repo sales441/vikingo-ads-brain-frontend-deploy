@@ -3,9 +3,9 @@ import { Users as UsersIcon, Plus, Trash2, Edit2, Shield, Eye, BarChart3, Crown,
 import { useCompanies } from "../context/CompaniesContext";
 
 const ROLES = [
-  { id: "admin",   label: "Admin",    desc: "Acesso total: editar, criar, excluir", icon: Crown,   color: "text-red-600 bg-red-50 border-red-200" },
-  { id: "manager", label: "Gerente",  desc: "Gerenciar campanhas e relatórios",     icon: BarChart3,color: "text-blue-600 bg-blue-50 border-blue-200" },
-  { id: "viewer",  label: "Viewer",   desc: "Apenas visualizar dados e relatórios", icon: Eye,      color: "text-gray-600 bg-gray-50 border-gray-200" },
+  { id: "admin",   label: "Admin",    desc: "Full access: edit, create, delete",        icon: Crown,    color: "text-red-600 bg-red-50 border-red-200" },
+  { id: "manager", label: "Manager",  desc: "Manage campaigns and reports",             icon: BarChart3,color: "text-blue-600 bg-blue-50 border-blue-200" },
+  { id: "viewer",  label: "Viewer",   desc: "View-only access to data and reports",     icon: Eye,      color: "text-gray-600 bg-gray-50 border-gray-200" },
 ];
 
 const STORAGE_KEY = "vab_users";
@@ -70,13 +70,13 @@ export default function Users() {
             <UsersIcon size={20} className="text-violet-600" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-gray-900">Usuários</h1>
+            <h1 className="text-xl font-bold text-gray-900">Users</h1>
             <p className="text-sm text-gray-500">{selectedCompany?.name} — Amazon US</p>
           </div>
         </div>
         <button onClick={openAdd}
           className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-xl transition-colors">
-          <Plus size={14} /> Adicionar Usuário
+          <Plus size={14} /> Add User
         </button>
       </div>
 
@@ -97,20 +97,20 @@ export default function Users() {
       {/* Form */}
       {showForm && (
         <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-4">
-          <h3 className="text-sm font-semibold text-gray-800">{editing ? "Editar Usuário" : "Novo Usuário"}</h3>
+          <h3 className="text-sm font-semibold text-gray-800">{editing ? "Edit User" : "New User"}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">Nome *</label>
-              <input name="name" value={form.name} onChange={ch} placeholder="Nome completo"
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5">Name *</label>
+              <input name="name" value={form.name} onChange={ch} placeholder="Full name"
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">E-mail *</label>
-              <input name="email" type="email" value={form.email} onChange={ch} placeholder="email@empresa.com"
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5">Email *</label>
+              <input name="email" type="email" value={form.email} onChange={ch} placeholder="email@company.com"
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-gray-700 mb-2">Perfil de Acesso *</label>
+              <label className="block text-xs font-semibold text-gray-700 mb-2">Access Role *</label>
               <div className="grid grid-cols-3 gap-2">
                 {ROLES.map(({ id, label, desc, icon: Icon }) => (
                   <button key={id} type="button" onClick={() => setForm(f => ({ ...f, role: id }))}
@@ -126,10 +126,10 @@ export default function Users() {
             </div>
           </div>
           <div className="flex gap-2">
-            <button onClick={() => { setShowForm(false); setEditing(null); }} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-xl hover:bg-gray-50">Cancelar</button>
+            <button onClick={() => { setShowForm(false); setEditing(null); }} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-xl hover:bg-gray-50">Cancel</button>
             <button onClick={save} disabled={!form.name || !form.email}
               className="px-5 py-2 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-300 text-white text-sm font-semibold rounded-xl transition-colors">
-              {editing ? "Salvar" : "Adicionar"}
+              {editing ? "Save" : "Add"}
             </button>
           </div>
         </div>
@@ -138,7 +138,7 @@ export default function Users() {
       {/* Users list */}
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-gray-700">{companyUsers.length} usuário{companyUsers.length !== 1 ? "s" : ""}</h2>
+          <h2 className="text-sm font-semibold text-gray-700">{companyUsers.length} user{companyUsers.length !== 1 ? "s" : ""}</h2>
         </div>
         <div className="divide-y divide-gray-50">
           {companyUsers.map(user => {
@@ -161,7 +161,7 @@ export default function Users() {
                     <RoleIcon size={10} />{role?.label}
                   </span>
                   <span className="text-xs text-gray-400 flex items-center gap-1 hidden sm:flex">
-                    <Calendar size={10} />{new Date(user.createdAt).toLocaleDateString("pt-BR")}
+                    <Calendar size={10} />{new Date(user.createdAt).toLocaleDateString("en-US")}
                   </span>
                   <button onClick={() => openEdit(user)} className="p-1.5 text-gray-400 hover:text-blue-500 rounded-lg">
                     <Edit2 size={13} />
@@ -176,7 +176,7 @@ export default function Users() {
             );
           })}
           {companyUsers.length === 0 && (
-            <div className="px-4 py-8 text-center text-gray-400 text-sm">Nenhum usuário cadastrado.</div>
+            <div className="px-4 py-8 text-center text-gray-400 text-sm">No users yet.</div>
           )}
         </div>
       </div>
@@ -185,11 +185,11 @@ export default function Users() {
       {confirmDelete && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 shadow-xl max-w-sm w-full mx-4">
-            <p className="text-sm font-semibold text-gray-800 mb-4">Remover usuário?</p>
-            <p className="text-xs text-gray-500 mb-6">Esta ação não pode ser desfeita.</p>
+            <p className="text-sm font-semibold text-gray-800 mb-4">Remove user?</p>
+            <p className="text-xs text-gray-500 mb-6">This action cannot be undone.</p>
             <div className="flex gap-2 justify-end">
-              <button onClick={() => setConfirmDelete(null)} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-xl">Cancelar</button>
-              <button onClick={() => { removeUser(confirmDelete); setConfirmDelete(null); }} className="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-xl">Remover</button>
+              <button onClick={() => setConfirmDelete(null)} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-xl">Cancel</button>
+              <button onClick={() => { removeUser(confirmDelete); setConfirmDelete(null); }} className="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-xl">Remove</button>
             </div>
           </div>
         </div>

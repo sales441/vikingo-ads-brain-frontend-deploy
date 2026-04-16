@@ -16,9 +16,9 @@ import { dashboardMetrics, spendChartData, campaigns, topSearchTerms } from "../
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const fmt = (v, type = "currency") => {
-  if (type === "currency") return `R$ ${Number(v).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+  if (type === "currency") return `$${Number(v).toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
   if (type === "percent") return `${Number(v).toFixed(2)}%`;
-  if (type === "large") return Number(v).toLocaleString("pt-BR");
+  if (type === "large") return Number(v).toLocaleString("en-US");
   return v;
 };
 
@@ -45,14 +45,15 @@ function AIBanner({ analysis, loading, onRefresh }) {
     return (
       <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl p-4 flex items-center gap-3 text-white">
         <RefreshCw size={18} className="animate-spin text-orange-400" />
-        <span className="text-sm">Vikingo Brain™ analisando suas campanhas...</span>
+        <span className="text-sm">Vikingo Brain™ is analyzing your campaigns...</span>
       </div>
     );
   }
   if (!analysis) return null;
 
-  const priorityAlerts = analysis.alertas?.filter(a => a.tipo === "acos_alto" || a.tipo === "budget_baixo") ?? [];
-  const topRec = analysis.recomendacoes?.[0];
+  const priorityAlerts = analysis.alerts?.filter(a => a.type === "high_acos" || a.type === "low_budget") ?? analysis.alertas?.filter(a => a.tipo === "acos_alto" || a.tipo === "budget_baixo") ?? [];
+  const topRec = analysis.recommendations?.[0] ?? analysis.recomendacoes?.[0];
+  const summary = analysis.summary ?? analysis.resumo;
 
   return (
     <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl p-4 flex flex-wrap items-center gap-4">
@@ -67,9 +68,9 @@ function AIBanner({ analysis, loading, onRefresh }) {
         <div className="flex items-center gap-2 mb-1">
           <BrainCircuit size={14} className="text-orange-400" />
           <span className="text-xs font-semibold text-orange-400">Vikingo Brain™</span>
-          <span className="text-xs text-gray-500">• atualizado agora</span>
+          <span className="text-xs text-gray-500">• updated just now</span>
         </div>
-        <p className="text-sm text-white leading-snug">{analysis.resumo}</p>
+        <p className="text-sm text-white leading-snug">{summary}</p>
       </div>
 
       {/* Top alert */}
@@ -77,8 +78,8 @@ function AIBanner({ analysis, loading, onRefresh }) {
         <div className="flex items-start gap-2 bg-red-900/40 border border-red-700/50 rounded-lg px-3 py-2 max-w-xs">
           <AlertTriangle size={13} className="text-red-400 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-xs text-red-300 font-medium">{priorityAlerts[0].mensagem}</p>
-            <p className="text-xs text-red-400 mt-0.5">→ {priorityAlerts[0].acao}</p>
+            <p className="text-xs text-red-300 font-medium">{priorityAlerts[0].message ?? priorityAlerts[0].mensagem}</p>
+            <p className="text-xs text-red-400 mt-0.5">→ {priorityAlerts[0].action ?? priorityAlerts[0].acao}</p>
           </div>
         </div>
       )}
@@ -88,8 +89,8 @@ function AIBanner({ analysis, loading, onRefresh }) {
         <div className="flex items-start gap-2 bg-green-900/30 border border-green-700/40 rounded-lg px-3 py-2 max-w-xs">
           <CheckCircle size={13} className="text-green-400 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-xs text-green-300 font-medium">{topRec.acao}</p>
-            <p className="text-xs text-green-500 mt-0.5">{topRec.impacto}</p>
+            <p className="text-xs text-green-300 font-medium">{topRec.action ?? topRec.acao}</p>
+            <p className="text-xs text-green-500 mt-0.5">{topRec.impact ?? topRec.impacto}</p>
           </div>
         </div>
       )}
@@ -99,7 +100,7 @@ function AIBanner({ analysis, loading, onRefresh }) {
           <RefreshCw size={14} />
         </button>
         <Link to="/ai" className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-medium rounded-lg transition-colors">
-          Ver análise completa <ArrowRight size={12} />
+          View full analysis <ArrowRight size={12} />
         </Link>
       </div>
     </div>
@@ -132,20 +133,20 @@ export default function Dashboard() {
 
       {/* KPI Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KPICard title="Gasto Total" value={dashboardMetrics.totalSpend} delta={dashboardMetrics.spendDelta} format="currency" icon={DollarSign} iconBg="bg-orange-100" iconColor="text-orange-600" />
-        <KPICard title="Receita Total" value={dashboardMetrics.totalRevenue} delta={dashboardMetrics.revenueDelta} format="currency" icon={TrendingUp} iconBg="bg-green-100" iconColor="text-green-600" />
-        <KPICard title="Pedidos" value={dashboardMetrics.totalOrders} delta={dashboardMetrics.ordersDelta} format="large" icon={ShoppingCart} iconBg="bg-blue-100" iconColor="text-blue-600" />
-        <KPICard title="Impressões" value={dashboardMetrics.totalImpressions} delta={dashboardMetrics.impressionsDelta} format="large" icon={Eye} iconBg="bg-purple-100" iconColor="text-purple-600" />
-        <KPICard title="Cliques" value={dashboardMetrics.totalClicks} delta={dashboardMetrics.clicksDelta} format="large" icon={MousePointerClick} iconBg="bg-sky-100" iconColor="text-sky-600" />
-        <KPICard title="ROAS Médio" value={dashboardMetrics.avgRoas} delta={dashboardMetrics.roasDelta} format="number" icon={Award} iconBg="bg-emerald-100" iconColor="text-emerald-600" />
-        <KPICard title="ACoS Médio" value={dashboardMetrics.avgAcos} delta={dashboardMetrics.acosData} format="percent" icon={Percent} iconBg="bg-red-100" iconColor="text-red-500" />
-        <KPICard title="CTR Médio" value={dashboardMetrics.avgCtr} format="percent" icon={Megaphone} iconBg="bg-yellow-100" iconColor="text-yellow-600" />
+        <KPICard title="Total Spend" value={dashboardMetrics.totalSpend} delta={dashboardMetrics.spendDelta} format="currency" icon={DollarSign} iconBg="bg-orange-100" iconColor="text-orange-600" />
+        <KPICard title="Total Revenue" value={dashboardMetrics.totalRevenue} delta={dashboardMetrics.revenueDelta} format="currency" icon={TrendingUp} iconBg="bg-green-100" iconColor="text-green-600" />
+        <KPICard title="Orders" value={dashboardMetrics.totalOrders} delta={dashboardMetrics.ordersDelta} format="large" icon={ShoppingCart} iconBg="bg-blue-100" iconColor="text-blue-600" />
+        <KPICard title="Impressions" value={dashboardMetrics.totalImpressions} delta={dashboardMetrics.impressionsDelta} format="large" icon={Eye} iconBg="bg-purple-100" iconColor="text-purple-600" />
+        <KPICard title="Clicks" value={dashboardMetrics.totalClicks} delta={dashboardMetrics.clicksDelta} format="large" icon={MousePointerClick} iconBg="bg-sky-100" iconColor="text-sky-600" />
+        <KPICard title="Average ROAS" value={dashboardMetrics.avgRoas} delta={dashboardMetrics.roasDelta} format="number" icon={Award} iconBg="bg-emerald-100" iconColor="text-emerald-600" />
+        <KPICard title="Average ACoS" value={dashboardMetrics.avgAcos} delta={dashboardMetrics.acosData} format="percent" icon={Percent} iconBg="bg-red-100" iconColor="text-red-500" />
+        <KPICard title="Average CTR" value={dashboardMetrics.avgCtr} format="percent" icon={Megaphone} iconBg="bg-yellow-100" iconColor="text-yellow-600" />
       </div>
 
       {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-gray-700 mb-4">Gasto vs Receita — Últimos 30 dias</h2>
+          <h2 className="text-sm font-semibold text-gray-700 mb-4">Spend vs Revenue — Last 30 days</h2>
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={spendChartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
               <defs>
@@ -160,24 +161,24 @@ export default function Dashboard() {
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#9ca3af" }} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: "#9ca3af" }} tickLine={false} axisLine={false} tickFormatter={(v) => `R$${v}`} />
+              <YAxis tick={{ fontSize: 10, fill: "#9ca3af" }} tickLine={false} axisLine={false} tickFormatter={(v) => `$${v}`} />
               <Tooltip content={<CustomTooltip />} />
               <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11 }} />
-              <Area type="monotone" dataKey="revenue" name="Receita" stroke="#22c55e" strokeWidth={2} fill="url(#colorRevenue)" dot={false} activeDot={{ r: 4 }} />
-              <Area type="monotone" dataKey="spend" name="Gasto" stroke="#f97316" strokeWidth={2} fill="url(#colorSpend)" dot={false} activeDot={{ r: 4 }} />
+              <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#22c55e" strokeWidth={2} fill="url(#colorRevenue)" dot={false} activeDot={{ r: 4 }} />
+              <Area type="monotone" dataKey="spend" name="Spend" stroke="#f97316" strokeWidth={2} fill="url(#colorSpend)" dot={false} activeDot={{ r: 4 }} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
 
         <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm flex flex-col gap-4">
-          <h2 className="text-sm font-semibold text-gray-700">Resumo Rápido</h2>
+          <h2 className="text-sm font-semibold text-gray-700">Quick Summary</h2>
           <div className="flex-1 space-y-3">
             {[
-              { label: "Campanhas ativas", value: campaigns.filter(c => c.status === "active").length, suffix: "de " + campaigns.length, color: "text-green-600" },
-              { label: "Melhor ROAS", value: Math.max(...campaigns.map(c => c.roas)).toFixed(1) + "x", color: "text-blue-600" },
-              { label: "Menor ACoS", value: Math.min(...campaigns.map(c => c.acos)).toFixed(2) + "%", color: "text-emerald-600" },
-              { label: "CPC Médio", value: fmt(dashboardMetrics.avgCpc), color: "text-orange-600" },
-              { label: "Campanhas pausadas", value: campaigns.filter(c => c.status === "paused").length, color: "text-yellow-600" },
+              { label: "Active campaigns", value: campaigns.filter(c => c.status === "active").length, suffix: "of " + campaigns.length, color: "text-green-600" },
+              { label: "Best ROAS", value: Math.max(...campaigns.map(c => c.roas)).toFixed(1) + "x", color: "text-blue-600" },
+              { label: "Lowest ACoS", value: Math.min(...campaigns.map(c => c.acos)).toFixed(2) + "%", color: "text-emerald-600" },
+              { label: "Average CPC", value: fmt(dashboardMetrics.avgCpc), color: "text-orange-600" },
+              { label: "Paused campaigns", value: campaigns.filter(c => c.status === "paused").length, color: "text-yellow-600" },
             ].map(({ label, value, suffix, color }) => (
               <div key={label} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
                 <span className="text-xs text-gray-500">{label}</span>
@@ -189,7 +190,7 @@ export default function Dashboard() {
           </div>
           <Link to="/ai" className="flex items-center justify-center gap-2 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium rounded-lg transition-colors">
             <BrainCircuit size={13} />
-            Abrir Vikingo Brain™
+            Open Vikingo Brain™
           </Link>
         </div>
       </div>
@@ -197,13 +198,13 @@ export default function Dashboard() {
       {/* Top Campaigns */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-700">Top Campanhas por Receita</h2>
+          <h2 className="text-sm font-semibold text-gray-700">Top Campaigns by Revenue</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
               <tr className="bg-gray-50">
-                {["Campanha", "Tipo", "Status", "Gasto", "Receita", "ROAS", "ACoS", "Pedidos"].map(h => (
+                {["Campaign", "Type", "Status", "Spend", "Revenue", "ROAS", "ACoS", "Orders"].map(h => (
                   <th key={h} className="text-left px-4 py-3 text-gray-500 font-medium">{h}</th>
                 ))}
               </tr>
@@ -229,13 +230,13 @@ export default function Dashboard() {
       {/* Top Search Terms */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-700">Top Termos de Busca</h2>
+          <h2 className="text-sm font-semibold text-gray-700">Top Search Terms</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
               <tr className="bg-gray-50">
-                {["Termo", "Impressões", "Cliques", "CTR", "Pedidos", "Gasto", "Receita", "ACoS"].map(h => (
+                {["Term", "Impressions", "Clicks", "CTR", "Orders", "Spend", "Revenue", "ACoS"].map(h => (
                   <th key={h} className="text-left px-4 py-3 text-gray-500 font-medium">{h}</th>
                 ))}
               </tr>
@@ -244,8 +245,8 @@ export default function Dashboard() {
               {topSearchTerms.map((t) => (
                 <tr key={t.term} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3 font-medium text-gray-800">{t.term}</td>
-                  <td className="px-4 py-3 text-gray-600">{t.impressions.toLocaleString("pt-BR")}</td>
-                  <td className="px-4 py-3 text-gray-600">{t.clicks.toLocaleString("pt-BR")}</td>
+                  <td className="px-4 py-3 text-gray-600">{t.impressions.toLocaleString("en-US")}</td>
+                  <td className="px-4 py-3 text-gray-600">{t.clicks.toLocaleString("en-US")}</td>
                   <td className="px-4 py-3 text-gray-600">{((t.clicks / t.impressions) * 100).toFixed(2)}%</td>
                   <td className="px-4 py-3 text-gray-600">{t.orders}</td>
                   <td className="px-4 py-3 text-gray-700">{fmt(t.spend)}</td>

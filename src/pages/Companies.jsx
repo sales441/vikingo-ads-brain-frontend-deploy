@@ -16,23 +16,23 @@ function CompanyForm({ initial = EMPTY_FORM, onSave, onCancel }) {
     <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-4">
       <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
         <Building2 size={16} className="text-orange-500" />
-        <h3 className="text-sm font-semibold text-gray-800">{initial.name ? "Editar Empresa" : "Nova Empresa"}</h3>
+        <h3 className="text-sm font-semibold text-gray-800">{initial.name ? "Edit Company" : "New Company"}</h3>
         <span className="ml-auto text-xs bg-blue-50 border border-blue-200 text-blue-700 px-2 py-0.5 rounded-full font-medium">🇺🇸 Amazon US</span>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="sm:col-span-2">
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Nome da Empresa *</label>
-          <input name="name" value={form.name} onChange={ch} placeholder="Ex: My Brand Store"
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Company Name *</label>
+          <input name="name" value={form.name} onChange={ch} placeholder="e.g. My Brand Store"
             className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Nome Legal</label>
-          <input name="legalName" value={form.legalName} onChange={ch} placeholder="Ex: My Brand Store LLC"
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Legal Name</label>
+          <input name="legalName" value={form.legalName} onChange={ch} placeholder="e.g. My Brand Store LLC"
             className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">E-mail de Contato</label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Contact Email</label>
           <input name="contactEmail" type="email" value={form.contactEmail} onChange={ch} placeholder="ads@mybrand.com"
             className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
         </div>
@@ -48,12 +48,12 @@ function CompanyForm({ initial = EMPTY_FORM, onSave, onCancel }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">Profile ID</label>
-            <input name="profileId" value={form.profileId} onChange={ch} placeholder="Ex: 1234567890"
+            <input name="profileId" value={form.profileId} onChange={ch} placeholder="e.g. 1234567890"
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-orange-400" />
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">Advertiser ID</label>
-            <input name="advertiserId" value={form.advertiserId} onChange={ch} placeholder="Ex: ADV0000000000"
+            <input name="advertiserId" value={form.advertiserId} onChange={ch} placeholder="e.g. ADV0000000000"
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-orange-400" />
           </div>
           <div>
@@ -64,7 +64,7 @@ function CompanyForm({ initial = EMPTY_FORM, onSave, onCancel }) {
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">
               Client Secret (LWA)
-              <button type="button" onClick={() => setShowSecrets(s => !s)} className="ml-2 text-orange-500 font-normal normal-case">{showSecrets ? "ocultar" : "mostrar"}</button>
+              <button type="button" onClick={() => setShowSecrets(s => !s)} className="ml-2 text-orange-500 font-normal normal-case">{showSecrets ? "hide" : "show"}</button>
             </label>
             <input name="clientSecret" type={showSecrets ? "text" : "password"} value={form.clientSecret} onChange={ch} placeholder="••••••••••••••••"
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-orange-400" />
@@ -73,11 +73,11 @@ function CompanyForm({ initial = EMPTY_FORM, onSave, onCancel }) {
       </div>
 
       <div className="flex gap-2 pt-2">
-        <button onClick={onCancel} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-xl hover:bg-gray-50">Cancelar</button>
+        <button onClick={onCancel} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-xl hover:bg-gray-50">Cancel</button>
         <button onClick={() => { if (form.name) onSave(form); }}
           disabled={!form.name}
           className="px-5 py-2 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-300 text-white text-sm font-semibold rounded-xl transition-colors">
-          Salvar Empresa
+          Save Company
         </button>
       </div>
     </div>
@@ -114,14 +114,14 @@ export default function Companies() {
             <Building2 size={20} className="text-blue-600" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-gray-900">Empresas</h1>
-            <p className="text-sm text-gray-500">Gerencie todas as suas contas Amazon US</p>
+            <h1 className="text-xl font-bold text-gray-900">Companies</h1>
+            <p className="text-sm text-gray-500">Manage all your Amazon US accounts</p>
           </div>
         </div>
         {!showForm && !editing && (
           <button onClick={() => setShowForm(true)}
             className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-xl transition-colors">
-            <Plus size={14} /> Nova Empresa
+            <Plus size={14} /> New Company
           </button>
         )}
       </div>
@@ -129,8 +129,8 @@ export default function Companies() {
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: "Total de Empresas", value: companies.length, color: "text-blue-600", bg: "bg-blue-50 border-blue-200" },
-          { label: "Ativas", value: companies.filter(c => c.status === "active").length, color: "text-green-600", bg: "bg-green-50 border-green-200" },
+          { label: "Total Companies", value: companies.length, color: "text-blue-600", bg: "bg-blue-50 border-blue-200" },
+          { label: "Active", value: companies.filter(c => c.status === "active").length, color: "text-green-600", bg: "bg-green-50 border-green-200" },
           { label: "Marketplace", value: "🇺🇸 US", color: "text-orange-600", bg: "bg-orange-50 border-orange-200" },
         ].map(({ label, value, color, bg }) => (
           <div key={label} className={`border rounded-xl p-4 text-center ${bg}`}>
@@ -163,10 +163,10 @@ export default function Companies() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-semibold text-gray-800">{company.name}</h3>
-                    {isSelected && <span className="text-xs bg-orange-100 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full font-medium">Ativa</span>}
+                    {isSelected && <span className="text-xs bg-orange-100 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full font-medium">Active</span>}
                     <span className="text-xs bg-blue-50 border border-blue-200 text-blue-700 px-2 py-0.5 rounded-full">🇺🇸 Amazon US</span>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${company.status === "active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
-                      {company.status === "active" ? "Ativa" : "Inativa"}
+                      {company.status === "active" ? "Active" : "Inactive"}
                     </span>
                   </div>
                   <div className="flex items-center gap-4 mt-1 flex-wrap">
@@ -185,7 +185,7 @@ export default function Companies() {
                   {!isSelected && (
                     <button onClick={() => selectCompany(company.id)}
                       className="flex items-center gap-1 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium rounded-lg transition-colors">
-                      Selecionar <ChevronRight size={12} />
+                      Select <ChevronRight size={12} />
                     </button>
                   )}
                   <button onClick={() => setEditing({ ...company })}
@@ -219,9 +219,9 @@ export default function Companies() {
               {/* Delete confirm */}
               {confirmDelete === company.id && (
                 <div className="mt-3 pt-3 border-t border-red-100 flex items-center gap-3">
-                  <p className="text-sm text-red-700 flex-1">Tem certeza que quer excluir <strong>{company.name}</strong>?</p>
-                  <button onClick={() => setConfirmDelete(null)} className="px-3 py-1.5 border border-gray-300 text-gray-700 text-xs rounded-lg">Cancelar</button>
-                  <button onClick={() => handleDelete(company.id)} className="px-3 py-1.5 bg-red-500 text-white text-xs font-medium rounded-lg">Excluir</button>
+                  <p className="text-sm text-red-700 flex-1">Are you sure you want to delete <strong>{company.name}</strong>?</p>
+                  <button onClick={() => setConfirmDelete(null)} className="px-3 py-1.5 border border-gray-300 text-gray-700 text-xs rounded-lg">Cancel</button>
+                  <button onClick={() => handleDelete(company.id)} className="px-3 py-1.5 bg-red-500 text-white text-xs font-medium rounded-lg">Delete</button>
                 </div>
               )}
             </div>
@@ -231,11 +231,11 @@ export default function Companies() {
 
       {/* Help box */}
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-xs text-blue-800 space-y-1.5">
-        <p className="font-semibold text-sm text-blue-900">Como obter as credenciais da Amazon Advertising API?</p>
-        <p>1. Acesse <strong>advertising.amazon.com</strong> → Settings → API Access</p>
-        <p>2. Clique em "Request Access" para obter Client ID e Secret</p>
-        <p>3. O Profile ID está na URL quando você seleciona sua conta: <code className="bg-blue-100 px-1 rounded">/cm/sp?entityId=XXXXXX</code></p>
-        <p>4. O Advertiser ID (entity ID) também está disponível nas configurações de perfil</p>
+        <p className="font-semibold text-sm text-blue-900">How do I get my Amazon Advertising API credentials?</p>
+        <p>1. Go to <strong>advertising.amazon.com</strong> → Settings → API Access</p>
+        <p>2. Click "Request Access" to get your Client ID and Secret</p>
+        <p>3. The Profile ID is in the URL when you select your account: <code className="bg-blue-100 px-1 rounded">/cm/sp?entityId=XXXXXX</code></p>
+        <p>4. The Advertiser ID (entity ID) is also available in your profile settings</p>
       </div>
     </div>
   );

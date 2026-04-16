@@ -24,7 +24,7 @@ export function AuthProvider({ children }) {
       body: JSON.stringify({ email, password }),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Credenciais inválidas");
+    if (!res.ok) throw new Error(data.error || "Invalid credentials");
     localStorage.setItem("vab_token", data.token);
     localStorage.setItem("vab_user", JSON.stringify(data.user));
     setUser(data.user);

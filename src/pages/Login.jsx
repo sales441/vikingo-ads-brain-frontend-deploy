@@ -15,14 +15,14 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email || !password) { setError("Preencha e-mail e senha."); return; }
+    if (!email || !password) { setError("Please enter email and password."); return; }
     setError("");
     setLoading(true);
     try {
       await login(email, password);
       navigate("/dashboard", { replace: true });
     } catch (err) {
-      setError(err.message || "Credenciais inválidas. Tente novamente.");
+      setError(err.message || "Invalid credentials. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -43,13 +43,13 @@ export default function Login() {
             </div>
           </div>
           <VikingShip size={56} />
-          <p className="text-slate-400 text-sm mt-2">Navegando rumo às vendas</p>
+          <p className="text-slate-400 text-sm mt-2">Sailing toward sales</p>
         </div>
 
         {/* Card */}
         <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-8">
-          <h1 className="text-white text-xl font-bold mb-1">Entrar na plataforma</h1>
-          <p className="text-slate-400 text-sm mb-6">Acesse o painel de gestão Amazon Ads</p>
+          <h1 className="text-white text-xl font-bold mb-1">Sign in to the platform</h1>
+          <p className="text-slate-400 text-sm mb-6">Access the Amazon Ads management dashboard</p>
 
           {error && (
             <div className="flex items-center gap-2 bg-red-900/40 border border-red-700/50 text-red-300 rounded-xl px-4 py-3 text-sm mb-4">
@@ -60,19 +60,19 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1.5">E-mail</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                placeholder="seu@email.com"
+                placeholder="you@email.com"
                 autoComplete="email"
                 className="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Senha</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -98,9 +98,9 @@ export default function Login() {
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-orange-400 disabled:to-orange-400 text-white font-semibold py-3 rounded-xl transition-all shadow-lg mt-2"
             >
               {loading ? (
-                <><RefreshCw size={16} className="animate-spin" /> Entrando...</>
+                <><RefreshCw size={16} className="animate-spin" /> Signing in...</>
               ) : (
-                <><Zap size={16} /> Entrar no Vikingo Brain™</>
+                <><Zap size={16} /> Sign in to Vikingo Brain™</>
               )}
             </button>
           </form>

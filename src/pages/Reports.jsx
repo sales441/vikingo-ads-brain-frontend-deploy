@@ -7,9 +7,9 @@ import { Download } from "lucide-react";
 import { weeklyData, campaigns, spendChartData } from "../data/mockData";
 
 const fmt = (v, type = "currency") => {
-  if (type === "currency") return `R$ ${Number(v).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+  if (type === "currency") return `$${Number(v).toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
   if (type === "percent") return `${Number(v).toFixed(2)}%`;
-  if (type === "large") return Number(v).toLocaleString("pt-BR");
+  if (type === "large") return Number(v).toLocaleString("en-US");
   return v;
 };
 
@@ -29,9 +29,9 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 const PERIODS = [
-  { label: "7 dias", days: 7 },
-  { label: "30 dias", days: 30 },
-  { label: "90 dias", days: 90 },
+  { label: "7 days", days: 7 },
+  { label: "30 days", days: 30 },
+  { label: "90 days", days: 90 },
 ];
 
 export default function Reports() {
@@ -86,18 +86,18 @@ export default function Reports() {
         </div>
         <button className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors">
           <Download size={14} />
-          Exportar CSV
+          Export CSV
         </button>
       </div>
 
       {/* Summary KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {[
-          { label: "Gasto Total", val: fmt(totals.spend), color: "text-gray-800" },
-          { label: "Receita Total", val: fmt(totals.revenue), color: "text-green-600" },
-          { label: "Pedidos", val: totals.orders.toLocaleString("pt-BR"), color: "text-blue-600" },
-          { label: "Impressões", val: totals.impressions.toLocaleString("pt-BR"), color: "text-purple-600" },
-          { label: "Cliques", val: totals.clicks.toLocaleString("pt-BR"), color: "text-sky-600" },
+          { label: "Total Spend", val: fmt(totals.spend), color: "text-gray-800" },
+          { label: "Total Revenue", val: fmt(totals.revenue), color: "text-green-600" },
+          { label: "Orders", val: totals.orders.toLocaleString("en-US"), color: "text-blue-600" },
+          { label: "Impressions", val: totals.impressions.toLocaleString("en-US"), color: "text-purple-600" },
+          { label: "Clicks", val: totals.clicks.toLocaleString("en-US"), color: "text-sky-600" },
         ].map(({ label, val, color }) => (
           <div key={label} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
             <p className="text-xs text-gray-500 mb-1">{label}</p>
@@ -110,25 +110,25 @@ export default function Reports() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Spend vs Revenue bar */}
         <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-gray-700 mb-4">Gasto vs Receita por Período</h2>
+          <h2 className="text-sm font-semibold text-gray-700 mb-4">Spend vs Revenue by Period</h2>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={period === 30 ? spendChartData.filter((_, i) => i % 3 === 0) : chartData}
               margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey={period === 30 ? "date" : "date"} tick={{ fontSize: 10, fill: "#9ca3af" }} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: "#9ca3af" }} tickLine={false} axisLine={false}
-                tickFormatter={v => `R$${v}`} />
+                tickFormatter={v => `$${v}`} />
               <Tooltip content={<CustomTooltip />} />
               <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11 }} />
-              <Bar dataKey="revenue" name="Receita" fill="#22c55e" radius={[3, 3, 0, 0]} />
-              <Bar dataKey="spend" name="Gasto" fill="#f97316" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="revenue" name="Revenue" fill="#22c55e" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="spend" name="Spend" fill="#f97316" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         {/* ROAS & ACoS line */}
         <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-gray-700 mb-4">Evolução de ROAS e ACoS (semanal)</h2>
+          <h2 className="text-sm font-semibold text-gray-700 mb-4">ROAS and ACoS Trend (weekly)</h2>
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={roasAcosData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -150,13 +150,13 @@ export default function Reports() {
       {/* Campaign performance table */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-700">Performance por Campanha</h2>
+          <h2 className="text-sm font-semibold text-gray-700">Campaign Performance</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs min-w-max">
             <thead>
               <tr className="bg-gray-50">
-                {["Campanha", "Tipo", "Gasto", "Receita", "ROAS", "ACoS", "Pedidos", "Impressões", "Cliques", "CTR", "CPC"].map(h => (
+                {["Campaign", "Type", "Spend", "Revenue", "ROAS", "ACoS", "Orders", "Impressions", "Clicks", "CTR", "CPC"].map(h => (
                   <th key={h} className="text-left px-4 py-3 text-gray-500 font-medium">{h}</th>
                 ))}
               </tr>
@@ -173,8 +173,8 @@ export default function Reports() {
                     {fmt(c.acos, "percent")}
                   </td>
                   <td className="px-4 py-3 text-gray-700">{c.orders}</td>
-                  <td className="px-4 py-3 text-gray-600">{c.impressions.toLocaleString("pt-BR")}</td>
-                  <td className="px-4 py-3 text-gray-600">{c.clicks.toLocaleString("pt-BR")}</td>
+                  <td className="px-4 py-3 text-gray-600">{c.impressions.toLocaleString("en-US")}</td>
+                  <td className="px-4 py-3 text-gray-600">{c.clicks.toLocaleString("en-US")}</td>
                   <td className="px-4 py-3 text-gray-600">{fmt(c.ctr, "percent")}</td>
                   <td className="px-4 py-3 text-gray-600">{fmt(c.cpc)}</td>
                 </tr>
@@ -188,8 +188,8 @@ export default function Reports() {
                 <td className="px-4 py-3 text-xs text-blue-600">{(totals.revenue / totals.spend).toFixed(1)}x</td>
                 <td className="px-4 py-3 text-xs text-gray-800">{((totals.spend / totals.revenue) * 100).toFixed(2)}%</td>
                 <td className="px-4 py-3 text-xs text-gray-800">{totals.orders}</td>
-                <td className="px-4 py-3 text-xs text-gray-800">{totals.impressions.toLocaleString("pt-BR")}</td>
-                <td className="px-4 py-3 text-xs text-gray-800">{totals.clicks.toLocaleString("pt-BR")}</td>
+                <td className="px-4 py-3 text-xs text-gray-800">{totals.impressions.toLocaleString("en-US")}</td>
+                <td className="px-4 py-3 text-xs text-gray-800">{totals.clicks.toLocaleString("en-US")}</td>
                 <td colSpan={2} />
               </tr>
             </tfoot>

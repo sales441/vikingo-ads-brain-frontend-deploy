@@ -22,36 +22,43 @@ async function sendChat(message, history) {
     const d = await r.json();
     return d.reply;
   } catch {
-    return "Erro ao conectar com o Vikingo Brain. Tente novamente.";
+    return "Error connecting to Vikingo Brain. Please try again.";
   }
 }
 
 const SUGGESTIONS = [
-  "Quais campanhas devo pausar agora?",
-  "Como reduzir meu ACoS médio?",
-  "Qual keyword tem melhor ROAS?",
-  "Preciso aumentar meu budget?",
-  "Como conquistar mais share of voice?",
+  "Which campaigns should I pause right now?",
+  "How can I lower my average ACoS?",
+  "Which keyword has the best ROAS?",
+  "Do I need to increase my budget?",
+  "How can I gain more share of voice?",
 ];
 
 const priorityColor = {
-  alta: "bg-red-100 text-red-700 border-red-200",
-  media: "bg-orange-100 text-orange-700 border-orange-200",
-  baixa: "bg-blue-100 text-blue-700 border-blue-200",
+  high:   "bg-red-100 text-red-700 border-red-200",
+  medium: "bg-orange-100 text-orange-700 border-orange-200",
+  low:    "bg-blue-100 text-blue-700 border-blue-200",
+  alta:   "bg-red-100 text-red-700 border-red-200",
+  media:  "bg-orange-100 text-orange-700 border-orange-200",
+  baixa:  "bg-blue-100 text-blue-700 border-blue-200",
 };
 
 const statusColor = {
-  otimo: "text-green-600 bg-green-50 border-green-200",
-  bom: "text-blue-600 bg-blue-50 border-blue-200",
-  atencao: "text-orange-600 bg-orange-50 border-orange-200",
-  critico: "text-red-600 bg-red-50 border-red-200",
+  excellent: "text-green-600 bg-green-50 border-green-200",
+  good:      "text-blue-600 bg-blue-50 border-blue-200",
+  attention: "text-orange-600 bg-orange-50 border-orange-200",
+  critical:  "text-red-600 bg-red-50 border-red-200",
+  otimo:     "text-green-600 bg-green-50 border-green-200",
+  bom:       "text-blue-600 bg-blue-50 border-blue-200",
+  atencao:   "text-orange-600 bg-orange-50 border-orange-200",
+  critico:   "text-red-600 bg-red-50 border-red-200",
 };
 
 export default function AIAssistant() {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      content: "Olá! Sou o **Vikingo Brain™**, sua IA especialista em Amazon Ads. Analisei suas campanhas e estou pronto para ajudar. O que você quer otimizar hoje?",
+      content: "Hi! I'm **Vikingo Brain™**, your Amazon Ads AI expert. I've analyzed your campaigns and I'm ready to help. What would you like to optimize today?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -96,6 +103,9 @@ export default function AIAssistant() {
   };
 
   const scoreColor = analysis?.score >= 80 ? "text-green-600" : analysis?.score >= 60 ? "text-orange-500" : "text-red-500";
+  const alerts = analysis?.alerts ?? analysis?.alertas ?? [];
+  const recommendations = analysis?.recommendations ?? analysis?.recomendacoes ?? [];
+  const summary = analysis?.summary ?? analysis?.resumo;
 
   return (
     <div className="flex gap-5 h-[calc(100vh-112px)]">
@@ -110,7 +120,7 @@ export default function AIAssistant() {
               <div className="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center">
                 <Zap size={16} className="text-white" />
               </div>
-              <span className="text-sm font-semibold text-gray-700">Saúde das Campanhas</span>
+              <span className="text-sm font-semibold text-gray-700">Campaign Health</span>
             </div>
             <button onClick={refreshAnalysis} className="text-gray-400 hover:text-gray-600">
               <RefreshCw size={14} className={loadingAnalysis ? "animate-spin" : ""} />
@@ -120,7 +130,7 @@ export default function AIAssistant() {
           {loadingAnalysis ? (
             <div className="flex items-center gap-2 text-sm text-gray-400 py-2">
               <RefreshCw size={14} className="animate-spin" />
-              Analisando campanhas...
+              Analyzing campaigns...
             </div>
           ) : analysis ? (
             <>
@@ -128,28 +138,28 @@ export default function AIAssistant() {
                 <span className={`text-4xl font-bold ${scoreColor}`}>{analysis.score}</span>
                 <span className="text-gray-400 text-sm mb-1">/100</span>
               </div>
-              <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${statusColor[analysis.status] || statusColor.atencao}`}>
+              <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${statusColor[analysis.status] || statusColor.attention}`}>
                 {analysis.status?.toUpperCase()}
               </div>
-              <p className="text-xs text-gray-500 mt-2 leading-relaxed">{analysis.resumo}</p>
+              <p className="text-xs text-gray-500 mt-2 leading-relaxed">{summary}</p>
             </>
           ) : (
-            <p className="text-xs text-gray-400">Análise indisponível</p>
+            <p className="text-xs text-gray-400">Analysis unavailable</p>
           )}
         </div>
 
         {/* Alerts */}
-        {analysis?.alertas?.length > 0 && (
+        {alerts.length > 0 && (
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
               <AlertTriangle size={14} className="text-orange-500" />
-              <span className="text-xs font-semibold text-gray-700">Alertas ({analysis.alertas.length})</span>
+              <span className="text-xs font-semibold text-gray-700">Alerts ({alerts.length})</span>
             </div>
             <div className="divide-y divide-gray-50">
-              {analysis.alertas.map((a, i) => (
+              {alerts.map((a, i) => (
                 <div key={i} className="px-4 py-3">
-                  <p className="text-xs font-medium text-gray-800 mb-0.5">{a.mensagem}</p>
-                  <p className="text-xs text-orange-600">→ {a.acao}</p>
+                  <p className="text-xs font-medium text-gray-800 mb-0.5">{a.message ?? a.mensagem}</p>
+                  <p className="text-xs text-orange-600">→ {a.action ?? a.acao}</p>
                 </div>
               ))}
             </div>
@@ -157,27 +167,30 @@ export default function AIAssistant() {
         )}
 
         {/* Recommendations */}
-        {analysis?.recomendacoes?.length > 0 && (
+        {recommendations.length > 0 && (
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
               <TrendingUp size={14} className="text-blue-500" />
-              <span className="text-xs font-semibold text-gray-700">Recomendações</span>
+              <span className="text-xs font-semibold text-gray-700">Recommendations</span>
             </div>
             <div className="divide-y divide-gray-50">
-              {analysis.recomendacoes.map((r, i) => (
-                <div key={i} className="px-4 py-3">
-                  <div className="flex items-start gap-2 mb-1">
-                    <span className={`flex-shrink-0 text-xs px-1.5 py-0.5 rounded border font-medium ${priorityColor[r.prioridade] || priorityColor.baixa}`}>
-                      {r.prioridade}
-                    </span>
+              {recommendations.map((r, i) => {
+                const priority = r.priority ?? r.prioridade;
+                return (
+                  <div key={i} className="px-4 py-3">
+                    <div className="flex items-start gap-2 mb-1">
+                      <span className={`flex-shrink-0 text-xs px-1.5 py-0.5 rounded border font-medium ${priorityColor[priority] || priorityColor.low}`}>
+                        {priority}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-800 mb-0.5">{r.action ?? r.acao}</p>
+                    <p className="text-xs text-green-600 flex items-center gap-1">
+                      <CheckCircle size={10} />
+                      {r.impact ?? r.impacto}
+                    </p>
                   </div>
-                  <p className="text-xs text-gray-800 mb-0.5">{r.acao}</p>
-                  <p className="text-xs text-green-600 flex items-center gap-1">
-                    <CheckCircle size={10} />
-                    {r.impacto}
-                  </p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -195,7 +208,7 @@ export default function AIAssistant() {
             <p className="text-sm font-semibold text-gray-800">Vikingo Brain™</p>
             <p className="text-xs text-green-500 flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
-              Online • Monitorando suas campanhas
+              Online • Monitoring your campaigns
             </p>
           </div>
         </div>
@@ -245,7 +258,7 @@ export default function AIAssistant() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === "Enter" && !e.shiftKey && send()}
-              placeholder="Pergunte sobre suas campanhas..."
+              placeholder="Ask about your campaigns..."
               className="flex-1 px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
               disabled={loading}
             />

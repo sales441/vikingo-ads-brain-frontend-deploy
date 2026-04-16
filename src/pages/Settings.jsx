@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import { Save, CheckCircle, Globe, Key, AlertCircle, Zap } from "lucide-react";
 
 const MARKETPLACES = [
-  { code: "BR", label: "Amazon Brasil (amazon.com.br)" },
   { code: "US", label: "Amazon USA (amazon.com)" },
-  { code: "MX", label: "Amazon México (amazon.com.mx)" },
-  { code: "CA", label: "Amazon Canadá (amazon.ca)" },
+  { code: "CA", label: "Amazon Canada (amazon.ca)" },
+  { code: "MX", label: "Amazon Mexico (amazon.com.mx)" },
+  { code: "UK", label: "Amazon UK (amazon.co.uk)" },
 ];
 
 export default function Settings() {
   const [form, setForm] = useState({
     apiUrl: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
-    marketplace: "BR",
+    marketplace: "US",
     profileId: "",
     advertiserId: "",
     clientId: "",
@@ -40,7 +40,7 @@ export default function Settings() {
     setTestResult(null);
     await new Promise(r => setTimeout(r, 1200));
     // Mock test result
-    setTestResult({ ok: true, msg: "Conexão estabelecida com sucesso!" });
+    setTestResult({ ok: true, msg: "Connection established successfully!" });
     setTesting(false);
   };
 
@@ -50,11 +50,11 @@ export default function Settings() {
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
           <Globe size={16} className="text-gray-400" />
-          <h2 className="text-sm font-semibold text-gray-700">Conexão com API</h2>
+          <h2 className="text-sm font-semibold text-gray-700">API Connection</h2>
         </div>
         <form onSubmit={handleSave} className="p-5 space-y-4">
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">URL da API Backend</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Backend API URL</label>
             <input
               type="url"
               value={form.apiUrl}
@@ -62,7 +62,7 @@ export default function Settings() {
               className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
               placeholder="http://localhost:5000/api"
             />
-            <p className="text-xs text-gray-400 mt-1">URL base do seu servidor backend Node.js/Flask/etc.</p>
+            <p className="text-xs text-gray-400 mt-1">Base URL of your Node.js/Flask/etc backend server.</p>
           </div>
 
           <div>
@@ -85,7 +85,7 @@ export default function Settings() {
                 value={form.profileId}
                 onChange={e => handleChange("profileId", e.target.value)}
                 className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
-                placeholder="ex: 1234567890"
+                placeholder="e.g. 1234567890"
               />
             </div>
             <div>
@@ -95,7 +95,7 @@ export default function Settings() {
                 value={form.advertiserId}
                 onChange={e => handleChange("advertiserId", e.target.value)}
                 className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
-                placeholder="ex: A1B2C3D4E5F6"
+                placeholder="e.g. A1B2C3D4E5F6"
               />
             </div>
           </div>
@@ -107,7 +107,7 @@ export default function Settings() {
               disabled={testing}
               className="flex items-center gap-1.5 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50">
               <Zap size={14} className={testing ? "animate-pulse text-orange-500" : ""} />
-              {testing ? "Testando..." : "Testar Conexão"}
+              {testing ? "Testing..." : "Test Connection"}
             </button>
 
             {testResult && (
@@ -124,12 +124,12 @@ export default function Settings() {
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
           <Key size={16} className="text-gray-400" />
-          <h2 className="text-sm font-semibold text-gray-700">Credenciais Amazon Ads API</h2>
+          <h2 className="text-sm font-semibold text-gray-700">Amazon Ads API Credentials</h2>
         </div>
         <div className="p-5 space-y-4">
           <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-xs text-blue-700">
-            Essas credenciais são utilizadas pelo backend para autenticar com a Amazon Advertising API.
-            Nunca as compartilhe publicamente.
+            These credentials are used by the backend to authenticate with the Amazon Advertising API.
+            Never share them publicly.
           </div>
 
           <div>
@@ -173,19 +173,19 @@ export default function Settings() {
           onClick={handleSave}
           className="flex items-center gap-2 px-5 py-2.5 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-600 transition-colors">
           <Save size={15} />
-          Salvar Configurações
+          Save Settings
         </button>
         {saved && (
           <div className="flex items-center gap-1.5 text-sm text-green-600 font-medium">
             <CheckCircle size={16} />
-            Salvo com sucesso!
+            Saved successfully!
           </div>
         )}
       </div>
 
       {/* Version info */}
       <div className="text-xs text-gray-400 pt-2">
-        Vikingo Ads Brain™ v0.1.0 — Modo: dados mock (conecte um backend para dados reais)
+        Vikingo Ads Brain™ v0.1.0 — Mode: mock data (connect a backend for real data)
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { TrendingUp, TrendingDown, Search, Plus, Trash2, Award } from "lucide-react";
 
-const DAYS = Array.from({length:30},(_,i)=>{const d=new Date(); d.setDate(d.getDate()-(29-i)); return d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"});});
+const DAYS = Array.from({length:30},(_,i)=>{const d=new Date(); d.setDate(d.getDate()-(29-i)); return d.toLocaleDateString("en-US",{month:"2-digit",day:"2-digit"});});
 
 function genRank(start, volatility = 3, trend = -0.5) {
   let r = start;
@@ -10,9 +10,9 @@ function genRank(start, volatility = 3, trend = -0.5) {
 }
 
 const MOCK_KEYWORDS = [
-  { id:1, keyword:"panela pressão elétrica", organic: genRank(28, 4, -0.8), paid: genRank(3, 1, 0), color:"#f97316", active:true },
-  { id:2, keyword:"panela pressão inox", organic: genRank(45, 5, -1.2), paid: genRank(5, 2, 0.1), color:"#3b82f6", active:true },
-  { id:3, keyword:"panela elétrica 6 litros", organic: genRank(62, 6, -1.5), paid: genRank(4, 1, -0.1), color:"#22c55e", active:true },
+  { id:1, keyword:"electric pressure cooker", organic: genRank(28, 4, -0.8), paid: genRank(3, 1, 0), color:"#f97316", active:true },
+  { id:2, keyword:"stainless pressure cooker", organic: genRank(45, 5, -1.2), paid: genRank(5, 2, 0.1), color:"#3b82f6", active:true },
+  { id:3, keyword:"6 quart electric cooker", organic: genRank(62, 6, -1.5), paid: genRank(4, 1, -0.1), color:"#22c55e", active:true },
 ];
 
 function rankDelta(arr) {
@@ -67,8 +67,8 @@ export default function RankingTracker() {
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center"><Award size={20} className="text-purple-600" /></div>
-        <div><h1 className="text-xl font-bold text-gray-900">Rastreador de Ranking</h1>
-          <p className="text-sm text-gray-500">Posição orgânica e paga por keyword nos últimos 30 dias</p></div>
+        <div><h1 className="text-xl font-bold text-gray-900">Ranking Tracker</h1>
+          <p className="text-sm text-gray-500">Organic and paid position per keyword over the last 30 days</p></div>
       </div>
 
       {/* KPI cards */}
@@ -82,7 +82,7 @@ export default function RankingTracker() {
               <p className="text-2xl font-bold text-gray-800">#{current}</p>
               <div className={`flex items-center gap-1 text-xs font-medium mt-1 ${delta > 0 ? "text-green-600" : delta < 0 ? "text-red-500" : "text-gray-400"}`}>
                 {delta > 0 ? <TrendingUp size={12} /> : delta < 0 ? <TrendingDown size={12} /> : null}
-                {delta > 0 ? `+${delta} posições` : delta < 0 ? `${delta} posições` : "Estável"} (7d)
+                {delta > 0 ? `+${delta} positions` : delta < 0 ? `${delta} positions` : "Stable"} (7d)
               </div>
             </div>
           );
@@ -92,12 +92,12 @@ export default function RankingTracker() {
       {/* Chart */}
       <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-gray-700">Evolução do Ranking — 30 dias</h2>
+          <h2 className="text-sm font-semibold text-gray-700">Ranking Evolution — 30 days</h2>
           <div className="flex gap-2">
             {["organic","paid"].map(v => (
               <button key={v} onClick={() => setView(v)}
                 className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${view === v ? "bg-orange-500 text-white" : "bg-gray-100 text-gray-600"}`}>
-                {v === "organic" ? "Orgânico" : "Pago (Ads)"}
+                {v === "organic" ? "Organic" : "Paid (Ads)"}
               </button>
             ))}
           </div>
@@ -116,12 +116,12 @@ export default function RankingTracker() {
             ))}
           </LineChart>
         </ResponsiveContainer>
-        <p className="text-xs text-gray-400 mt-2">* Y invertido: posição #1 = topo. Subir no gráfico = melhorar ranking.</p>
+        <p className="text-xs text-gray-400 mt-2">* Inverted Y-axis: position #1 = top. Going up on the chart = better ranking.</p>
       </div>
 
       {/* Keyword list + add */}
       <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-3">
-        <h2 className="text-sm font-semibold text-gray-700">Keywords Rastreadas</h2>
+        <h2 className="text-sm font-semibold text-gray-700">Tracked Keywords</h2>
         {keywords.map(k => {
           const delta = rankDelta(k.organic);
           const current = k.organic[k.organic.length - 1];
@@ -129,8 +129,8 @@ export default function RankingTracker() {
             <div key={k.id} className="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
               <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: k.color }} />
               <span className="flex-1 text-sm text-gray-700">{k.keyword}</span>
-              <span className="text-xs text-gray-500">Orgânico #{current}</span>
-              <span className="text-xs text-gray-500">Pago #{k.paid[k.paid.length-1]}</span>
+              <span className="text-xs text-gray-500">Organic #{current}</span>
+              <span className="text-xs text-gray-500">Paid #{k.paid[k.paid.length-1]}</span>
               <span className={`text-xs font-medium ${delta > 0 ? "text-green-600" : delta < 0 ? "text-red-500" : "text-gray-400"}`}>
                 {delta > 0 ? `↑${delta}` : delta < 0 ? `↓${Math.abs(delta)}` : "="}
               </span>
@@ -140,10 +140,10 @@ export default function RankingTracker() {
         })}
         <div className="flex gap-2 pt-1">
           <input value={newKw} onChange={e => setNewKw(e.target.value)} onKeyDown={e => e.key === "Enter" && addKeyword()}
-            placeholder="Adicionar keyword para rastrear..."
+            placeholder="Add keyword to track..."
             className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
           <button onClick={addKeyword} className="flex items-center gap-1.5 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-xl transition-colors">
-            <Plus size={14} /> Rastrear
+            <Plus size={14} /> Track
           </button>
         </div>
       </div>

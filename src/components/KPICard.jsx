@@ -3,9 +3,9 @@ import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 export default function KPICard({ title, value, delta, format = "number", icon: Icon, iconBg = "bg-orange-100", iconColor = "text-orange-600" }) {
   const formatValue = (v) => {
-    if (format === "currency") return `R$ ${Number(v).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+    if (format === "currency") return `$${Number(v).toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
     if (format === "percent") return `${Number(v).toFixed(2)}%`;
-    if (format === "large") return Number(v).toLocaleString("pt-BR");
+    if (format === "large") return Number(v).toLocaleString("en-US");
     return v;
   };
 
@@ -29,13 +29,13 @@ export default function KPICard({ title, value, delta, format = "number", icon: 
       {!isNeutral && (
         <div className={`flex items-center gap-1 text-xs font-medium ${isPositive ? "text-green-600" : "text-red-500"}`}>
           {isPositive ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
-          <span>{isPositive ? "+" : ""}{deltaNum.toFixed(1)}% vs período anterior</span>
+          <span>{isPositive ? "+" : ""}{deltaNum.toFixed(1)}% vs previous period</span>
         </div>
       )}
       {isNeutral && delta !== undefined && (
         <div className="flex items-center gap-1 text-xs font-medium text-gray-400">
           <Minus size={13} />
-          <span>Sem variação</span>
+          <span>No change</span>
         </div>
       )}
     </div>

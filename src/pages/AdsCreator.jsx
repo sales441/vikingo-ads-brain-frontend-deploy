@@ -10,25 +10,25 @@ import {
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const CATEGORIES = [
-  "Casa e Cozinha","Eletrônicos","Ferramentas","Beleza","Saúde",
-  "Esportes","Brinquedos","Pet","Alimentos","Roupas e Acessórios",
-  "Jardim","Automotivo","Escritório","Outros",
+  "Home & Kitchen","Electronics","Tools","Beauty","Health",
+  "Sports","Toys","Pet","Grocery","Clothing & Accessories",
+  "Garden","Automotive","Office","Other",
 ];
 
 const CAMPAIGN_TYPES = [
-  { id:"SP", label:"Sponsored Products", desc:"Produto nos resultados de busca", icon:ShoppingBag, color:"blue" },
-  { id:"SB", label:"Sponsored Brands",   desc:"Marca com headline e vídeo",     icon:Star,       color:"purple" },
-  { id:"SD", label:"Sponsored Display",  desc:"Display e retargeting",           icon:Target,     color:"green" },
+  { id:"SP", label:"Sponsored Products", desc:"Product in search results",   icon:ShoppingBag, color:"blue" },
+  { id:"SB", label:"Sponsored Brands",   desc:"Brand headline with video",   icon:Star,        color:"purple" },
+  { id:"SD", label:"Sponsored Display",  desc:"Display and retargeting",     icon:Target,      color:"green" },
 ];
 
 const MATCH_COLORS = { broad:"bg-blue-100 text-blue-700", phrase:"bg-orange-100 text-orange-700", exact:"bg-green-100 text-green-700" };
-const MATCH_LABELS = { broad:"Ampla", phrase:"Frase", exact:"Exata" };
+const MATCH_LABELS = { broad:"Broad", phrase:"Phrase", exact:"Exact" };
 
-const VOL_COLORS  = { alto:"text-green-600", médio:"text-yellow-600", baixo:"text-gray-400", medio:"text-yellow-600" };
-const COMP_COLORS = { alta:"text-red-500", média:"text-orange-500", baixa:"text-green-600", media:"text-orange-500" };
+const VOL_COLORS  = { high:"text-green-600", medium:"text-yellow-600", low:"text-gray-400" };
+const COMP_COLORS = { high:"text-red-500", medium:"text-orange-500", low:"text-green-600" };
 
 function ProgressBar({ step }) {
-  const steps = ["Modo","Produto","Revisar","Pronto"];
+  const steps = ["Mode","Product","Review","Done"];
   const idx = { mode_type:0, product:1, loading:2, review:2, creating:2, success:3 }[step] ?? 0;
   return (
     <div className="flex items-center gap-2 mb-6">
@@ -52,11 +52,11 @@ function StepModeType({ mode, setMode, campaignType, setCampaignType, onNext }) 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-sm font-semibold text-gray-700 mb-3">Como você quer criar?</h2>
+        <h2 className="text-sm font-semibold text-gray-700 mb-3">How do you want to build it?</h2>
         <div className="grid grid-cols-2 gap-4">
           {[
-            { id:"auto",   label:"Automático IA",    desc:"IA cria tudo com 1 clique",    icon:BrainCircuit, cls:"from-orange-500 to-orange-600 text-white" },
-            { id:"manual", label:"Manual Assistido", desc:"Você configura com ajuda da IA", icon:Settings,     cls:"from-slate-700 to-slate-800 text-white" },
+            { id:"auto",   label:"Automatic AI",      desc:"AI builds everything in 1 click",    icon:BrainCircuit, cls:"from-orange-500 to-orange-600 text-white" },
+            { id:"manual", label:"Manual + Assisted", desc:"You configure it with AI assistance", icon:Settings,     cls:"from-slate-700 to-slate-800 text-white" },
           ].map(({ id, label, desc, icon: Icon, cls }) => (
             <button key={id} onClick={() => setMode(id)}
               className={`p-5 rounded-xl border-2 text-left transition-all ${mode === id ? "border-orange-400 shadow-md" : "border-gray-200 hover:border-gray-300"}`}>
@@ -71,7 +71,7 @@ function StepModeType({ mode, setMode, campaignType, setCampaignType, onNext }) 
       </div>
 
       <div>
-        <h2 className="text-sm font-semibold text-gray-700 mb-3">Tipo de campanha</h2>
+        <h2 className="text-sm font-semibold text-gray-700 mb-3">Campaign type</h2>
         <div className="grid grid-cols-3 gap-4">
           {CAMPAIGN_TYPES.map(({ id, label, desc, icon: Icon, color }) => (
             <button key={id} onClick={() => setCampaignType(id)}
@@ -89,7 +89,7 @@ function StepModeType({ mode, setMode, campaignType, setCampaignType, onNext }) 
 
       <button disabled={!mode || !campaignType} onClick={onNext}
         className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-200 disabled:text-gray-400 text-white font-semibold py-3 rounded-xl transition-colors text-sm">
-        Continuar <ArrowRight size={16} />
+        Continue <ArrowRight size={16} />
       </button>
     </div>
   );
@@ -107,54 +107,54 @@ function StepProduct({ form, setForm, mode, campaignType, onBack, onGenerate, lo
       )}
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Nome do Produto <span className="text-red-400">*</span></label>
-          <input name="productName" value={form.productName} onChange={ch} placeholder="Ex: Panela de Pressão Elétrica 6L" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Product Name <span className="text-red-400">*</span></label>
+          <input name="productName" value={form.productName} onChange={ch} placeholder="e.g. 6Qt Electric Pressure Cooker" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">ASIN <span className="text-gray-400 font-normal">(opcional)</span></label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">ASIN <span className="text-gray-400 font-normal">(optional)</span></label>
           <input name="asin" value={form.asin} onChange={ch} placeholder="B0XXXXXXXXX" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Categoria <span className="text-red-400">*</span></label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Category <span className="text-red-400">*</span></label>
           <select name="category" value={form.category} onChange={ch} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
-            <option value="">Selecionar...</option>
+            <option value="">Select...</option>
             {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Orçamento Diário (R$)</label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Daily Budget ($)</label>
           <input name="budget" type="number" min="5" value={form.budget} onChange={ch} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">ACoS Alvo (%)</label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Target ACoS (%)</label>
           <input name="targetAcos" type="number" min="1" max="100" value={form.targetAcos} onChange={ch} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
         </div>
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">Marketplace</label>
           <select name="marketplace" value={form.marketplace} onChange={ch} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
-            <option value="BR">Amazon Brasil (BR)</option>
-            <option value="US">Amazon EUA (US)</option>
-            <option value="MX">Amazon México (MX)</option>
+            <option value="US">Amazon USA (US)</option>
+            <option value="CA">Amazon Canada (CA)</option>
+            <option value="MX">Amazon Mexico (MX)</option>
           </select>
         </div>
         <div className="col-span-2">
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Descrição / Características Principais</label>
-          <textarea name="features" value={form.features} onChange={ch} rows={3} placeholder="Ajuda a IA a gerar keywords mais relevantes para seu produto..." className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Description / Main Features</label>
+          <textarea name="features" value={form.features} onChange={ch} rows={3} placeholder="Helps the AI generate more relevant keywords for your product..." className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
         </div>
         <div className="col-span-2">
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Concorrentes <span className="text-gray-400 font-normal">(separados por vírgula)</span></label>
-          <input name="competitors" value={form.competitors} onChange={ch} placeholder="Mondial, Tramontina, Oster" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Competitors <span className="text-gray-400 font-normal">(comma-separated)</span></label>
+          <input name="competitors" value={form.competitors} onChange={ch} placeholder="Instant Pot, Ninja, Cuisinart" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
         </div>
       </div>
 
       <div className="flex gap-3 pt-2">
         <button onClick={onBack} className="flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-          <ArrowLeft size={14} /> Voltar
+          <ArrowLeft size={14} /> Back
         </button>
         <button onClick={onGenerate} disabled={loading || !form.productName || !form.category}
           className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-300 disabled:to-gray-300 text-white font-semibold py-2.5 rounded-xl transition-all text-sm">
           {loading ? <RefreshCw size={15} className="animate-spin" /> : <BrainCircuit size={15} />}
-          {loading ? "Gerando..." : "Gerar Campanha com IA"}
+          {loading ? "Generating..." : "Generate Campaign with AI"}
         </button>
       </div>
     </div>
@@ -163,15 +163,15 @@ function StepProduct({ form, setForm, mode, campaignType, onBack, onGenerate, lo
 
 /* ─── STEP 3: Loading ────────────────────────────────────────────────────── */
 function StepLoading() {
-  const pills = ["Pesquisando concorrentes","Analisando volume de busca","Calculando lances ideais","Estruturando campanha","Finalizando recomendações"];
+  const pills = ["Researching competitors","Analyzing search volume","Calculating optimal bids","Structuring campaign","Finalizing recommendations"];
   return (
     <div className="flex flex-col items-center justify-center py-16 gap-6">
       <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center shadow-lg animate-pulse">
         <BrainCircuit size={36} className="text-white" />
       </div>
       <div className="text-center">
-        <h2 className="text-xl font-bold text-gray-800 mb-1">Vikingo Brain™ montando sua campanha...</h2>
-        <p className="text-sm text-gray-500">Analisando concorrentes e calculando os melhores lances</p>
+        <h2 className="text-xl font-bold text-gray-800 mb-1">Vikingo Brain™ is building your campaign...</h2>
+        <p className="text-sm text-gray-500">Analyzing competitors and calculating the best bids</p>
       </div>
       <div className="flex flex-wrap justify-center gap-2">
         {pills.map((p, i) => (
@@ -200,13 +200,25 @@ function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreat
     setCampaign(c => ({ ...c, keywords: kws }));
   };
 
+  const negKeywords = campaign.negativeKeywords ?? campaign.keywordsNegativas ?? [];
   const removeNeg = (i) => {
-    const neg = campaign.keywordsNegativas.filter((_, idx) => idx !== i);
-    setCampaign(c => ({ ...c, keywordsNegativas: neg }));
+    const neg = negKeywords.filter((_, idx) => idx !== i);
+    setCampaign(c => ({ ...c, negativeKeywords: neg, keywordsNegativas: neg }));
   };
 
-  const perf = campaign.estimativaPerformance || {};
+  const perf = campaign.performanceEstimate || campaign.estimativaPerformance || {};
   const selected = (campaign.keywords || []).filter(k => !k._excluded);
+
+  const impressionsDay = perf.impressionsDay ?? perf.impressoesDia;
+  const clicksDay = perf.clicksDay ?? perf.cliquesDia;
+  const spendDay = perf.spendDay ?? perf.gastoDia;
+  const ordersDay = perf.ordersDay ?? perf.pedidosDia;
+  const estimatedAcos = perf.estimatedAcos ?? perf.acosEstimado;
+  const estimatedRoas = perf.estimatedRoas ?? perf.roasEstimado;
+
+  const insights = campaign.insights;
+  const alerts = campaign.alerts ?? campaign.alertas;
+  const strategyDescription = campaign.strategyDescription ?? campaign.descricaoEstrategia;
 
   return (
     <div className="space-y-4">
@@ -222,43 +234,43 @@ function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreat
 
           {/* Campaign settings */}
           <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm space-y-3">
-            <h3 className="text-sm font-semibold text-gray-700">Configurações da Campanha</h3>
+            <h3 className="text-sm font-semibold text-gray-700">Campaign Settings</h3>
             <div className="grid grid-cols-2 gap-3">
               <div className="col-span-2">
-                <label className="block text-xs text-gray-500 mb-1">Nome</label>
-                <input value={campaign.nomeCampanha || ""} onChange={e => setCampaign(c => ({ ...c, nomeCampanha: e.target.value }))}
+                <label className="block text-xs text-gray-500 mb-1">Name</label>
+                <input value={campaign.campaignName ?? campaign.nomeCampanha ?? ""} onChange={e => setCampaign(c => ({ ...c, campaignName: e.target.value, nomeCampanha: e.target.value }))}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Orçamento Diário (R$)</label>
-                <input type="number" value={campaign.orcamentoDiario || ""} onChange={e => setCampaign(c => ({ ...c, orcamentoDiario: e.target.value }))}
+                <label className="block text-xs text-gray-500 mb-1">Daily Budget ($)</label>
+                <input type="number" value={campaign.dailyBudget ?? campaign.orcamentoDiario ?? ""} onChange={e => setCampaign(c => ({ ...c, dailyBudget: e.target.value, orcamentoDiario: e.target.value }))}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Lance Padrão (R$)</label>
-                <input type="number" step="0.01" value={campaign.lanceDefault || ""} onChange={e => setCampaign(c => ({ ...c, lanceDefault: e.target.value }))}
+                <label className="block text-xs text-gray-500 mb-1">Default Bid ($)</label>
+                <input type="number" step="0.01" value={campaign.defaultBid ?? campaign.lanceDefault ?? ""} onChange={e => setCampaign(c => ({ ...c, defaultBid: e.target.value, lanceDefault: e.target.value }))}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Estratégia de Lance</label>
-                <select value={campaign.estrategiaLance || "legacyForSales"} onChange={e => setCampaign(c => ({ ...c, estrategiaLance: e.target.value }))}
+                <label className="block text-xs text-gray-500 mb-1">Bidding Strategy</label>
+                <select value={campaign.bidStrategy ?? campaign.estrategiaLance ?? "legacyForSales"} onChange={e => setCampaign(c => ({ ...c, bidStrategy: e.target.value, estrategiaLance: e.target.value }))}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
-                  <option value="legacyForSales">CPC Manual</option>
-                  <option value="autoForSales">Auto para Vendas</option>
-                  <option value="enhanced">CPC Melhorado</option>
+                  <option value="legacyForSales">Manual CPC</option>
+                  <option value="autoForSales">Auto for Sales</option>
+                  <option value="enhanced">Enhanced CPC</option>
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Segmentação</label>
-                <select value={campaign.tipoSegmentacao || "manual"} onChange={e => setCampaign(c => ({ ...c, tipoSegmentacao: e.target.value }))}
+                <label className="block text-xs text-gray-500 mb-1">Targeting</label>
+                <select value={campaign.targetingType ?? campaign.tipoSegmentacao ?? "manual"} onChange={e => setCampaign(c => ({ ...c, targetingType: e.target.value, tipoSegmentacao: e.target.value }))}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
                   <option value="manual">Manual</option>
-                  <option value="auto">Automática</option>
+                  <option value="auto">Automatic</option>
                 </select>
               </div>
             </div>
-            {campaign.descricaoEstrategia && (
-              <p className="text-xs text-gray-500 bg-orange-50 border border-orange-100 rounded-lg px-3 py-2">{campaign.descricaoEstrategia}</p>
+            {strategyDescription && (
+              <p className="text-xs text-gray-500 bg-orange-50 border border-orange-100 rounded-lg px-3 py-2">{strategyDescription}</p>
             )}
           </div>
 
@@ -266,7 +278,7 @@ function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreat
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
             <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
               <h3 className="text-sm font-semibold text-gray-700">Keywords</h3>
-              <span className="text-xs text-gray-500">{selected.length} de {campaign.keywords?.length || 0} selecionadas</span>
+              <span className="text-xs text-gray-500">{selected.length} of {campaign.keywords?.length || 0} selected</span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
@@ -274,51 +286,55 @@ function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreat
                   <tr className="bg-gray-50">
                     <th className="px-3 py-2 text-left text-gray-500 font-medium w-8"></th>
                     <th className="px-3 py-2 text-left text-gray-500 font-medium">Keyword</th>
-                    <th className="px-3 py-2 text-left text-gray-500 font-medium">Tipo</th>
-                    <th className="px-3 py-2 text-left text-gray-500 font-medium">Lance</th>
+                    <th className="px-3 py-2 text-left text-gray-500 font-medium">Type</th>
+                    <th className="px-3 py-2 text-left text-gray-500 font-medium">Bid</th>
                     <th className="px-3 py-2 text-left text-gray-500 font-medium">Volume</th>
                     <th className="px-3 py-2 text-left text-gray-500 font-medium">Comp.</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {(campaign.keywords || []).map((kw, i) => (
-                    <tr key={i} className={`hover:bg-gray-50 ${kw._excluded ? "opacity-40" : ""}`}>
-                      <td className="px-3 py-2">
-                        <input type="checkbox" checked={!kw._excluded} onChange={() => toggleKw(i)} className="rounded accent-orange-500" />
-                      </td>
-                      <td className="px-3 py-2 font-medium text-gray-800 max-w-[160px] truncate">{kw.keyword}</td>
-                      <td className="px-3 py-2">
-                        <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${MATCH_COLORS[kw.matchType] || "bg-gray-100 text-gray-600"}`}>
-                          {MATCH_LABELS[kw.matchType] || kw.matchType}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2">
-                        {editingBid === i ? (
-                          <input autoFocus type="number" step="0.01" defaultValue={kw.bid}
-                            onBlur={e => { updateBid(i, e.target.value); setEditingBid(null); }}
-                            onKeyDown={e => { if (e.key === "Enter") { updateBid(i, e.target.value); setEditingBid(null); } }}
-                            className="w-16 border border-orange-300 rounded px-1 py-0.5 text-xs focus:outline-none" />
-                        ) : (
-                          <button onClick={() => setEditingBid(i)} className="flex items-center gap-1 text-gray-700 hover:text-orange-600">
-                            R$ {Number(kw.bid).toFixed(2)} <Edit3 size={10} />
-                          </button>
-                        )}
-                      </td>
-                      <td className={`px-3 py-2 font-medium ${VOL_COLORS[kw.volume] || "text-gray-500"}`}>{kw.volume}</td>
-                      <td className={`px-3 py-2 font-medium ${COMP_COLORS[kw.competicao] || "text-gray-500"}`}>{kw.competicao}</td>
-                    </tr>
-                  ))}
+                  {(campaign.keywords || []).map((kw, i) => {
+                    const volume = kw.volume;
+                    const competition = kw.competition ?? kw.competicao;
+                    return (
+                      <tr key={i} className={`hover:bg-gray-50 ${kw._excluded ? "opacity-40" : ""}`}>
+                        <td className="px-3 py-2">
+                          <input type="checkbox" checked={!kw._excluded} onChange={() => toggleKw(i)} className="rounded accent-orange-500" />
+                        </td>
+                        <td className="px-3 py-2 font-medium text-gray-800 max-w-[160px] truncate">{kw.keyword}</td>
+                        <td className="px-3 py-2">
+                          <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${MATCH_COLORS[kw.matchType] || "bg-gray-100 text-gray-600"}`}>
+                            {MATCH_LABELS[kw.matchType] || kw.matchType}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2">
+                          {editingBid === i ? (
+                            <input autoFocus type="number" step="0.01" defaultValue={kw.bid}
+                              onBlur={e => { updateBid(i, e.target.value); setEditingBid(null); }}
+                              onKeyDown={e => { if (e.key === "Enter") { updateBid(i, e.target.value); setEditingBid(null); } }}
+                              className="w-16 border border-orange-300 rounded px-1 py-0.5 text-xs focus:outline-none" />
+                          ) : (
+                            <button onClick={() => setEditingBid(i)} className="flex items-center gap-1 text-gray-700 hover:text-orange-600">
+                              ${Number(kw.bid).toFixed(2)} <Edit3 size={10} />
+                            </button>
+                          )}
+                        </td>
+                        <td className={`px-3 py-2 font-medium ${VOL_COLORS[volume] || "text-gray-500"}`}>{volume}</td>
+                        <td className={`px-3 py-2 font-medium ${COMP_COLORS[competition] || "text-gray-500"}`}>{competition}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           </div>
 
           {/* Negative keywords */}
-          {campaign.keywordsNegativas?.length > 0 && (
+          {negKeywords.length > 0 && (
             <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">Keywords Negativas</h3>
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">Negative Keywords</h3>
               <div className="flex flex-wrap gap-2">
-                {campaign.keywordsNegativas.map((kw, i) => (
+                {negKeywords.map((kw, i) => (
                   <span key={i} className="flex items-center gap-1 text-xs bg-red-50 border border-red-200 text-red-700 px-2 py-1 rounded-full">
                     {kw.keyword} <span className="text-red-400">({kw.matchType})</span>
                     <button onClick={() => removeNeg(i)} className="ml-0.5 hover:text-red-900"><Trash2 size={10} /></button>
@@ -333,15 +349,15 @@ function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreat
         <div className="space-y-4">
           {/* Estimated performance */}
           <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Estimativa de Performance</h3>
+            <h3 className="text-sm font-semibold text-gray-700 mb-3">Performance Estimate</h3>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { label:"Impressões/dia", value: perf.impressoesDia?.toLocaleString("pt-BR") || "—", icon:Eye, color:"text-purple-600" },
-                { label:"Cliques/dia",    value: perf.cliquesDia?.toLocaleString("pt-BR") || "—",   icon:MousePointerClick, color:"text-blue-600" },
-                { label:"Gasto/dia",      value: perf.gastoDia ? `R$ ${perf.gastoDia}` : "—",       icon:DollarSign, color:"text-orange-600" },
-                { label:"Pedidos/dia",    value: perf.pedidosDia || "—",                             icon:Package, color:"text-green-600" },
-                { label:"ACoS estimado",  value: perf.acosEstimado ? `${perf.acosEstimado}%` : "—", icon:TrendingUp, color:"text-red-500" },
-                { label:"ROAS estimado",  value: perf.roasEstimado ? `${perf.roasEstimado}x` : "—", icon:Zap, color:"text-emerald-600" },
+                { label:"Impressions/day", value: impressionsDay?.toLocaleString("en-US") || "—", icon:Eye, color:"text-purple-600" },
+                { label:"Clicks/day",      value: clicksDay?.toLocaleString("en-US") || "—",       icon:MousePointerClick, color:"text-blue-600" },
+                { label:"Spend/day",       value: spendDay ? `$${spendDay}` : "—",                icon:DollarSign, color:"text-orange-600" },
+                { label:"Orders/day",      value: ordersDay || "—",                                icon:Package, color:"text-green-600" },
+                { label:"Est. ACoS",       value: estimatedAcos ? `${estimatedAcos}%` : "—",      icon:TrendingUp, color:"text-red-500" },
+                { label:"Est. ROAS",       value: estimatedRoas ? `${estimatedRoas}x` : "—",      icon:Zap, color:"text-emerald-600" },
               ].map(({ label, value, icon: Icon, color }) => (
                 <div key={label} className="bg-gray-50 rounded-lg p-2 text-center">
                   <Icon size={14} className={`${color} mx-auto mb-1`} />
@@ -353,11 +369,11 @@ function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreat
           </div>
 
           {/* Insights */}
-          {campaign.insights?.length > 0 && (
+          {insights?.length > 0 && (
             <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">Insights da IA</h3>
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">AI Insights</h3>
               <ul className="space-y-1.5">
-                {campaign.insights.map((ins, i) => (
+                {insights.map((ins, i) => (
                   <li key={i} className="flex items-start gap-2 text-xs text-gray-600">
                     <CheckCircle size={12} className="text-green-500 flex-shrink-0 mt-0.5" /> {ins}
                   </li>
@@ -367,11 +383,11 @@ function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreat
           )}
 
           {/* Alerts */}
-          {campaign.alertas?.length > 0 && (
+          {alerts?.length > 0 && (
             <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
-              <h3 className="text-sm font-semibold text-orange-700 mb-2">Atenção</h3>
+              <h3 className="text-sm font-semibold text-orange-700 mb-2">Heads up</h3>
               <ul className="space-y-1.5">
-                {campaign.alertas.map((a, i) => (
+                {alerts.map((a, i) => (
                   <li key={i} className="flex items-start gap-2 text-xs text-orange-700">
                     <AlertTriangle size={12} className="flex-shrink-0 mt-0.5" /> {a}
                   </li>
@@ -382,12 +398,12 @@ function StepReview({ campaign, setCampaign, campaignType, form, onBack, onCreat
 
           <div className="flex flex-col gap-2">
             <button onClick={onBack} className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-              <ArrowLeft size={14} /> Editar produto
+              <ArrowLeft size={14} /> Edit product
             </button>
             <button onClick={onCreate} disabled={creating || selected.length === 0}
               className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-300 disabled:to-gray-300 text-white font-semibold py-3 rounded-xl transition-all text-sm">
               {creating ? <RefreshCw size={15} className="animate-spin" /> : <Megaphone size={15} />}
-              {creating ? "Criando..." : "Criar Campanha na Amazon"}
+              {creating ? "Creating..." : "Create Campaign on Amazon"}
             </button>
           </div>
         </div>
@@ -404,19 +420,19 @@ function StepSuccess({ result, form, campaignType, onReset }) {
         <CheckCircle size={40} className="text-green-500" />
       </div>
       <div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Campanha criada com sucesso!</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Campaign created successfully!</h2>
         <p className="text-sm text-gray-500 mb-1">{form.productName} · {campaignType}</p>
         {result?.campaignId && <p className="text-xs text-gray-400">ID: {result.campaignId}</p>}
         <p className={`text-xs mt-2 font-medium ${result?.mode === "live" ? "text-green-600" : "text-orange-500"}`}>
-          {result?.mode === "live" ? "✓ Ativa na Amazon Ads" : "✓ Simulada com sucesso (conecte credenciais Amazon para ativar)"}
+          {result?.mode === "live" ? "✓ Live on Amazon Ads" : "✓ Simulated successfully (connect Amazon credentials to go live)"}
         </p>
       </div>
       <div className="flex gap-3">
         <Link to="/campaigns" className="flex items-center gap-2 px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-sm font-medium rounded-xl transition-colors">
-          <Megaphone size={14} /> Ver Campanhas
+          <Megaphone size={14} /> View Campaigns
         </Link>
         <button onClick={onReset} className="flex items-center gap-2 px-5 py-2.5 border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-xl transition-colors">
-          <RefreshCw size={14} /> Nova Campanha
+          <RefreshCw size={14} /> New Campaign
         </button>
       </div>
     </div>
@@ -428,7 +444,7 @@ export default function AdsCreator() {
   const [step, setStep] = useState("mode_type");
   const [mode, setMode] = useState(null);
   const [campaignType, setCampaignType] = useState(null);
-  const [form, setForm] = useState({ productName:"", asin:"", category:"", marketplace:"BR", budget:50, targetAcos:20, features:"", competitors:"" });
+  const [form, setForm] = useState({ productName:"", asin:"", category:"", marketplace:"US", budget:50, targetAcos:20, features:"", competitors:"" });
   const [campaign, setCampaign] = useState(null);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -463,7 +479,7 @@ export default function AdsCreator() {
       setCampaign(sug);
       setStep("review");
     } catch (err) {
-      setError("Erro ao gerar campanha. Tente novamente.");
+      setError("Error generating campaign. Please try again.");
       setStep("product");
     } finally {
       setLoading(false);
@@ -491,7 +507,7 @@ export default function AdsCreator() {
       setResult(data);
       setStep("success");
     } catch (err) {
-      setError("Erro ao criar campanha. Tente novamente.");
+      setError("Error creating campaign. Please try again.");
     } finally {
       setCreating(false);
     }
@@ -499,7 +515,7 @@ export default function AdsCreator() {
 
   const handleReset = () => {
     setStep("mode_type"); setMode(null); setCampaignType(null);
-    setForm({ productName:"", asin:"", category:"", marketplace:"BR", budget:50, targetAcos:20, features:"", competitors:"" });
+    setForm({ productName:"", asin:"", category:"", marketplace:"US", budget:50, targetAcos:20, features:"", competitors:"" });
     setCampaign(null); setResult(null); setError(null);
   };
 
@@ -511,8 +527,8 @@ export default function AdsCreator() {
           <Megaphone size={22} className="text-white" />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Criador de Ads</h1>
-          <p className="text-sm text-gray-500">Vikingo Brain™ analisa concorrentes e cria campanhas otimizadas para Amazon</p>
+          <h1 className="text-xl font-bold text-gray-900">Ads Creator</h1>
+          <p className="text-sm text-gray-500">Vikingo Brain™ analyzes competitors and builds Amazon-optimized campaigns</p>
         </div>
       </div>
 

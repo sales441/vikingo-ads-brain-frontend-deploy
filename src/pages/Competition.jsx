@@ -49,7 +49,7 @@ export default function Competition() {
   }, [search, compFilter, oppFilter]);
 
   const opportunities = competitionKeywords.filter(k =>
-    (k.opportunity === "muito alta" || k.opportunity === "alta") && !k.yourBid
+    (k.opportunity === "very high" || k.opportunity === "high") && !k.yourBid
   );
 
   const detail = selected ? competitionKeywords.find(k => k.id === selected) : null;
@@ -62,7 +62,7 @@ export default function Competition() {
           <Zap size={18} className="text-orange-500 flex-shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-semibold text-orange-800">
-              {opportunities.length} keyword(s) com alta oportunidade sem anúncio ativo!
+              {opportunities.length} keyword(s) with high opportunity and no active ad!
             </p>
             <div className="flex flex-wrap gap-2 mt-1.5">
               {opportunities.map(k => (
@@ -77,10 +77,10 @@ export default function Competition() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Keywords Monitoradas", val: competitionKeywords.length, color: "text-gray-800" },
-          { label: "Alta Oportunidade", val: competitionKeywords.filter(k => k.opportunity === "muito alta" || k.opportunity === "alta").length, color: "text-green-600" },
-          { label: "Concorrência Muito Alta", val: competitionKeywords.filter(k => k.competition === "muito alto").length, color: "text-red-500" },
-          { label: "Você em 1º lugar (SoV)", val: competitionKeywords.filter(k => k.topBrands[0]?.brand === "Você").length, color: "text-blue-600" },
+          { label: "Monitored Keywords", val: competitionKeywords.length, color: "text-gray-800" },
+          { label: "High Opportunity", val: competitionKeywords.filter(k => k.opportunity === "very high" || k.opportunity === "high").length, color: "text-green-600" },
+          { label: "Very High Competition", val: competitionKeywords.filter(k => k.competition === "very high").length, color: "text-red-500" },
+          { label: "You in 1st Place (SoV)", val: competitionKeywords.filter(k => k.topBrands[0]?.brand === "You").length, color: "text-blue-600" },
         ].map(({ label, val, color }) => (
           <div key={label} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
             <p className="text-xs text-gray-500 mb-1">{label}</p>
@@ -95,7 +95,7 @@ export default function Competition() {
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
-            placeholder="Buscar keyword..."
+            placeholder="Search keyword..."
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
@@ -105,22 +105,22 @@ export default function Competition() {
           value={compFilter}
           onChange={e => setCompFilter(e.target.value)}
           className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white text-gray-700">
-          <option value="all">Todos os níveis</option>
-          <option value="muito alto">Muito Alto</option>
-          <option value="alto">Alto</option>
-          <option value="médio">Médio</option>
-          <option value="baixo">Baixo</option>
+          <option value="all">All levels</option>
+          <option value="very high">Very High</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
         </select>
 
         <select
           value={oppFilter}
           onChange={e => setOppFilter(e.target.value)}
           className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white text-gray-700">
-          <option value="all">Todas as oportunidades</option>
-          <option value="muito alta">Muito Alta</option>
-          <option value="alta">Alta</option>
-          <option value="média">Média</option>
-          <option value="baixa">Baixa</option>
+          <option value="all">All opportunities</option>
+          <option value="very high">Very High</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
         </select>
       </div>
 
@@ -135,14 +135,14 @@ export default function Competition() {
               <thead>
                 <tr className="bg-gray-50">
                   <th className="text-left px-4 py-3 text-gray-500 font-medium">Keyword</th>
-                  <th className="text-right px-4 py-3 text-gray-500 font-medium">Vol. Busca</th>
-                  <th className="text-right px-4 py-3 text-gray-500 font-medium">Tendência</th>
-                  <th className="text-left px-4 py-3 text-gray-500 font-medium w-32">Competição</th>
+                  <th className="text-right px-4 py-3 text-gray-500 font-medium">Search Vol.</th>
+                  <th className="text-right px-4 py-3 text-gray-500 font-medium">Trend</th>
+                  <th className="text-left px-4 py-3 text-gray-500 font-medium w-32">Competition</th>
                   <th className="text-left px-4 py-3 text-gray-500 font-medium">Share of Voice</th>
-                  <th className="text-right px-4 py-3 text-gray-500 font-medium">Bid Min</th>
-                  <th className="text-right px-4 py-3 text-gray-500 font-medium">Bid Max</th>
-                  <th className="text-right px-4 py-3 text-gray-500 font-medium">Seu Bid</th>
-                  <th className="text-left px-4 py-3 text-gray-500 font-medium">Oportunidade</th>
+                  <th className="text-right px-4 py-3 text-gray-500 font-medium">Min Bid</th>
+                  <th className="text-right px-4 py-3 text-gray-500 font-medium">Max Bid</th>
+                  <th className="text-right px-4 py-3 text-gray-500 font-medium">Your Bid</th>
+                  <th className="text-left px-4 py-3 text-gray-500 font-medium">Opportunity</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -152,7 +152,7 @@ export default function Competition() {
                     onClick={() => setSelected(selected === k.id ? null : k.id)}
                     className={`hover:bg-gray-50 transition-colors cursor-pointer ${selected === k.id ? "bg-orange-50" : ""}`}>
                     <td className="px-4 py-3 font-medium text-gray-800">{k.keyword}</td>
-                    <td className="px-4 py-3 text-right text-gray-600">{k.searchVolume.toLocaleString("pt-BR")}</td>
+                    <td className="px-4 py-3 text-right text-gray-600">{k.searchVolume.toLocaleString("en-US")}</td>
                     <td className="px-4 py-3 text-right">
                       <span className={`flex items-center justify-end gap-1 font-medium ${k.volumeTrend >= 0 ? "text-green-600" : "text-red-500"}`}>
                         {k.volumeTrend >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
@@ -165,11 +165,11 @@ export default function Competition() {
                     <td className="px-4 py-3">
                       <ShareOfVoiceBar brands={k.topBrands} />
                     </td>
-                    <td className="px-4 py-3 text-right text-gray-600">R$ {k.suggestedBidMin.toFixed(2)}</td>
-                    <td className="px-4 py-3 text-right text-gray-600">R$ {k.suggestedBidMax.toFixed(2)}</td>
+                    <td className="px-4 py-3 text-right text-gray-600">${k.suggestedBidMin.toFixed(2)}</td>
+                    <td className="px-4 py-3 text-right text-gray-600">${k.suggestedBidMax.toFixed(2)}</td>
                     <td className="px-4 py-3 text-right">
                       {k.yourBid
-                        ? <span className="font-medium text-orange-600">R$ {k.yourBid.toFixed(2)}</span>
+                        ? <span className="font-medium text-orange-600">${k.yourBid.toFixed(2)}</span>
                         : <span className="text-gray-300 italic">—</span>
                       }
                     </td>
@@ -180,7 +180,7 @@ export default function Competition() {
             </table>
           </div>
           {filtered.length === 0 && (
-            <div className="text-center py-12 text-gray-400 text-sm">Nenhuma keyword encontrada.</div>
+            <div className="text-center py-12 text-gray-400 text-sm">No keywords found.</div>
           )}
         </div>
 
@@ -199,7 +199,7 @@ export default function Competition() {
                   <div className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
                   <div className="flex-1">
                     <div className="flex justify-between items-center mb-0.5">
-                      <span className={`text-xs font-medium ${b.brand === "Você" ? "text-orange-600" : "text-gray-700"}`}>{b.brand}</span>
+                      <span className={`text-xs font-medium ${b.brand === "You" ? "text-orange-600" : "text-gray-700"}`}>{b.brand}</span>
                       <span className="text-xs text-gray-500">{b.shareOfVoice}%</span>
                     </div>
                     <div className="bg-gray-100 rounded-full h-1">
@@ -212,27 +212,27 @@ export default function Competition() {
 
             <div className="border-t border-gray-100 pt-3 space-y-2 text-xs">
               <div className="flex justify-between">
-                <span className="text-gray-500">Volume de Busca</span>
-                <span className="font-medium">{detail.searchVolume.toLocaleString("pt-BR")}</span>
+                <span className="text-gray-500">Search Volume</span>
+                <span className="font-medium">{detail.searchVolume.toLocaleString("en-US")}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Tendência</span>
+                <span className="text-gray-500">Trend</span>
                 <span className={`font-medium ${detail.volumeTrend >= 0 ? "text-green-600" : "text-red-500"}`}>
                   {detail.volumeTrend > 0 ? "+" : ""}{detail.volumeTrend}%
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Score Competição</span>
+                <span className="text-gray-500">Competition Score</span>
                 <span className="font-medium">{detail.competitionScore}/100</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Bid Sugerido</span>
-                <span className="font-medium">R$ {detail.suggestedBidMin.toFixed(2)} – R$ {detail.suggestedBidMax.toFixed(2)}</span>
+                <span className="text-gray-500">Suggested Bid</span>
+                <span className="font-medium">${detail.suggestedBidMin.toFixed(2)} – ${detail.suggestedBidMax.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Seu Bid Atual</span>
+                <span className="text-gray-500">Your Current Bid</span>
                 <span className={`font-medium ${detail.yourBid ? "text-orange-600" : "text-gray-300"}`}>
-                  {detail.yourBid ? `R$ ${detail.yourBid.toFixed(2)}` : "Sem anúncio"}
+                  {detail.yourBid ? `$${detail.yourBid.toFixed(2)}` : "No ad"}
                 </span>
               </div>
             </div>
@@ -241,7 +241,7 @@ export default function Competition() {
               <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-xs text-green-700">
                 <div className="flex gap-1.5 items-start">
                   <AlertCircle size={13} className="flex-shrink-0 mt-0.5" />
-                  <span>Você ainda não anuncia nessa keyword. Bid sugerido para começar: <strong>R$ {((detail.suggestedBidMin + detail.suggestedBidMax) / 2).toFixed(2)}</strong></span>
+                  <span>You aren't advertising on this keyword yet. Suggested starting bid: <strong>${((detail.suggestedBidMin + detail.suggestedBidMax) / 2).toFixed(2)}</strong></span>
                 </div>
               </div>
             )}

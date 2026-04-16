@@ -9,22 +9,22 @@ import {
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const MARKETPLACE_OPTIONS = [
-  { value: "BR", label: "Amazon Brasil (BR)" },
-  { value: "US", label: "Amazon EUA (US)" },
-  { value: "MX", label: "Amazon México (MX)" },
+  { value: "US", label: "Amazon USA (US)" },
+  { value: "CA", label: "Amazon Canada (CA)" },
+  { value: "MX", label: "Amazon Mexico (MX)" },
 ];
 
 const TONE_OPTIONS = [
-  { value: "profissional", label: "Profissional" },
-  { value: "persuasivo", label: "Persuasivo" },
-  { value: "informativo", label: "Informativo" },
-  { value: "premium", label: "Premium / Luxo" },
+  { value: "professional", label: "Professional" },
+  { value: "persuasive", label: "Persuasive" },
+  { value: "informative", label: "Informative" },
+  { value: "premium", label: "Premium / Luxury" },
 ];
 
 const CATEGORY_OPTIONS = [
-  "Casa e Cozinha", "Eletrônicos", "Ferramentas", "Beleza", "Saúde",
-  "Esportes", "Brinquedos", "Pet", "Alimentos", "Roupas e Acessórios",
-  "Jardim", "Automotivo", "Escritório", "Livros", "Outros",
+  "Home & Kitchen", "Electronics", "Tools", "Beauty", "Health",
+  "Sports", "Toys", "Pet", "Grocery", "Clothing & Accessories",
+  "Garden", "Automotive", "Office", "Books", "Other",
 ];
 
 function ScoreRing({ score, size = 72 }) {
@@ -69,7 +69,7 @@ function CopyButton({ text }) {
       }`}
     >
       {copied ? <Check size={12} /> : <Copy size={12} />}
-      {copied ? "Copiado!" : "Copiar"}
+      {copied ? "Copied!" : "Copy"}
     </button>
   );
 }
@@ -104,8 +104,8 @@ export default function ListingCreator() {
     targetAudience: "",
     targetKeywords: "",
     competitors: "",
-    marketplace: "BR",
-    tone: "profissional",
+    marketplace: "US",
+    tone: "professional",
   });
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -117,7 +117,7 @@ export default function ListingCreator() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.productName.trim() || !form.category) {
-      setError("Preencha pelo menos o nome do produto e a categoria.");
+      setError("Please enter at least the product name and category.");
       return;
     }
     setError(null);
@@ -139,7 +139,7 @@ export default function ListingCreator() {
       setResult(data);
       setStep("result");
     } catch (err) {
-      setError("Erro ao gerar listing. Tente novamente.");
+      setError("Error generating listing. Please try again.");
       setStep("form");
     }
   };
@@ -157,13 +157,13 @@ export default function ListingCreator() {
           <BrainCircuit size={36} className="text-white" />
         </div>
         <div className="text-center">
-          <h2 className="text-xl font-bold text-gray-800 mb-2">Vikingo Brain™ trabalhando...</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">Vikingo Brain™ is working...</h2>
           <p className="text-sm text-gray-500 max-w-sm">
-            Analisando concorrentes, identificando keywords de alto impacto e gerando seu listing otimizado para Amazon.
+            Analyzing competitors, identifying high-impact keywords, and generating your Amazon-optimized listing.
           </p>
         </div>
         <div className="flex gap-2">
-          {["Analisando concorrentes", "Identificando keywords", "Gerando listing", "Calculando score"].map((label, i) => (
+          {["Analyzing competitors", "Identifying keywords", "Generating listing", "Calculating score"].map((label, i) => (
             <div key={label} className="flex items-center gap-1 text-xs text-gray-400 bg-gray-100 px-3 py-1.5 rounded-full animate-pulse" style={{ animationDelay: `${i * 0.3}s` }}>
               <RefreshCw size={10} className="animate-spin" />
               {label}
@@ -177,29 +177,36 @@ export default function ListingCreator() {
   if (step === "result" && result) {
     const listing = result.listing || result;
     const competitors = result.competitors || {};
-    const tituloScore = listing.tituloScore ?? 0;
-    const scoreGeral = listing.scoreGeral ?? 0;
+    const titleScore = listing.titleScore ?? listing.tituloScore ?? 0;
+    const overallScore = listing.overallScore ?? listing.scoreGeral ?? 0;
     const bulletPoints = listing.bulletPoints ?? [];
-    const dicas = listing.dicas ?? [];
+    const tips = listing.tips ?? listing.dicas ?? [];
     const backendKeywords = Array.isArray(listing.backendKeywords)
       ? listing.backendKeywords.join(", ")
       : listing.backendKeywords ?? "";
-    const keywordsAnalisadas = listing.keywordsAnalisadas ?? [];
+    const analyzedKeywords = listing.analyzedKeywords ?? listing.keywordsAnalisadas ?? [];
+    const title = listing.title ?? listing.titulo;
+    const description = listing.description ?? listing.descricao;
+    const rankingEstimate = listing.rankingEstimate ?? listing.estimativaRanking;
+    const competitorInsights = competitors.competitorInsights ?? competitors.insightsCompetidores;
+    const keywordsGap = competitors.keywordsGap;
+    const differentiators = competitors.differentiators ?? competitors.diferenciais;
+    const strategy = competitors.strategy ?? competitors.estrategia;
 
     return (
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">Listing Gerado — {form.productName}</h1>
-            <p className="text-sm text-gray-500 mt-0.5">Otimizado para Amazon {form.marketplace} • {form.category}</p>
+            <h1 className="text-xl font-bold text-gray-900">Generated Listing — {form.productName}</h1>
+            <p className="text-sm text-gray-500 mt-0.5">Optimized for Amazon {form.marketplace} • {form.category}</p>
           </div>
           <div className="flex gap-2">
             <button
               onClick={handleReset}
               className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
             >
-              <ArrowLeft size={14} /> Novo Listing
+              <ArrowLeft size={14} /> New Listing
             </button>
           </div>
         </div>
@@ -207,20 +214,20 @@ export default function ListingCreator() {
         {/* Score row */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center gap-1 shadow-sm">
-            <ScoreRing score={scoreGeral} size={64} />
-            <span className="text-xs font-medium text-gray-600 mt-1">Score Geral</span>
+            <ScoreRing score={overallScore} size={64} />
+            <span className="text-xs font-medium text-gray-600 mt-1">Overall Score</span>
           </div>
           <div className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center gap-1 shadow-sm">
-            <ScoreRing score={tituloScore} size={64} />
-            <span className="text-xs font-medium text-gray-600 mt-1">Score Título</span>
+            <ScoreRing score={titleScore} size={64} />
+            <span className="text-xs font-medium text-gray-600 mt-1">Title Score</span>
           </div>
           <div className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center gap-1 shadow-sm">
-            <span className="text-2xl font-bold text-blue-600">{keywordsAnalisadas.length}</span>
-            <span className="text-xs font-medium text-gray-600">Keywords Analisadas</span>
+            <span className="text-2xl font-bold text-blue-600">{analyzedKeywords.length}</span>
+            <span className="text-xs font-medium text-gray-600">Keywords Analyzed</span>
           </div>
           <div className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center gap-1 shadow-sm">
-            <span className="text-lg font-bold text-emerald-600 text-center">{listing.estimativaRanking || "Alta"}</span>
-            <span className="text-xs font-medium text-gray-600">Estimativa Ranking</span>
+            <span className="text-lg font-bold text-emerald-600 text-center">{rankingEstimate || "High"}</span>
+            <span className="text-xs font-medium text-gray-600">Ranking Estimate</span>
           </div>
         </div>
 
@@ -228,9 +235,9 @@ export default function ListingCreator() {
           {/* Main listing */}
           <div className="lg:col-span-2 space-y-4">
             {/* Title */}
-            <ResultCard title="Título do Produto" icon={FileText} copyText={listing.titulo} accent="orange">
-              <p className="text-sm font-medium text-gray-900 leading-relaxed">{listing.titulo}</p>
-              <p className="text-xs text-gray-400 mt-2">{listing.titulo?.length ?? 0} caracteres</p>
+            <ResultCard title="Product Title" icon={FileText} copyText={title} accent="orange">
+              <p className="text-sm font-medium text-gray-900 leading-relaxed">{title}</p>
+              <p className="text-xs text-gray-400 mt-2">{title?.length ?? 0} characters</p>
             </ResultCard>
 
             {/* Bullet Points */}
@@ -251,25 +258,25 @@ export default function ListingCreator() {
             </ResultCard>
 
             {/* Description */}
-            <ResultCard title="Descrição do Produto" icon={FileText} copyText={listing.descricao} accent="green">
-              <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-line">{listing.descricao}</p>
+            <ResultCard title="Product Description" icon={FileText} copyText={description} accent="green">
+              <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-line">{description}</p>
             </ResultCard>
 
             {/* Backend Keywords */}
-            <ResultCard title="Palavras-chave Backend" icon={Tag} copyText={backendKeywords} accent="purple">
+            <ResultCard title="Backend Keywords" icon={Tag} copyText={backendKeywords} accent="purple">
               <p className="text-xs text-gray-700 leading-relaxed font-mono">{backendKeywords}</p>
-              <p className="text-xs text-gray-400 mt-2">{backendKeywords.length} caracteres (limite: 249)</p>
+              <p className="text-xs text-gray-400 mt-2">{backendKeywords.length} characters (limit: 249)</p>
             </ResultCard>
 
             {/* Keywords analyzed */}
-            {keywordsAnalisadas.length > 0 && (
+            {analyzedKeywords.length > 0 && (
               <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <Search size={16} className="text-gray-500" />
-                  <span className="text-sm font-semibold text-gray-700">Keywords Priorizadas no Listing</span>
+                  <span className="text-sm font-semibold text-gray-700">Priority Keywords in Listing</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {keywordsAnalisadas.map((kw, i) => (
+                  {analyzedKeywords.map((kw, i) => (
                     <span key={i} className="text-xs bg-orange-50 border border-orange-200 text-orange-700 px-2.5 py-1 rounded-full font-medium">
                       {kw}
                     </span>
@@ -282,17 +289,17 @@ export default function ListingCreator() {
           {/* Right panel */}
           <div className="space-y-4">
             {/* Tips */}
-            {dicas.length > 0 && (
+            {tips.length > 0 && (
               <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <Lightbulb size={16} className="text-yellow-500" />
-                  <span className="text-sm font-semibold text-gray-700">Dicas de Otimização</span>
+                  <span className="text-sm font-semibold text-gray-700">Optimization Tips</span>
                 </div>
                 <ul className="space-y-2">
-                  {dicas.map((dica, i) => (
+                  {tips.map((tip, i) => (
                     <li key={i} className="flex items-start gap-2 text-xs text-gray-600">
                       <ChevronRight size={12} className="text-orange-400 flex-shrink-0 mt-0.5" />
-                      {dica}
+                      {tip}
                     </li>
                   ))}
                 </ul>
@@ -300,14 +307,14 @@ export default function ListingCreator() {
             )}
 
             {/* Competitor insights */}
-            {competitors.insightsCompetidores?.length > 0 && (
+            {competitorInsights?.length > 0 && (
               <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <Users size={16} className="text-blue-500" />
-                  <span className="text-sm font-semibold text-gray-700">Análise de Concorrentes</span>
+                  <span className="text-sm font-semibold text-gray-700">Competitor Analysis</span>
                 </div>
                 <ul className="space-y-2">
-                  {competitors.insightsCompetidores.map((insight, i) => (
+                  {competitorInsights.map((insight, i) => (
                     <li key={i} className="flex items-start gap-2 text-xs text-gray-600">
                       <AlertCircle size={12} className="text-blue-400 flex-shrink-0 mt-0.5" />
                       {insight}
@@ -318,14 +325,14 @@ export default function ListingCreator() {
             )}
 
             {/* Keywords gap */}
-            {competitors.keywordsGap?.length > 0 && (
+            {keywordsGap?.length > 0 && (
               <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <TrendingUp size={16} className="text-green-500" />
-                  <span className="text-sm font-semibold text-gray-700">Oportunidades de Keywords</span>
+                  <span className="text-sm font-semibold text-gray-700">Keyword Opportunities</span>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
-                  {competitors.keywordsGap.map((kw, i) => (
+                  {keywordsGap.map((kw, i) => (
                     <span key={i} className="text-xs bg-green-50 border border-green-200 text-green-700 px-2 py-0.5 rounded-full">
                       {kw}
                     </span>
@@ -334,15 +341,15 @@ export default function ListingCreator() {
               </div>
             )}
 
-            {/* Diferenciais */}
-            {competitors.diferenciais?.length > 0 && (
+            {/* Differentiators */}
+            {differentiators?.length > 0 && (
               <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <Target size={16} className="text-purple-500" />
-                  <span className="text-sm font-semibold text-gray-700">Diferenciais Sugeridos</span>
+                  <span className="text-sm font-semibold text-gray-700">Suggested Differentiators</span>
                 </div>
                 <ul className="space-y-1.5">
-                  {competitors.diferenciais.map((d, i) => (
+                  {differentiators.map((d, i) => (
                     <li key={i} className="flex items-start gap-2 text-xs text-gray-600">
                       <Check size={11} className="text-purple-400 flex-shrink-0 mt-0.5" />
                       {d}
@@ -353,13 +360,13 @@ export default function ListingCreator() {
             )}
 
             {/* Strategy */}
-            {competitors.estrategia && (
+            {strategy && (
               <div className="bg-slate-800 rounded-xl p-4 shadow-sm">
                 <div className="flex items-center gap-2 mb-2">
                   <BrainCircuit size={14} className="text-orange-400" />
-                  <span className="text-xs font-semibold text-orange-400">Estratégia Recomendada</span>
+                  <span className="text-xs font-semibold text-orange-400">Recommended Strategy</span>
                 </div>
-                <p className="text-xs text-slate-300 leading-relaxed">{competitors.estrategia}</p>
+                <p className="text-xs text-slate-300 leading-relaxed">{strategy}</p>
               </div>
             )}
           </div>
@@ -377,8 +384,8 @@ export default function ListingCreator() {
           <Package size={24} className="text-white" />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Criador de Listing</h1>
-          <p className="text-sm text-gray-500">Vikingo Brain™ analisa concorrentes e gera seu listing otimizado para Amazon</p>
+          <h1 className="text-xl font-bold text-gray-900">Listing Creator</h1>
+          <p className="text-sm text-gray-500">Vikingo Brain™ analyzes competitors and generates your Amazon-optimized listing</p>
         </div>
       </div>
 
@@ -393,13 +400,13 @@ export default function ListingCreator() {
         {/* Product name */}
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-            Nome do Produto <span className="text-red-400">*</span>
+            Product Name <span className="text-red-400">*</span>
           </label>
           <input
             name="productName"
             value={form.productName}
             onChange={handleChange}
-            placeholder="Ex: Panela de Pressão Elétrica 6L Inox"
+            placeholder="e.g. 6Qt Stainless Steel Electric Pressure Cooker"
             className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
           />
         </div>
@@ -408,7 +415,7 @@ export default function ListingCreator() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-              Categoria <span className="text-red-400">*</span>
+              Category <span className="text-red-400">*</span>
             </label>
             <select
               name="category"
@@ -416,7 +423,7 @@ export default function ListingCreator() {
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
             >
-              <option value="">Selecionar...</option>
+              <option value="">Select...</option>
               {CATEGORY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
@@ -436,15 +443,15 @@ export default function ListingCreator() {
         {/* Main features */}
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-            Principais Características
-            <span className="ml-1 text-gray-400 font-normal">(uma por linha)</span>
+            Main Features
+            <span className="ml-1 text-gray-400 font-normal">(one per line)</span>
           </label>
           <textarea
             name="mainFeatures"
             value={form.mainFeatures}
             onChange={handleChange}
             rows={4}
-            placeholder={"Capacidade 6 litros\nMaterial inox 304\nFechamento automático com trava\nTimer digital 24h\nGarantia 2 anos"}
+            placeholder={"6 quart capacity\n304 stainless steel\nAutomatic locking lid\n24h digital timer\n2-year warranty"}
             className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"
           />
         </div>
@@ -454,20 +461,20 @@ export default function ListingCreator() {
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">
               <Users size={12} className="inline mr-1" />
-              Público-Alvo
+              Target Audience
             </label>
             <input
               name="targetAudience"
               value={form.targetAudience}
               onChange={handleChange}
-              placeholder="Ex: Donas de casa, cozinheiros"
+              placeholder="e.g. Home cooks, busy parents"
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
             />
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">
               <Mic size={12} className="inline mr-1" />
-              Tom do Texto
+              Copy Tone
             </label>
             <select
               name="tone"
@@ -484,14 +491,14 @@ export default function ListingCreator() {
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">
             <Search size={12} className="inline mr-1" />
-            Keywords-Alvo
-            <span className="ml-1 text-gray-400 font-normal">(separadas por vírgula)</span>
+            Target Keywords
+            <span className="ml-1 text-gray-400 font-normal">(comma-separated)</span>
           </label>
           <input
             name="targetKeywords"
             value={form.targetKeywords}
             onChange={handleChange}
-            placeholder="panela pressão elétrica, panela inox, panela rápida"
+            placeholder="electric pressure cooker, stainless cooker, fast cooker"
             className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
           />
         </div>
@@ -500,14 +507,14 @@ export default function ListingCreator() {
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">
             <BarChart2 size={12} className="inline mr-1" />
-            Concorrentes Principais
-            <span className="ml-1 text-gray-400 font-normal">(nomes separados por vírgula)</span>
+            Main Competitors
+            <span className="ml-1 text-gray-400 font-normal">(comma-separated names)</span>
           </label>
           <input
             name="competitors"
             value={form.competitors}
             onChange={handleChange}
-            placeholder="Mondial, Tramontina, Oster"
+            placeholder="Instant Pot, Ninja, Cuisinart"
             className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
           />
         </div>
@@ -518,12 +525,12 @@ export default function ListingCreator() {
           className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3 rounded-xl transition-all shadow-sm text-sm"
         >
           <Sparkles size={16} />
-          Gerar Listing com Vikingo Brain™
+          Generate Listing with Vikingo Brain™
           <ChevronRight size={16} />
         </button>
 
         <p className="text-center text-xs text-gray-400">
-          O processo leva cerca de 15–30 segundos. O resultado inclui título, bullet points, descrição e keywords backend otimizados para SEO Amazon.
+          The process takes about 15–30 seconds. The result includes an SEO-optimized title, bullet points, description, and backend keywords for Amazon.
         </p>
       </form>
     </div>

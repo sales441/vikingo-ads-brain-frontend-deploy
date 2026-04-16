@@ -26,54 +26,54 @@ import {
 
 const groups = [
   {
-    label: "Início",
+    label: "Home",
     items: [
       { to: "/dashboard",  label: "Dashboard",     icon: LayoutDashboard },
       { to: "/pnl",        label: "P&L",           icon: DollarSign },
-      { to: "/reports",    label: "Relatórios",    icon: BarChart3 },
+      { to: "/reports",    label: "Reports",       icon: BarChart3 },
     ],
   },
   {
-    label: "Análise",
+    label: "Analysis",
     items: [
-      { to: "/profitability", label: "Rentabilidade",   icon: Calculator },
-      { to: "/ranking",       label: "Ranking Orgânico", icon: Search },
-      { to: "/trends",        label: "Tendências",       icon: Calendar },
-      { to: "/reviews",       label: "Análise Reviews",  icon: Star, highlight: true },
+      { to: "/profitability", label: "Profitability",    icon: Calculator },
+      { to: "/ranking",       label: "Organic Ranking",  icon: Search },
+      { to: "/trends",        label: "Trends",           icon: Calendar },
+      { to: "/reviews",       label: "Review Analysis",  icon: Star, highlight: true },
     ],
   },
   {
-    label: "Monitorar",
+    label: "Monitor",
     items: [
-      { to: "/monitor",    label: "Concorrentes",  icon: Users },
-      { to: "/competition",label: "Competição",    icon: LineChart },
-      { to: "/inventory",  label: "Estoque",       icon: Package },
+      { to: "/monitor",    label: "Competitors",   icon: Users },
+      { to: "/competition",label: "Competition",   icon: LineChart },
+      { to: "/inventory",  label: "Inventory",     icon: Package },
     ],
   },
   {
-    label: "Otimizar",
+    label: "Optimize",
     items: [
-      { to: "/campaigns",  label: "Campanhas",     icon: Megaphone },
+      { to: "/campaigns",  label: "Campaigns",     icon: Megaphone },
       { to: "/keywords",   label: "Keywords",      icon: KeyRound },
-      { to: "/pricing",    label: "Preços",        icon: Tag, highlight: true },
+      { to: "/pricing",    label: "Pricing",       icon: Tag, highlight: true },
     ],
   },
   {
-    label: "IA & Criação",
+    label: "AI & Creation",
     items: [
-      { to: "/ai",       label: "Vikingo Brain IA", icon: BrainCircuit, highlight: true },
-      { to: "/listing",  label: "Criar Listing",    icon: FileText,     highlight: true },
-      { to: "/ads",      label: "Criar Ads",        icon: Megaphone,    highlight: true },
+      { to: "/ai",       label: "Vikingo Brain AI", icon: BrainCircuit, highlight: true },
+      { to: "/listing",  label: "Create Listing",   icon: FileText,     highlight: true },
+      { to: "/ads",      label: "Create Ads",       icon: Megaphone,    highlight: true },
       { to: "/abtest",   label: "A/B Test",         icon: FlaskConical, highlight: true },
-      { to: "/discover", label: "Descobrir Produtos",icon: Compass,     highlight: true },
+      { to: "/discover", label: "Discover Products",icon: Compass,     highlight: true },
     ],
   },
   {
-    label: "Conta",
+    label: "Account",
     items: [
-      { to: "/companies", label: "Empresas",      icon: Building2 },
-      { to: "/users",     label: "Usuários",      icon: Users },
-      { to: "/settings",  label: "Configurações", icon: Settings },
+      { to: "/companies", label: "Companies",    icon: Building2 },
+      { to: "/users",     label: "Users",        icon: Users },
+      { to: "/settings",  label: "Settings",     icon: Settings },
     ],
   },
 ];
@@ -120,7 +120,7 @@ export default function Sidebar() {
                   <span className="flex-1 truncate">{label}</span>
                   {highlight && (
                     <span className="text-xs bg-orange-500/30 text-orange-300 px-1.5 py-0.5 rounded-full border border-orange-500/30">
-                      IA
+                      AI
                     </span>
                   )}
                 </NavLink>
@@ -134,7 +134,7 @@ export default function Sidebar() {
       <div className="px-4 py-4 border-t border-slate-700">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-slate-400 text-xs">Conectado • Amazon BR</span>
+          <span className="text-slate-400 text-xs">Connected • Amazon US</span>
         </div>
       </div>
     </aside>

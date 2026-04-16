@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Bell, RefreshCw, Calendar, LogOut, User, Building2, ChevronDown, Check, Plus, HelpCircle, AlertTriangle, Package, BrainCircuit, CheckCheck, Trash2 } from "lucide-react";
+import { Bell, RefreshCw, Calendar, LogOut, User, Building2, ChevronDown, Check, Plus, HelpCircle, AlertTriangle, Package, BrainCircuit, CheckCheck, Trash2, Menu } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useCompanies } from "../context/CompaniesContext";
 import { useNotifications } from "../context/NotificationsContext";
@@ -250,7 +250,7 @@ function CompanySelector() {
   );
 }
 
-export default function Header() {
+export default function Header({ onOpenSidebar }) {
   const { pathname } = useLocation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -267,10 +267,20 @@ export default function Header() {
     : "V";
 
   return (
-    <header className="fixed top-0 left-64 right-0 h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 z-20">
-      <h1 className="text-lg font-semibold text-gray-800">{title}</h1>
+    <header className="fixed top-0 left-0 md:left-64 right-0 h-16 bg-white border-b border-gray-200 flex items-center justify-between px-3 sm:px-6 z-20">
+      <div className="flex items-center gap-2 min-w-0">
+        {/* Mobile hamburger */}
+        <button
+          onClick={onOpenSidebar}
+          className="md:hidden w-10 h-10 rounded-lg flex items-center justify-center text-gray-600 hover:bg-gray-100"
+          aria-label="Open menu"
+        >
+          <Menu size={20} />
+        </button>
+        <h1 className="text-base sm:text-lg font-semibold text-gray-800 truncate">{title}</h1>
+      </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1 sm:gap-3">
         {/* Company selector */}
         <CompanySelector />
 

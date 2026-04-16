@@ -82,18 +82,40 @@ const groups = [
   },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ open = false, onClose }) {
   return (
-    <aside className="fixed top-0 left-0 h-full w-64 bg-slate-900 flex flex-col z-30">
+    <>
+      {/* Mobile backdrop */}
+      {open && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          onClick={onClose}
+          aria-hidden="true"
+        />
+      )}
+
+      <aside
+        className={`fixed top-0 left-0 h-full w-64 bg-slate-900 flex flex-col z-40 transform transition-transform duration-200 ease-out ${
+          open ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0`}
+      >
       {/* Brand */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-slate-700">
         <div className="w-9 h-9 rounded-lg bg-orange-500 flex items-center justify-center flex-shrink-0">
           <Zap size={20} className="text-white" />
         </div>
-        <div>
+        <div className="flex-1 min-w-0">
           <p className="text-white font-bold text-sm leading-tight">Vikingo Ads</p>
           <p className="text-orange-400 text-xs font-medium">Brain™</p>
         </div>
+        {/* Close button on mobile */}
+        <button
+          onClick={onClose}
+          className="md:hidden text-slate-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-800"
+          aria-label="Close menu"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
 
       {/* Navigation */}
@@ -110,6 +132,7 @@ export default function Sidebar() {
                 <NavLink
                   key={to}
                   to={to}
+                  onClick={() => { if (window.innerWidth < 768) onClose?.(); }}
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       isActive
@@ -142,5 +165,6 @@ export default function Sidebar() {
         </div>
       </div>
     </aside>
+    </>
   );
 }

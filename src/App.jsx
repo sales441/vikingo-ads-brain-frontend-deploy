@@ -24,6 +24,7 @@ import SeasonalTrends from "./pages/SeasonalTrends";
 import ABTest from "./pages/ABTest";
 import ProductDiscovery from "./pages/ProductDiscovery";
 import Products from "./pages/Products";
+import Help from "./pages/Help";
 import { useAuth } from "./context/AuthContext";
 
 function ProtectedRoute({ children }) {
@@ -73,6 +74,7 @@ export default function App() {
         <Route path="products"      element={<Products />} />
         <Route path="companies"     element={<Companies />} />
         <Route path="users"         element={<Users />} />
+        <Route path="help"          element={<Help />} />
       </Route>
     </Routes>
   );

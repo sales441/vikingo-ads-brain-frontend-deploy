@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Bell, RefreshCw, Calendar, LogOut, User, Building2, ChevronDown, Check, Plus } from "lucide-react";
+import { Bell, RefreshCw, Calendar, LogOut, User, Building2, ChevronDown, Check, Plus, HelpCircle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useCompanies } from "../context/CompaniesContext";
 
@@ -27,6 +27,32 @@ const titles = {
   "/products":      "My Products",
   "/companies":     "Companies",
   "/users":         "Users",
+  "/help":          "Help Center",
+};
+
+// Maps the current route to the matching Help Center topic id.
+const HELP_TOPIC_FOR_ROUTE = {
+  "/dashboard":     "dashboard",
+  "/campaigns":     "campaigns",
+  "/keywords":      "keywords",
+  "/reports":       "reports",
+  "/ai":            "ai-assistant",
+  "/listing":       "listing-creator",
+  "/ads":           "create-ads",
+  "/settings":      "settings",
+  "/profitability": "profitability",
+  "/pnl":           "pnl",
+  "/monitor":       "competitor-monitor",
+  "/ranking":       "ranking-tracker",
+  "/reviews":       "review-analysis",
+  "/pricing":       "pricing-optimizer",
+  "/inventory":     "inventory",
+  "/trends":        "seasonal",
+  "/abtest":        "ab-test",
+  "/discover":      "product-discovery",
+  "/products":      "my-products",
+  "/companies":     "companies",
+  "/users":         "users",
 };
 
 function CompanySelector() {
@@ -113,6 +139,17 @@ export default function Header() {
       <div className="flex items-center gap-3">
         {/* Company selector */}
         <CompanySelector />
+
+        {/* Contextual Help — opens Help Center at the topic for the current route */}
+        {HELP_TOPIC_FOR_ROUTE[pathname] && (
+          <button
+            onClick={() => navigate(`/help?topic=${HELP_TOPIC_FOR_ROUTE[pathname]}`)}
+            className="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+            title="Help for this page"
+          >
+            <HelpCircle size={16} />
+          </button>
+        )}
 
         <button className="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors" title="Refresh data">
           <RefreshCw size={16} />

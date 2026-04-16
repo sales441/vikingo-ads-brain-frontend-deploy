@@ -22,6 +22,7 @@ import {
   Compass,
   DollarSign,
   Search,
+  HelpCircle,
 } from "lucide-react";
 
 const groups = [
@@ -75,6 +76,7 @@ const groups = [
       { to: "/companies", label: "Companies",    icon: Building2 },
       { to: "/users",     label: "Users",        icon: Users },
       { to: "/settings",  label: "Settings",     icon: Settings },
+      { to: "/help",      label: "Help Center",  icon: HelpCircle },
     ],
   },
 ];

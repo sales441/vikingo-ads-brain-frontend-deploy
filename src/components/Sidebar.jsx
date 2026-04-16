@@ -55,9 +55,10 @@ const groups = [
   {
     label: "Optimize",
     items: [
-      { to: "/campaigns",  label: "Campaigns",     icon: Megaphone },
-      { to: "/keywords",   label: "Keywords",      icon: KeyRound },
-      { to: "/pricing",    label: "Pricing",       icon: Tag, highlight: true },
+      { to: "/campaigns",    label: "Campaigns",      icon: Megaphone },
+      { to: "/keywords",     label: "Keywords",       icon: KeyRound },
+      { to: "/search-terms", label: "Search Terms",   icon: Search },
+      { to: "/pricing",      label: "Pricing",        icon: Tag, highlight: true },
     ],
   },
   {

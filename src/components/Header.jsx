@@ -160,6 +160,8 @@ const titles = {
   "/companies":     "Companies",
   "/users":         "Users",
   "/help":          "Help Center",
+  "/alerts":        "Alerts & Notifications",
+  "/search-terms":  "Search Term Report",
 };
 
 // Maps the current route to the matching Help Center topic id.

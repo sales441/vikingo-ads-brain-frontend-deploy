@@ -1,7 +1,11 @@
 import React, { useState, useMemo } from "react";
-import { Search, TrendingUp, TrendingDown, AlertTriangle, Plus, ChevronUp, ChevronDown } from "lucide-react";
+import {
+  Search, TrendingUp, TrendingDown, AlertTriangle, Plus, ChevronUp, ChevronDown,
+  Download, PauseCircle, PlayCircle, Trash2, BrainCircuit, X,
+} from "lucide-react";
 import StatusBadge from "../components/StatusBadge";
 import { keywords as initialKeywords } from "../data/mockData";
+import { downloadCSV } from "../utils/csv";
 
 const fmt = (v, type = "currency") => {
   if (type === "currency") return `$${Number(v).toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
@@ -52,6 +56,7 @@ export default function Keywords() {
   const [statusFilter, setStatusFilter] = useState("active");
   const [sortCol, setSortCol] = useState("revenue");
   const [sortDir, setSortDir] = useState("desc");
+  const [selected, setSelected] = useState(new Set());
 
   const filtered = useMemo(() => {
     let rows = keywords;
@@ -148,11 +153,121 @@ export default function Keywords() {
           ))}
         </div>
 
-        <button className="flex items-center gap-1.5 px-3 py-2 bg-orange-500 text-white text-sm rounded-lg hover:bg-orange-600 transition-colors ml-auto">
+        <button
+          onClick={() => {
+            const stamp = new Date().toISOString().slice(0, 10);
+            downloadCSV(
+              `vikingo-keywords-${stamp}.csv`,
+              filtered,
+              [
+                { key: "keyword",       label: "Keyword" },
+                { key: "matchType",     label: "Match" },
+                { key: "campaignName",  label: "Campaign" },
+                { key: "status",        label: "Status" },
+                { key: "bid",           label: "Bid" },
+                { key: "suggestedBid",  label: "Suggested Bid" },
+                { key: "impressions",   label: "Impressions" },
+                { key: "clicks",        label: "Clicks" },
+                { key: "ctr",           label: "CTR (%)" },
+                { key: "orders",        label: "Orders" },
+                { key: "spend",         label: "Spend" },
+                { key: "revenue",       label: "Revenue" },
+                { key: "acos",          label: "ACoS (%)" },
+                { key: "roas",          label: "ROAS" },
+              ],
+            );
+          }}
+          className="flex items-center gap-1.5 px-3 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition-colors ml-auto"
+        >
+          <Download size={14} /> Export CSV
+        </button>
+
+        <button className="flex items-center gap-1.5 px-3 py-2 bg-orange-500 text-white text-sm rounded-lg hover:bg-orange-600 transition-colors">
           <Plus size={15} />
           Add Keyword
         </button>
       </div>
+
+      {/* Bulk actions toolbar */}
+      {selected.size > 0 && (
+        <div className="bg-slate-800 text-white rounded-xl px-4 py-3 flex items-center gap-3 flex-wrap shadow-lg">
+          <div className="flex items-center gap-2">
+            <span className="bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+              {selected.size}
+            </span>
+            <span className="text-sm">selected</span>
+          </div>
+          <div className="flex items-center gap-2 ml-auto flex-wrap">
+            <button
+              onClick={() => {
+                setKeywords((prev) =>
+                  prev.map((k) => (selected.has(k.id) ? { ...k, bid: Math.round(k.bid * 1.1 * 100) / 100 } : k)),
+                );
+              }}
+              className="flex items-center gap-1 text-xs px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg"
+            >
+              <TrendingUp size={12} /> +10% bid
+            </button>
+            <button
+              onClick={() => {
+                setKeywords((prev) =>
+                  prev.map((k) => (selected.has(k.id) ? { ...k, bid: Math.round(k.bid * 0.9 * 100) / 100 } : k)),
+                );
+              }}
+              className="flex items-center gap-1 text-xs px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg"
+            >
+              <TrendingDown size={12} /> -10% bid
+            </button>
+            <button
+              onClick={() => {
+                setKeywords((prev) =>
+                  prev.map((k) => (selected.has(k.id) ? { ...k, bid: k.suggestedBid || k.bid } : k)),
+                );
+              }}
+              className="flex items-center gap-1 text-xs px-3 py-1.5 bg-orange-500 hover:bg-orange-600 rounded-lg"
+            >
+              <BrainCircuit size={12} /> Apply AI bids
+            </button>
+            <button
+              onClick={() => {
+                setKeywords((prev) =>
+                  prev.map((k) => (selected.has(k.id) ? { ...k, status: "paused" } : k)),
+                );
+              }}
+              className="flex items-center gap-1 text-xs px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg"
+            >
+              <PauseCircle size={12} /> Pause
+            </button>
+            <button
+              onClick={() => {
+                setKeywords((prev) =>
+                  prev.map((k) => (selected.has(k.id) ? { ...k, status: "active" } : k)),
+                );
+              }}
+              className="flex items-center gap-1 text-xs px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg"
+            >
+              <PlayCircle size={12} /> Activate
+            </button>
+            <button
+              onClick={() => {
+                if (!confirm(`Delete ${selected.size} keyword(s)?`)) return;
+                setKeywords((prev) => prev.filter((k) => !selected.has(k.id)));
+                setSelected(new Set());
+              }}
+              className="flex items-center gap-1 text-xs px-3 py-1.5 bg-red-500 hover:bg-red-600 rounded-lg"
+            >
+              <Trash2 size={12} /> Delete
+            </button>
+            <button
+              onClick={() => setSelected(new Set())}
+              className="p-1.5 hover:bg-white/10 rounded-lg"
+              title="Clear selection"
+            >
+              <X size={13} />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Table */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -163,6 +278,19 @@ export default function Keywords() {
           <table className="w-full text-xs min-w-max">
             <thead>
               <tr className="bg-gray-50">
+                <th className="text-left px-3 py-3 text-gray-500 font-medium w-8">
+                  <input
+                    type="checkbox"
+                    checked={filtered.length > 0 && filtered.every((k) => selected.has(k.id))}
+                    onChange={(e) => {
+                      const next = new Set(selected);
+                      if (e.target.checked) filtered.forEach((k) => next.add(k.id));
+                      else filtered.forEach((k) => next.delete(k.id));
+                      setSelected(next);
+                    }}
+                    className="rounded accent-orange-500"
+                  />
+                </th>
                 <th className="text-left px-4 py-3 text-gray-500 font-medium">Keyword</th>
                 <th className="text-left px-4 py-3 text-gray-500 font-medium">Match</th>
                 <th className="text-left px-4 py-3 text-gray-500 font-medium">Campaign</th>
@@ -185,7 +313,19 @@ export default function Keywords() {
                 const acosHigh = k.acos > 10;
                 const roasLow = k.roas < 10;
                 return (
-                  <tr key={k.id} className={`hover:bg-gray-50 transition-colors ${k.status === "paused" ? "opacity-60" : ""}`}>
+                  <tr key={k.id} className={`hover:bg-gray-50 transition-colors ${k.status === "paused" ? "opacity-60" : ""} ${selected.has(k.id) ? "bg-orange-50" : ""}`}>
+                    <td className="px-3 py-3">
+                      <input
+                        type="checkbox"
+                        checked={selected.has(k.id)}
+                        onChange={(e) => {
+                          const next = new Set(selected);
+                          if (e.target.checked) next.add(k.id); else next.delete(k.id);
+                          setSelected(next);
+                        }}
+                        className="rounded accent-orange-500"
+                      />
+                    </td>
                     <td className="px-4 py-3 font-medium text-gray-800 max-w-xs">
                       <div className="flex items-center gap-1.5">
                         {(acosHigh || roasLow) && <AlertTriangle size={12} className="text-red-400 flex-shrink-0" />}

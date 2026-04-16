@@ -32,6 +32,7 @@ import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Alerts from "./pages/Alerts";
+import SearchTerms from "./pages/SearchTerms";
 import { useAuth } from "./context/AuthContext";
 
 function ProtectedRoute({ children }) {
@@ -89,6 +90,7 @@ export default function App() {
         <Route path="users"         element={<Users />} />
         <Route path="help"          element={<Help />} />
         <Route path="alerts"        element={<Alerts />} />
+        <Route path="search-terms"  element={<SearchTerms />} />
       </Route>
     </Routes>
   );

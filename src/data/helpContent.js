@@ -596,4 +596,175 @@ export const helpTopics = [
       },
     ],
   },
+
+  /* ──────────────────────── LISTING CREATOR ─────────────────────────── */
+  {
+    id: "listing-creator",
+    title: "Create Listing",
+    icon: "FileText",
+    summary: "Generate SEO-optimized Amazon listings (title, bullets, description, backend keywords) with competitor analysis.",
+    sections: [
+      {
+        id: "what-it-does",
+        title: "What Create Listing does",
+        paragraphs: [
+          "Produces a full listing ready to paste into Seller Central: SEO-optimized title, 5 bullet points, long description, and backend search terms. It also analyzes 3–5 top competitors to find keyword gaps and differentiator angles.",
+          "Everything is scored: a title score, an overall listing score, and a ranking estimate (High / Medium / Low).",
+        ],
+      },
+      {
+        id: "form-fields",
+        title: "Filling the form (step by step)",
+        steps: [
+          {
+            title: "Product name",
+            body: "Write the plain, simple name — don't stuff keywords. The AI will do the optimization. E.g. '6Qt Stainless Steel Pressure Cooker' is better than 'Best Premium 6 Qt Electric Pressure Cooker with Lid'.",
+          },
+          {
+            title: "Category",
+            body: "Affects word-count limits Amazon enforces (e.g. 200 chars for Home & Kitchen, 150 for Clothing). The AI trims the title to the right length automatically.",
+          },
+          {
+            title: "Marketplace",
+            body: "US, CA, or MX. Language, fee structure, and buyer behavior differ — the AI writes differently for each.",
+          },
+          {
+            title: "Main features (one per line)",
+            body: "List the concrete features: capacity, material, dimensions, warranty. The AI turns each into a benefit-driven bullet point. Tip: 3–7 features is the sweet spot.",
+          },
+          {
+            title: "Target audience (optional but powerful)",
+            body: "'Busy parents cooking for 4' → generates different copy than 'professional chefs'. The more specific, the better.",
+          },
+          {
+            title: "Copy tone",
+            body: "Professional (neutral authority), Persuasive (emotional hook), Informative (spec-heavy), Premium/Luxury (high-ticket positioning). Pick the one that matches your price point.",
+          },
+          {
+            title: "Target keywords (comma-separated)",
+            body: "The keywords you want to rank for. The AI will place them in title/bullets/backend according to Amazon's weight rules. If left empty, the AI picks from the category.",
+          },
+          {
+            title: "Main competitors (comma-separated names)",
+            body: "Feed 3–5 competitor brand names. The AI reads their listings and finds keywords they use but you don't — that's your opportunity gap.",
+          },
+        ],
+      },
+      {
+        id: "reading-result",
+        title: "Reading the output",
+        steps: [
+          {
+            title: "Overall Score",
+            body: "Combination of title SEO, bullet clarity, keyword coverage, and length compliance. Aim for 80+. Below 60 the AI will flag specific fixes in 'Optimization tips'." ,
+          },
+          {
+            title: "Title Score",
+            body: "Scored on keyword density, placement of primary keyword (first 80 chars are king), character usage, and readability." ,
+          },
+          {
+            title: "Bullet points",
+            body: "Copy-paste each individually or all at once (Copy button in each card). Amazon accepts 5 bullets, ~200 chars each." ,
+          },
+          {
+            title: "Description",
+            body: "Goes into the 'Product Description' field in Seller Central. If you have Brand Registry, use A+ Content instead and repurpose the copy." ,
+          },
+          {
+            title: "Backend keywords",
+            body: "249-character limit. These are invisible to shoppers but indexed by Amazon. The AI never duplicates what's already in title/bullets." ,
+          },
+          {
+            title: "Competitor insights panel",
+            body: "Shows keyword gaps (opportunities), suggested differentiators, and a recommended strategy sentence. Read this BEFORE posting the listing." ,
+          },
+        ],
+        tip: "AI tip: if the overall score is below 70, re-generate with more specific features. Generic inputs → generic listings.",
+      },
+      {
+        id: "after-creation",
+        title: "After you paste the listing to Amazon",
+        paragraphs: [
+          "Amazon reindexes listings in 24–72 hours. Don't evaluate impact before day 4. After a week, check the Ranking Tracker page — your organic rank for target keywords should improve.",
+          "Keep the old listing version saved somewhere. If the new version doesn't improve conversion in 2 weeks, you can roll back.",
+        ],
+      },
+    ],
+  },
+
+  /* ────────────────────── PRICING OPTIMIZER ─────────────────────────── */
+  {
+    id: "pricing-optimizer",
+    title: "Price Optimizer",
+    icon: "Tag",
+    summary: "AI-driven pricing: find the price that maximizes profit, not just revenue. Scenario simulation + competitor benchmark.",
+    sections: [
+      {
+        id: "why-it-matters",
+        title: "Why price matters more than ads",
+        paragraphs: [
+          "A 10% price increase often outperforms a 50% budget boost. Most sellers leave money on the table by defaulting to 'round down by $1 below the cheapest competitor'.",
+          "Price Optimizer finds the price that maximizes profit × volume — not just revenue. It uses category elasticity curves to estimate how your conversion rate changes at different price points.",
+        ],
+      },
+      {
+        id: "form",
+        title: "Filling the form",
+        steps: [
+          {
+            title: "Product name",
+            body: "Used to pull competitor prices. Be specific: '6Qt Electric Pressure Cooker' not just 'Pressure Cooker'." ,
+          },
+          {
+            title: "Current price ($)",
+            body: "What you sell for today. This is the baseline for impact calculations." ,
+          },
+          {
+            title: "Product cost ($)",
+            body: "Your cost to acquire one unit (supplier price + landing costs). The AI uses this to compute real profit per unit at each scenario price." ,
+          },
+          {
+            title: "Competitors and prices (optional but powerful)",
+            body: "Format: 'Instant Pot $79, Ninja $119, Cuisinart $89'. If left empty the AI pulls from the category average." ,
+          },
+        ],
+      },
+      {
+        id: "reading-result",
+        title: "Reading the recommendation",
+        paragraphs: [
+          "The dark hero card at the top is the headline: Current price → Ideal price, with three impact bubbles (Revenue, Conversion, Profit).",
+        ],
+        definitions: [
+          { term: "Revenue Impact", body: "Total revenue change. Green = up, yellow = slight down. Ideal price often trades some conversion for much higher profit — revenue may dip slightly." },
+          { term: "Conversion Impact", body: "Expected conversion rate change. Nearly always negative when raising price. The key is: does profit grow enough to offset?" },
+          { term: "Profit Impact", body: "The one that matters. Should be strongly positive. If profit impact is less than +5%, stay put." },
+        ],
+        tip: "AI tip: if the AI recommends raising price by more than 20%, split it: raise 10% now, wait 2 weeks, measure, then raise another 10%. Smaller moves are easier to walk back.",
+      },
+      {
+        id: "scenarios",
+        title: "Scenario simulation table",
+        paragraphs: [
+          "Shows 5 price points (cheaper than current → more expensive) with projected conversion %, units/month, revenue/month, and profit per unit. The 'ideal' row is highlighted orange.",
+          "Useful sanity check: the revenue curve should be dome-shaped. If revenue keeps growing at the highest price, you're still under-priced — test higher.",
+        ],
+      },
+      {
+        id: "benchmark",
+        title: "Competitor benchmark grid",
+        paragraphs: [
+          "At the bottom — 5 competitor cards with their price and positioning (Cheaper / Mid / Premium / Top / Entry-level). Useful to see the price bracket you're aiming for.",
+        ],
+      },
+      {
+        id: "alerts",
+        title: "The alert banners",
+        definitions: [
+          { term: "Main competitor lowered price", body: "A direct competitor dropped price recently. Consider matching temporarily or emphasizing quality in your listing." },
+          { term: "Buy Box lost", body: "You're no longer winning the Buy Box. Could be price, stock, or seller metrics. Check the Competitor Monitor page for details." },
+        ],
+      },
+    ],
+  },
 ];

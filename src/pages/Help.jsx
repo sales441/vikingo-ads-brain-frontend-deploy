@@ -5,7 +5,8 @@ import {
   Rocket, Package, Zap, Megaphone, KeyRound, LayoutDashboard,
   BrainCircuit, FileText, Tag, FlaskConical, Star, Compass,
   Calculator, TrendingUp, BarChart3, Eye, Award, Calendar,
-  Building2, Users, Settings, AlertTriangle,
+  Building2, Users, Settings, AlertTriangle, Send, RefreshCw,
+  MessageSquare, X,
 } from "lucide-react";
 import { helpTopics } from "../data/helpContent";
 
@@ -128,6 +129,217 @@ function SectionContent({ section, query }) {
   );
 }
 
+/* ──────────────────────── HELP AI CHAT ─────────────────────────── */
+
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+const SUGGESTED_QUESTIONS = [
+  "How do I lower my ACoS?",
+  "How does the OAuth connection work?",
+  "Which bidding strategy should I pick?",
+  "How do I read the profit card?",
+  "How do I create my first campaign?",
+  "What's the difference between FBA and FBM?",
+];
+
+// Build a lightweight context string that summarizes the current topic
+// so the AI can answer in the context of the page the user is on.
+function contextFromTopic(topic) {
+  if (!topic) return "";
+  const pieces = [`Help topic the user is reading: ${topic.title}.`, `Summary: ${topic.summary}.`];
+  topic.sections.slice(0, 4).forEach((s) => {
+    if (s.paragraphs?.[0]) pieces.push(`${s.title}: ${s.paragraphs[0]}`);
+  });
+  return pieces.join(" ").slice(0, 1500);
+}
+
+// Fallback answer used when the backend is offline. It searches the help
+// content for a paragraph matching the question keywords — so the user
+// still gets something useful without the AI server.
+function localSearchAnswer(question) {
+  const words = question.toLowerCase().split(/\s+/).filter((w) => w.length > 3);
+  let best = null;
+  let bestScore = 0;
+  for (const topic of helpTopics) {
+    for (const section of topic.sections) {
+      const text = [
+        ...(section.paragraphs || []),
+        ...(section.steps || []).map((s) => s.body),
+        ...(section.definitions || []).map((d) => d.body),
+        section.tip,
+      ].filter(Boolean).join(" ").toLowerCase();
+      const score = words.reduce((s, w) => s + (text.includes(w) ? 1 : 0), 0);
+      if (score > bestScore) {
+        bestScore = score;
+        best = { topic, section };
+      }
+    }
+  }
+  if (!best || bestScore === 0) {
+    return "I couldn't find a direct answer in the Help Center. Try rephrasing, or browse the topic list on the left.";
+  }
+  const first = best.section.paragraphs?.[0] || best.section.steps?.[0]?.body || best.section.tip;
+  return `${first}\n\n(From **${best.topic.title} → ${best.section.title}**. Open the topic for the full step-by-step.)`;
+}
+
+function HelpAiChat({ activeTopic, onJumpToTopic }) {
+  const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState([
+    {
+      role: "assistant",
+      content:
+        "Hi — I'm Vikingo Brain™'s help assistant. Ask anything about how to use the app. I'll pull from the Help Center and your current page context.",
+    },
+  ]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, open]);
+
+  const ask = async (text) => {
+    const q = (text || input).trim();
+    if (!q) return;
+    setInput("");
+    setMessages((m) => [...m, { role: "user", content: q }]);
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${BASE_URL}/ai/help`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: q,
+          context: contextFromTopic(activeTopic),
+          topicId: activeTopic?.id,
+        }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setMessages((m) => [...m, { role: "assistant", content: data.reply || localSearchAnswer(q) }]);
+    } catch {
+      // Graceful fallback — search the help content locally
+      setMessages((m) => [...m, { role: "assistant", content: localSearchAnswer(q) }]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderContent = (text) =>
+    text.split("**").map((part, i) =>
+      i % 2 === 1 ? <strong key={i}>{part}</strong> : <span key={i}>{part}</span>
+    );
+
+  if (!open) {
+    return (
+      <button
+        onClick={() => setOpen(true)}
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-4 py-3 rounded-full shadow-2xl font-semibold text-sm transition-transform hover:scale-105"
+      >
+        <BrainCircuit size={16} /> Ask the AI
+      </button>
+    );
+  }
+
+  return (
+    <div className="fixed bottom-6 right-6 z-40 w-[min(92vw,380px)] h-[min(80vh,560px)] bg-white border border-gray-200 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-3 flex items-center gap-3">
+        <div className="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center flex-shrink-0">
+          <BrainCircuit size={16} className="text-white" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-bold text-white">Vikingo Brain™ Help</p>
+          <p className="text-xs text-slate-400 truncate">
+            {activeTopic ? `Context: ${activeTopic.title}` : "General questions"}
+          </p>
+        </div>
+        <button
+          onClick={() => setOpen(false)}
+          className="text-slate-400 hover:text-white"
+          title="Minimize"
+        >
+          <X size={16} />
+        </button>
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+        {messages.map((m, i) => (
+          <div key={i} className={`flex gap-2 ${m.role === "user" ? "flex-row-reverse" : ""}`}>
+            <div
+              className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-white text-xs font-bold ${
+                m.role === "user" ? "bg-slate-700" : "bg-orange-500"
+              }`}
+            >
+              {m.role === "user" ? "V" : <BrainCircuit size={11} />}
+            </div>
+            <div
+              className={`max-w-[80%] px-3 py-2 rounded-xl text-sm leading-relaxed whitespace-pre-line ${
+                m.role === "user"
+                  ? "bg-slate-800 text-white rounded-tr-sm"
+                  : "bg-white border border-gray-200 text-gray-800 rounded-tl-sm"
+              }`}
+            >
+              {renderContent(m.content)}
+            </div>
+          </div>
+        ))}
+
+        {loading && (
+          <div className="flex gap-2">
+            <div className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center">
+              <BrainCircuit size={11} className="text-white" />
+            </div>
+            <div className="bg-white border border-gray-200 rounded-xl rounded-tl-sm px-3 py-2 flex gap-1 items-center">
+              <span className="w-1.5 h-1.5 bg-orange-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+              <span className="w-1.5 h-1.5 bg-orange-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <span className="w-1.5 h-1.5 bg-orange-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+            </div>
+          </div>
+        )}
+        <div ref={bottomRef} />
+      </div>
+
+      {/* Suggested questions */}
+      {messages.length <= 2 && (
+        <div className="px-3 pb-2 flex gap-1.5 flex-wrap border-t border-gray-100 pt-2">
+          {SUGGESTED_QUESTIONS.slice(0, 3).map((q) => (
+            <button
+              key={q}
+              onClick={() => ask(q)}
+              className="text-xs px-2.5 py-1 border border-gray-200 rounded-full text-gray-600 hover:bg-orange-50 hover:border-orange-300 hover:text-orange-700 transition-colors"
+            >
+              {q}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Input */}
+      <div className="px-3 pb-3 pt-2 border-t border-gray-100 flex gap-2">
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && ask()}
+          placeholder="Ask how to do something…"
+          className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
+          disabled={loading}
+        />
+        <button
+          onClick={() => ask()}
+          disabled={loading || !input.trim()}
+          className="w-9 h-9 bg-orange-500 hover:bg-orange-600 disabled:opacity-40 rounded-xl flex items-center justify-center text-white"
+        >
+          <Send size={14} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ────────────────────────── MAIN PAGE ──────────────────────────── */
 
 export default function Help() {
@@ -153,6 +365,8 @@ export default function Help() {
   };
 
   return (
+    <>
+    <HelpAiChat activeTopic={activeTopic} onJumpToTopic={setActiveTopic} />
     <div className="flex gap-6 min-h-[calc(100vh-160px)]">
       {/* ── Sidebar: topic list ──────────────────────────────────── */}
       <aside className="w-64 flex-shrink-0 hidden lg:block">
@@ -333,5 +547,6 @@ export default function Help() {
         )}
       </main>
     </div>
+    </>
   );
 }

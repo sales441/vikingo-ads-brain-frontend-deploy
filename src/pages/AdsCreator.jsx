@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   BrainCircuit, Settings, ShoppingBag, Star, Target, Zap,
-  Check, AlertTriangle, TrendingUp, Eye, MousePointerClick,
+  Check, AlertTriangle, TrendingUp, TrendingDown, Eye, MousePointerClick,
   DollarSign, RefreshCw, ArrowLeft, ArrowRight, Megaphone,
-  CheckCircle, Trash2, Edit3, Package, ChevronDown,
+  CheckCircle, Trash2, Edit3, Package, ChevronDown, Calendar,
+  ArrowUpDown, Lock, Sparkles,
 } from "lucide-react";
 import { useProducts } from "../context/ProductsContext";
 
@@ -294,6 +295,149 @@ function StepProduct({ form, setForm, mode, campaignType, onBack, onGenerate, lo
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">Competitors <span className="text-gray-400 font-normal">(comma-separated)</span></label>
           <input name="competitors" value={form.competitors} onChange={ch} placeholder="Instant Pot, Ninja, Cuisinart" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
         </div>
+      </div>
+
+      {/* Campaign schedule & targeting */}
+      <div className="bg-white border-2 border-gray-200 rounded-xl p-4 space-y-4">
+        <div className="flex items-center gap-2">
+          <Calendar size={15} className="text-orange-500" />
+          <h3 className="text-sm font-semibold text-gray-800">Campaign Schedule & Targeting</h3>
+          <span className="ml-auto text-xs bg-orange-50 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+            <BrainCircuit size={10} /> AI monitors for unsafe values
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="sm:col-span-2">
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Campaign Name <span className="text-gray-400 font-normal">(optional — AI will auto-generate)</span></label>
+            <input name="campaignName" value={form.campaignName} onChange={ch} placeholder="e.g. SP - 6Qt Cooker | Exact | Main"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Start Date</label>
+            <input name="startDate" type="date" value={form.startDate} onChange={ch}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">End Date <span className="text-gray-400 font-normal">(optional)</span></label>
+            <input name="endDate" type="date" value={form.endDate} onChange={ch}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Default Bid ($)</label>
+            <input name="defaultBid" type="number" step="0.01" min="0.02" value={form.defaultBid} onChange={ch}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+            <p className="text-xs text-gray-400 mt-0.5">Used for any keyword without a specific bid</p>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Targeting Type</label>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { id:"manual", label:"Manual", desc:"You pick keywords", icon:Edit3 },
+                { id:"auto",   label:"Automatic", desc:"Amazon picks for you", icon:Sparkles },
+              ].map(({ id, label, desc, icon: Icon }) => (
+                <button key={id} type="button"
+                  onClick={() => setForm(f => ({ ...f, targetingType: id }))}
+                  className={`flex items-start gap-2 p-2.5 rounded-lg border-2 text-left transition-all ${form.targetingType === id ? "border-orange-400 bg-orange-50" : "border-gray-200 hover:border-gray-300"}`}>
+                  <Icon size={14} className={form.targetingType === id ? "text-orange-600" : "text-gray-500"} />
+                  <div className="min-w-0">
+                    <p className={`text-xs font-semibold ${form.targetingType === id ? "text-orange-700" : "text-gray-700"}`}>{label}</p>
+                    <p className="text-xs text-gray-500">{desc}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Bidding strategy */}
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <label className="block text-xs font-semibold text-gray-700">Bidding Strategy</label>
+            <span className="text-xs bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+              <BrainCircuit size={10} /> AI recommends "Down only" for new campaigns
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {[
+              {
+                id: "dynamic_updown",
+                label: "Dynamic bids – up and down",
+                icon: ArrowUpDown,
+                color: "purple",
+                desc: "We'll raise your bids (by a maximum of 100% on all placements) in real time when your ad may be more likely to convert to a sale, and lower your bids when less likely to convert to a sale.",
+                aiNote: "Best for proven campaigns with data history. Higher risk of overspend.",
+              },
+              {
+                id: "dynamic_down",
+                label: "Dynamic bids – down only",
+                icon: TrendingDown,
+                color: "green",
+                desc: "We'll lower your bids in real time when your ad may be less likely to convert to a sale.",
+                aiNote: "Recommended for new campaigns. Safest option — Amazon only reduces bids.",
+              },
+              {
+                id: "fixed",
+                label: "Fixed bids",
+                icon: Lock,
+                color: "gray",
+                desc: "We'll use your exact bid and any manual adjustments you set, and won't change your bids based on likelihood of a sale.",
+                aiNote: "Maximum control. Use only if you want full manual bid authority.",
+              },
+            ].map(({ id, label, icon: Icon, color, desc, aiNote }) => {
+              const active = form.biddingStrategy === id;
+              const recommended = id === "dynamic_down";
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setForm(f => ({ ...f, biddingStrategy: id }))}
+                  className={`relative p-3 rounded-xl border-2 text-left transition-all ${active ? "border-orange-400 bg-orange-50" : "border-gray-200 hover:border-gray-300 bg-white"}`}
+                >
+                  {recommended && (
+                    <span className="absolute top-2 right-2 text-xs bg-green-100 text-green-700 border border-green-200 px-1.5 py-0.5 rounded-full font-semibold flex items-center gap-0.5">
+                      <BrainCircuit size={9} /> AI pick
+                    </span>
+                  )}
+                  <div className={`w-7 h-7 rounded-lg bg-${color}-100 flex items-center justify-center mb-2`}>
+                    <Icon size={14} className={`text-${color}-600`} />
+                  </div>
+                  <p className={`text-xs font-bold ${active ? "text-orange-700" : "text-gray-800"}`}>{label}</p>
+                  <p className="text-xs text-gray-500 mt-1 leading-snug">{desc}</p>
+                  <p className="text-xs text-blue-600 mt-2 flex items-start gap-1">
+                    <BrainCircuit size={10} className="flex-shrink-0 mt-0.5" /><span>{aiNote}</span>
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* AI warnings */}
+        {form.biddingStrategy === "dynamic_updown" && (
+          <div className="flex items-start gap-2 bg-purple-50 border border-purple-200 text-purple-800 rounded-lg px-3 py-2 text-xs">
+            <AlertTriangle size={13} className="flex-shrink-0 mt-0.5" />
+            <span>
+              <strong>AI heads up:</strong> Up-and-down can double your CPC on hot placements.
+              Monitor daily spend for the first 7 days or keep a low budget cap.
+            </span>
+          </div>
+        )}
+        {Number(form.defaultBid) > 3 && (
+          <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-800 rounded-lg px-3 py-2 text-xs">
+            <AlertTriangle size={13} className="flex-shrink-0 mt-0.5" />
+            <span>
+              <strong>AI safeguard:</strong> Default bid of ${Number(form.defaultBid).toFixed(2)} is above the 90th percentile for this category.
+              Consider lowering to $0.50–$1.20 to avoid wasted spend.
+            </span>
+          </div>
+        )}
+        {form.endDate && form.startDate && form.endDate < form.startDate && (
+          <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-800 rounded-lg px-3 py-2 text-xs">
+            <AlertTriangle size={13} className="flex-shrink-0 mt-0.5" />
+            <span>End date is before start date. Please fix before generating.</span>
+          </div>
+        )}
       </div>
 
       <div className="flex gap-3 pt-2">
@@ -664,7 +808,7 @@ export default function AdsCreator() {
 
   const handleReset = () => {
     setStep("mode_type"); setMode(null); setCampaignType(null);
-    setForm({ productId:null, productName:"", asin:"", category:"", marketplace:"US", budget:50, targetAcos:20, features:"", competitors:"" });
+    setForm({ productId:null, productName:"", asin:"", category:"", marketplace:"US", budget:50, targetAcos:20, features:"", competitors:"", campaignName:"", startDate: new Date().toISOString().slice(0,10), endDate:"", defaultBid: 0.75, targetingType: "manual", biddingStrategy: "dynamic_down" });
     setCampaign(null); setResult(null); setError(null);
   };
 

@@ -1218,4 +1218,126 @@ export const helpTopics = [
       },
     ],
   },
+
+  /* ───────────────────────────── COMPANIES ──────────────────────────── */
+  {
+    id: "companies",
+    title: "Companies",
+    icon: "Building2",
+    summary: "Manage one or many Amazon seller accounts. Each company has its own credentials, users, and campaigns.",
+    sections: [
+      {
+        id: "why-multiple",
+        title: "Why Companies?",
+        paragraphs: [
+          "Agencies typically manage several Amazon accounts. Even solo sellers often run separate entities (LLCs) to segment risk.",
+          "A Company in Vikingo represents one Amazon Ads account. Switching company with the selector at the top-right changes everything the app shows — campaigns, reports, products, users.",
+        ],
+      },
+      {
+        id: "fields",
+        title: "Company fields explained",
+        definitions: [
+          { term: "Company Name *", body: "Short display name. Shown in the company selector." },
+          { term: "Legal Name", body: "LLC / corporation name for internal reference. Not sent to Amazon." },
+          { term: "Contact Email", body: "Default contact — used when sending internal notifications (stock alerts, ACoS alerts)." },
+          { term: "Website / Seller Central URL", body: "Helpful for users managing several brands to identify the right account quickly." },
+          { term: "Profile ID", body: "Amazon Advertising profile numeric ID. Required for API calls." },
+          { term: "Advertiser ID", body: "The entity ID. Required for some SB/SD campaign types." },
+          { term: "Client ID (LWA)", body: "From your Amazon Developer Security Profile. Starts with 'amzn1.application-oa2-client.'" },
+          { term: "Client Secret (LWA)", body: "Paired with Client ID. Never share publicly. Stored encrypted." },
+        ],
+      },
+      {
+        id: "connect",
+        title: "Connecting a company to Amazon",
+        paragraphs: [
+          "See the full Connect Amazon Ads topic. Short version: click 'Connect with Amazon' on the company card → authorize → Vikingo stores the refresh token.",
+        ],
+      },
+      {
+        id: "status-checklist",
+        title: "Status checklist (bottom of card)",
+        paragraphs: [
+          "Five small indicators show if each credential is filled: Profile ID, Advertiser ID, Client ID, Client Secret, Refresh Token. Green check = filled. Gray X = missing.",
+          "A company is fully ready when all five are green. Until then, ads functionality is demo-only for that company.",
+        ],
+      },
+    ],
+  },
+
+  /* ───────────────────────────── USERS ──────────────────────────────── */
+  {
+    id: "users",
+    title: "Users",
+    icon: "Users",
+    summary: "Invite teammates with role-based access. Users are scoped per company.",
+    sections: [
+      {
+        id: "overview",
+        title: "Per-company users",
+        paragraphs: [
+          "A user can have different roles in different companies. Switching company shows only that company's users.",
+        ],
+      },
+      {
+        id: "roles",
+        title: "The three roles",
+        definitions: [
+          { term: "Admin", body: "Full access. Can edit any setting, create/delete campaigns, manage users, change credentials. Reserved for owners and trusted senior staff." },
+          { term: "Manager", body: "Can view and edit campaigns and reports. Cannot manage users or credentials. Ideal for internal media buyers." },
+          { term: "Viewer", body: "Read-only. Can see data and reports but can't change anything. Good for clients or stakeholders." },
+        ],
+      },
+      {
+        id: "adding",
+        title: "Adding a user",
+        steps: [
+          { title: "Click Add User", body: "The form opens." },
+          { title: "Enter name + email", body: "Email is where the invite is sent. In demo mode no email is sent — the user is created locally." },
+          { title: "Pick a role", body: "Three cards; pick one. You can change later." },
+          { title: "Add", body: "User appears in the list with their role badge and date added." },
+        ],
+      },
+      {
+        id: "protection",
+        title: "The last-admin rule",
+        paragraphs: [
+          "A company must always have at least 1 admin. Vikingo hides the delete button for the last remaining admin. To replace, promote another user first, then delete the previous admin.",
+        ],
+      },
+    ],
+  },
+
+  /* ───────────────────────────── SETTINGS ───────────────────────────── */
+  {
+    id: "settings",
+    title: "Settings",
+    icon: "Settings",
+    summary: "App-level preferences: API URL, default marketplace, and credentials (mirrored from the Company).",
+    sections: [
+      {
+        id: "api",
+        title: "API Connection",
+        definitions: [
+          { term: "Backend API URL", body: "Where Vikingo's backend is hosted. Defaults to http://localhost:5000/api in development. Change if you're pointing to staging or production." },
+          { term: "Marketplace", body: "Default Amazon marketplace used for new companies. US, CA, MX, UK." },
+        ],
+      },
+      {
+        id: "credentials",
+        title: "Credential fields",
+        paragraphs: [
+          "Same credentials as in the Company card. Edit here for global defaults; edit in Company for per-account overrides.",
+        ],
+      },
+      {
+        id: "test",
+        title: "Test Connection",
+        paragraphs: [
+          "The Test Connection button calls the backend with the current credentials and reports success or error. Run this after any credential change — don't assume.",
+        ],
+      },
+    ],
+  },
 ];

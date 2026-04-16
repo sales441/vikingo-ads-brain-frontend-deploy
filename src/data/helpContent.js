@@ -767,4 +767,126 @@ export const helpTopics = [
       },
     ],
   },
+
+  /* ──────────────────────────── A/B TEST ────────────────────────────── */
+  {
+    id: "ab-test",
+    title: "A/B Test",
+    icon: "FlaskConical",
+    summary: "Compare two listing titles (or generate one) and let the AI predict which converts better — with a confidence score.",
+    sections: [
+      {
+        id: "when-to-use",
+        title: "When to run an A/B Test",
+        paragraphs: [
+          "Any time you're about to change a title, subtitle, or headline on your listing. Titles drive 40–60% of Amazon conversion — a small change can swing sales double digits.",
+          "Also useful to validate titles from freelancers or ChatGPT before publishing.",
+        ],
+      },
+      {
+        id: "inputs",
+        title: "How to feed it",
+        steps: [
+          { title: "Title – Variant A", body: "Paste your current title. Character counter shows length at a glance." },
+          { title: "Title – Variant B", body: "Paste the alternative you want to test. If empty, the AI can generate one based on Variant A." },
+          { title: "Product context (optional)", body: "A few words about the product and audience. Improves analysis quality significantly." },
+        ],
+      },
+      {
+        id: "reading-output",
+        title: "Reading the output",
+        paragraphs: [
+          "The black banner at the top declares the winner (A or B) with a confidence percentage. Confidence above 90% = ship it. 70–89% = test live if possible. Below 70% = the two titles are too similar.",
+        ],
+        definitions: [
+          { term: "Score per variant", body: "0–100 score on SEO, clarity, benefit communication, and keyword placement." },
+          { term: "Strengths / Weaknesses", body: "Plain-English list of what each title does well and poorly." },
+          { term: "Estimated impact", body: "Projected CTR lift if you switch to the winning variant." },
+          { term: "Recommended next steps", body: "A numbered list of actions — paste the winning title, test live for 2 weeks, move strong keywords to bullets, etc." },
+        ],
+        tip: "AI tip: the AI rewards titles with the primary keyword in the first 80 characters and a clear benefit statement ('Cook 70% faster' beats 'Digital timer').",
+      },
+    ],
+  },
+
+  /* ────────────────────────── REVIEW ANALYSIS ───────────────────────── */
+  {
+    id: "review-analysis",
+    title: "Review Analysis",
+    icon: "Star",
+    summary: "Mine competitor reviews to find their weaknesses — and exploit them in your own listing.",
+    sections: [
+      {
+        id: "why",
+        title: "Why analyze reviews?",
+        paragraphs: [
+          "Your competitors' 1- and 2-star reviews are a goldmine. They tell you exactly what shoppers hate about the category — so you can solve those problems in your product, or at least claim you do in the listing.",
+          "This is one of the highest-leverage AI tools in Vikingo. Every hour spent here often translates to a measurable conversion lift.",
+        ],
+      },
+      {
+        id: "how-to",
+        title: "How to run an analysis",
+        steps: [
+          { title: "Product name / keyword to analyze", body: "Can be your own product, a competitor, or a category term like 'electric pressure cooker'." },
+          { title: "Competitor ASIN (optional)", body: "If you want the AI to focus on one specific competitor's reviews, paste their ASIN." },
+          { title: "Other competitors (comma-separated)", body: "List of brand names. The AI aggregates patterns across all of them." },
+          { title: "Run analysis", body: "Takes ~10–20 seconds in production. Reads hundreds of reviews behind the scenes." },
+        ],
+      },
+      {
+        id: "reading-result",
+        title: "Reading the result",
+        definitions: [
+          { term: "Sentiment breakdown", body: "% positive, neutral, negative across all reviews analyzed. Good benchmark: if competitor positive % is below 70, they have quality issues you can exploit." },
+          { term: "Weaknesses (ranked)", body: "The recurring complaints, ordered by frequency. These are your opportunities." },
+          { term: "Strengths", body: "What competitors do well — you need to at least match these." },
+          { term: "Opportunities for your product", body: "Concrete actions: improve this feature, add that accessory, create a video manual, etc." },
+          { term: "AI-suggested differentiator", body: "The one headline claim that would directly attack the #1 competitor weakness. Paste this into your title or A+ content." },
+          { term: "Negative keywords in reviews", body: "Words like 'leaking', 'hot handle', 'broken'. Avoid these in your own listing — they create unwanted associations." },
+        ],
+      },
+    ],
+  },
+
+  /* ──────────────────────── PRODUCT DISCOVERY ───────────────────────── */
+  {
+    id: "product-discovery",
+    title: "Product Discovery",
+    icon: "Compass",
+    summary: "Find new products to launch. AI scans categories for high-demand, low-competition niches that match your budget and margin target.",
+    sections: [
+      {
+        id: "use-case",
+        title: "Who should use this",
+        paragraphs: [
+          "Sellers thinking about their next SKU. It won't tell you what will succeed, but it narrows the field from 'millions of products' to '10 promising niches' in seconds.",
+          "Best used as a first filter — always validate the top picks manually before committing inventory.",
+        ],
+      },
+      {
+        id: "form",
+        title: "Filling the form",
+        steps: [
+          { title: "Category of interest", body: "Pick a broad category you know. Niching inside a familiar area beats chasing trends in unknown ones." },
+          { title: "Available budget ($)", body: "Total capital you can invest (inventory + advertising + misc). Narrows recommendations to products that fit." },
+          { title: "Minimum target margin (%)", body: "Anything below this won't be shown. 25–30% is typical for FBA private-label." },
+          { title: "Products you already sell (optional)", body: "Helps the AI avoid suggesting products that would cannibalize your current catalog." },
+        ],
+      },
+      {
+        id: "reading-output",
+        title: "Reading the opportunities",
+        paragraphs: [
+          "Each opportunity card has: product idea name, AI score (0–100), demand level, competition level, estimated margin, average market price, trend (rising/stable/declining), and a short rationale explaining the score.",
+          "The colored border reflects the score: green (80+) = strong pick, orange (70–79) = worth researching, red (below 70) = probably skip.",
+        ],
+        definitions: [
+          { term: "Growing Trends section", body: "Macro patterns the AI sees in the market. Useful for positioning even if you don't pick a specific suggestion." },
+          { term: "Niches to Avoid", body: "Categories the AI recommends staying away from (saturated, dominated by big brands, fragile products, etc.)." },
+        ],
+        tip: "AI tip: before ordering inventory for a suggested product, register it as a new product in My Products and run the full competitor analysis. Trust but verify.",
+      },
+    ],
+  },
 ];

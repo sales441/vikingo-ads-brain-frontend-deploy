@@ -10,18 +10,69 @@ import {
   Zap,
   BrainCircuit,
   FileText,
+  Calculator,
+  TrendingUp,
+  Users,
+  Star,
+  Tag,
+  Package,
+  Calendar,
+  FlaskConical,
+  Compass,
+  DollarSign,
+  Search,
 } from "lucide-react";
 
-const navItems = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/campaigns", label: "Campanhas", icon: Megaphone },
-  { to: "/keywords", label: "Keywords", icon: KeyRound },
-  { to: "/competition", label: "Concorrência", icon: LineChart },
-  { to: "/reports", label: "Relatórios", icon: BarChart3 },
-  { to: "/ai", label: "Vikingo Brain IA", icon: BrainCircuit, highlight: true },
-  { to: "/listing", label: "Criar Listing", icon: FileText, highlight: true },
-  { to: "/ads", label: "Criar Ads", icon: Megaphone, highlight: true },
-  { to: "/settings", label: "Configurações", icon: Settings },
+const groups = [
+  {
+    label: "Início",
+    items: [
+      { to: "/dashboard",  label: "Dashboard",     icon: LayoutDashboard },
+      { to: "/pnl",        label: "P&L",           icon: DollarSign },
+      { to: "/reports",    label: "Relatórios",    icon: BarChart3 },
+    ],
+  },
+  {
+    label: "Análise",
+    items: [
+      { to: "/profitability", label: "Rentabilidade",   icon: Calculator },
+      { to: "/ranking",       label: "Ranking Orgânico", icon: Search },
+      { to: "/trends",        label: "Tendências",       icon: Calendar },
+      { to: "/reviews",       label: "Análise Reviews",  icon: Star, highlight: true },
+    ],
+  },
+  {
+    label: "Monitorar",
+    items: [
+      { to: "/monitor",    label: "Concorrentes",  icon: Users },
+      { to: "/competition",label: "Competição",    icon: LineChart },
+      { to: "/inventory",  label: "Estoque",       icon: Package },
+    ],
+  },
+  {
+    label: "Otimizar",
+    items: [
+      { to: "/campaigns",  label: "Campanhas",     icon: Megaphone },
+      { to: "/keywords",   label: "Keywords",      icon: KeyRound },
+      { to: "/pricing",    label: "Preços",        icon: Tag, highlight: true },
+    ],
+  },
+  {
+    label: "IA & Criação",
+    items: [
+      { to: "/ai",       label: "Vikingo Brain IA", icon: BrainCircuit, highlight: true },
+      { to: "/listing",  label: "Criar Listing",    icon: FileText,     highlight: true },
+      { to: "/ads",      label: "Criar Ads",        icon: Megaphone,    highlight: true },
+      { to: "/abtest",   label: "A/B Test",         icon: FlaskConical, highlight: true },
+      { to: "/discover", label: "Descobrir Produtos",icon: Compass,     highlight: true },
+    ],
+  },
+  {
+    label: null,
+    items: [
+      { to: "/settings", label: "Configurações", icon: Settings },
+    ],
+  },
 ];
 
 export default function Sidebar() {
@@ -39,25 +90,40 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {navItems.map(({ to, label, icon: Icon, highlight }) => (
-          <NavLink
-            key={to}
-            to={to}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                isActive
-                  ? "bg-orange-500 text-white"
-                  : highlight
-                  ? "text-orange-300 hover:bg-slate-800 hover:text-orange-200"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-white"
-              }`
-            }
-          >
-            <Icon size={18} />
-            <span className="flex-1">{label}</span>
-            {highlight && <span className="text-xs bg-orange-500 text-white px-1.5 py-0.5 rounded-full">IA</span>}
-          </NavLink>
+      <nav className="flex-1 px-3 py-3 overflow-y-auto">
+        {groups.map((group, gi) => (
+          <div key={gi} className={gi > 0 ? "mt-4" : ""}>
+            {group.label && (
+              <p className="px-3 mb-1.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                {group.label}
+              </p>
+            )}
+            <div className="space-y-0.5">
+              {group.items.map(({ to, label, icon: Icon, highlight }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive
+                        ? "bg-orange-500 text-white"
+                        : highlight
+                        ? "text-orange-300 hover:bg-slate-800 hover:text-orange-200"
+                        : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                    }`
+                  }
+                >
+                  <Icon size={16} />
+                  <span className="flex-1 truncate">{label}</span>
+                  {highlight && (
+                    <span className="text-xs bg-orange-500/30 text-orange-300 px-1.5 py-0.5 rounded-full border border-orange-500/30">
+                      IA
+                    </span>
+                  )}
+                </NavLink>
+              ))}
+            </div>
+          </div>
         ))}
       </nav>
 

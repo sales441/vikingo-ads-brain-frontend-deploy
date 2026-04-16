@@ -11,6 +11,16 @@ import AIAssistant from "./pages/AIAssistant";
 import ListingCreator from "./pages/ListingCreator";
 import AdsCreator from "./pages/AdsCreator";
 import Login from "./pages/Login";
+import Profitability from "./pages/Profitability";
+import PnL from "./pages/PnL";
+import CompetitorMonitor from "./pages/CompetitorMonitor";
+import RankingTracker from "./pages/RankingTracker";
+import ReviewAnalysis from "./pages/ReviewAnalysis";
+import PricingOptimizer from "./pages/PricingOptimizer";
+import InventoryAlerts from "./pages/InventoryAlerts";
+import SeasonalTrends from "./pages/SeasonalTrends";
+import ABTest from "./pages/ABTest";
+import ProductDiscovery from "./pages/ProductDiscovery";
 import { useAuth } from "./context/AuthContext";
 
 function ProtectedRoute({ children }) {
@@ -38,15 +48,25 @@ export default function App() {
         }
       >
         <Route index element={<Navigate to="/dashboard" replace />} />
-        <Route path="dashboard"  element={<Dashboard />} />
-        <Route path="campaigns"  element={<Campaigns />} />
-        <Route path="keywords"   element={<Keywords />} />
-        <Route path="competition" element={<Competition />} />
-        <Route path="reports"    element={<Reports />} />
-        <Route path="ai"         element={<AIAssistant />} />
-        <Route path="listing"    element={<ListingCreator />} />
-        <Route path="ads"        element={<AdsCreator />} />
-        <Route path="settings"   element={<Settings />} />
+        <Route path="dashboard"     element={<Dashboard />} />
+        <Route path="campaigns"     element={<Campaigns />} />
+        <Route path="keywords"      element={<Keywords />} />
+        <Route path="competition"   element={<Competition />} />
+        <Route path="reports"       element={<Reports />} />
+        <Route path="ai"            element={<AIAssistant />} />
+        <Route path="listing"       element={<ListingCreator />} />
+        <Route path="ads"           element={<AdsCreator />} />
+        <Route path="settings"      element={<Settings />} />
+        <Route path="profitability" element={<Profitability />} />
+        <Route path="pnl"           element={<PnL />} />
+        <Route path="monitor"       element={<CompetitorMonitor />} />
+        <Route path="ranking"       element={<RankingTracker />} />
+        <Route path="reviews"       element={<ReviewAnalysis />} />
+        <Route path="pricing"       element={<PricingOptimizer />} />
+        <Route path="inventory"     element={<InventoryAlerts />} />
+        <Route path="trends"        element={<SeasonalTrends />} />
+        <Route path="abtest"        element={<ABTest />} />
+        <Route path="discover"      element={<ProductDiscovery />} />
       </Route>
     </Routes>
   );

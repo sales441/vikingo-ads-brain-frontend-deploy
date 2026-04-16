@@ -11,6 +11,8 @@ import AIAssistant from "./pages/AIAssistant";
 import ListingCreator from "./pages/ListingCreator";
 import AdsCreator from "./pages/AdsCreator";
 import Login from "./pages/Login";
+import Companies from "./pages/Companies";
+import Users from "./pages/Users";
 import Profitability from "./pages/Profitability";
 import PnL from "./pages/PnL";
 import CompetitorMonitor from "./pages/CompetitorMonitor";
@@ -67,6 +69,8 @@ export default function App() {
         <Route path="trends"        element={<SeasonalTrends />} />
         <Route path="abtest"        element={<ABTest />} />
         <Route path="discover"      element={<ProductDiscovery />} />
+        <Route path="companies"     element={<Companies />} />
+        <Route path="users"         element={<Users />} />
       </Route>
     </Routes>
   );

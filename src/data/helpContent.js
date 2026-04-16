@@ -889,4 +889,152 @@ export const helpTopics = [
       },
     ],
   },
+
+  /* ────────────────────── PROFITABILITY CALC ────────────────────────── */
+  {
+    id: "profitability",
+    title: "Profitability Calculator",
+    icon: "Calculator",
+    summary: "Standalone calculator for any product idea. Tweak price/cost/ads and see margin, ROI and break-even live.",
+    sections: [
+      {
+        id: "vs-products",
+        title: "When to use this vs My Products",
+        paragraphs: [
+          "My Products persists each SKU with full competitor analysis — use it for products you actively sell.",
+          "The Profitability Calculator is for one-off simulations: evaluating a new supplier quote, testing a hypothetical price, comparing two SKUs side by side. Nothing is saved.",
+        ],
+      },
+      {
+        id: "inputs",
+        title: "All the inputs",
+        steps: [
+          { title: "Selling Price", body: "Final price on Amazon." },
+          { title: "Product Cost", body: "Landed supplier cost per unit." },
+          { title: "FBA Size tier", body: "Small ($3.22), Medium ($5.40), Large ($8.60), XLarge ($15.20). If unsure, start with Medium." },
+          { title: "Marketplace", body: "Determines referral % (US/CA 15%, some categories 8%)." },
+          { title: "Ad spend per unit", body: "Target ad cost per conversion. If ACoS target is 20% and price is $30, that's $6 per unit." },
+          { title: "Units per month (estimated)", body: "Used to compute monthly profit. Conservative 50 → realistic 150 → aspirational 300." },
+          { title: "Advanced: Other Costs & Tax Rate", body: "Packaging, returns, insurance, income tax %. Expand to include these." },
+        ],
+      },
+      {
+        id: "reading-output",
+        title: "Reading the results",
+        definitions: [
+          { term: "Status card", body: "Excellent (margin ≥25%), Acceptable (15–25%), Low margin (0–15%), Losing money (negative). Color-coded." },
+          { term: "Profit per unit", body: "Dollars you keep after every fee and cost." },
+          { term: "Net margin (%)", body: "Profit ÷ Price. The number everybody quotes. Below 15% is fragile." },
+          { term: "ROI (%)", body: "Profit ÷ Cost. How fast you're multiplying your capital per cycle." },
+          { term: "Est. monthly profit", body: "Profit × units. Useful for cashflow planning." },
+          { term: "Cost Breakdown", body: "Line-by-line list of every outflow. If a number looks wrong, you know exactly where to dig." },
+          { term: "Break-even price", body: "The price below which you lose money. Never quote below this — not even in Black Friday promos." },
+        ],
+        tip: "AI tip: run three scenarios — conservative (low volume, high ads), realistic (medium both), aspirational (high volume, low ads). If conservative is profitable, the SKU is safe.",
+      },
+    ],
+  },
+
+  /* ───────────────────────────── P&L ────────────────────────────────── */
+  {
+    id: "pnl",
+    title: "P&L Dashboard",
+    icon: "TrendingUp",
+    summary: "Full Profit & Loss across 3 / 6 / 12 months. Revenue vs costs vs profit, cost breakdown, monthly table.",
+    sections: [
+      {
+        id: "overview",
+        title: "What P&L shows",
+        paragraphs: [
+          "Your business health over time. Unlike the Dashboard (which focuses on ads), P&L includes everything: revenue, COGS (cost of goods), Amazon fees, ads, taxes, and net profit.",
+          "Use the 3m / 6m / 12m toggle at the top right to change the view. 12 months is the default for spotting seasonal patterns.",
+        ],
+      },
+      {
+        id: "kpis",
+        title: "The four KPIs",
+        definitions: [
+          { term: "Total Revenue", body: "Sum of sales across the selected period." },
+          { term: "Net Profit", body: "Revenue minus every cost. This is your paycheck." },
+          { term: "Average Margin", body: "Net profit ÷ revenue. Aim for 15%+ to have room for growth investment." },
+          { term: "Last month change", body: "Month-over-month revenue delta. Green = growing, red = declining." },
+        ],
+      },
+      {
+        id: "chart",
+        title: "Revenue vs Costs vs Profit chart",
+        paragraphs: [
+          "Three bars per month: green (revenue), orange (total costs), blue (net profit). When blue is a thick slice = healthy month. Blue below zero = loss month.",
+          "Look for the pattern, not just the last month. Two consecutive loss months = investigate urgently.",
+        ],
+      },
+      {
+        id: "breakdown",
+        title: "Cost breakdown (% of total costs)",
+        paragraphs: [
+          "COGS (usually the biggest), Amazon fees (~25–30% of revenue in FBA), ads (15–25% is normal), taxes (varies by region). Any line above its typical range is a red flag.",
+        ],
+        definitions: [
+          { term: "COGS > 45% of revenue", body: "Supplier cost too high. Renegotiate or switch." },
+          { term: "Amazon fees > 35%", body: "Low-margin category or oversized FBA. Consider FBM or repricing." },
+          { term: "Ads > 30%", body: "Either ACoS is out of control, or organic is broken and you're over-relying on ads." },
+        ],
+      },
+      {
+        id: "monthly-table",
+        title: "Monthly P&L table",
+        paragraphs: [
+          "Scrollable month-by-month numbers. Export to CSV (coming) for your accountant. Red margin % = loss month.",
+        ],
+      },
+    ],
+  },
+
+  /* ─────────────────────────── REPORTS ──────────────────────────────── */
+  {
+    id: "reports",
+    title: "Reports & Analytics",
+    icon: "BarChart3",
+    summary: "Deep-dive ads performance. Campaign-level breakdown, weekly ROAS/ACoS evolution, CSV export.",
+    sections: [
+      {
+        id: "period",
+        title: "Choosing the period",
+        paragraphs: [
+          "Top-left selector: 7 days / 30 days / 90 days. 7d is noisy — use it only to spot fresh issues. 30d is the honest performance window. 90d reveals trends.",
+        ],
+      },
+      {
+        id: "summary",
+        title: "Summary KPIs (top row)",
+        paragraphs: [
+          "Total Spend, Total Revenue, Orders, Impressions, Clicks — aggregated for the chosen period. Useful to confirm what you'll see in the charts below.",
+        ],
+      },
+      {
+        id: "charts",
+        title: "The two charts",
+        definitions: [
+          { term: "Spend vs Revenue by Period (bar chart)", body: "Grouped bars. Useful to see spend/revenue balance per day or week." },
+          { term: "ROAS and ACoS Trend (line chart)", body: "ROAS on left axis, ACoS on right. Ideal pattern: ROAS climbing, ACoS flat or declining. Both climbing = revenue grew but cost grew faster — investigate." },
+        ],
+      },
+      {
+        id: "campaign-table",
+        title: "Campaign Performance table",
+        paragraphs: [
+          "Full data per campaign: spend, revenue, ROAS, ACoS, orders, impressions, clicks, CTR, CPC. The TOTAL row at the bottom is the account-level rollup.",
+          "Sort by any column by clicking the header. Red ACoS > 10% means over-target — not necessarily bad if margin allows, but always worth reviewing.",
+        ],
+      },
+      {
+        id: "export",
+        title: "Export to CSV",
+        paragraphs: [
+          "Click the Export CSV button top-right. Contains the full campaign table. Import into Excel / Google Sheets for custom pivots or share with a stakeholder.",
+        ],
+        tip: "AI tip: export once a month and keep a running archive. Amazon only keeps 90 days of granular data — your own archive becomes a long-term benchmark.",
+      },
+    ],
+  },
 ];

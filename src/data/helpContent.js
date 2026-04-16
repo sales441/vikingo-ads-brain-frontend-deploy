@@ -473,4 +473,127 @@ export const helpTopics = [
       },
     ],
   },
+
+  /* ───────────────────────────── DASHBOARD ──────────────────────────── */
+  {
+    id: "dashboard",
+    title: "Dashboard",
+    icon: "LayoutDashboard",
+    summary: "The home screen. A live AI summary, 8 KPIs, a 30-day spend vs revenue chart, and your top campaigns at a glance.",
+    sections: [
+      {
+        id: "ai-banner",
+        title: "The AI banner on top",
+        paragraphs: [
+          "The dark banner at the very top is updated every 15 minutes by Vikingo Brain™. It contains four things:",
+        ],
+        definitions: [
+          { term: "Score (0–100)", body: "A single number that tells you if your account is healthy. 80+ = great. 60–79 = tune up needed. Under 60 = urgent action." },
+          { term: "Plain-English summary", body: "One sentence describing the overall state of your campaigns." },
+          { term: "Top alert (red)", body: "The most important issue the AI detected — usually ACoS overruns or budget caps." },
+          { term: "Top recommendation (green)", body: "The highest-impact change you can make right now." },
+        ],
+        tip: "AI tip: refresh the banner (circular arrow on the right) after making a big change to see how your score moves.",
+      },
+      {
+        id: "kpis",
+        title: "The 8 KPIs",
+        paragraphs: [
+          "Each KPI compares the current period to the previous one (default: last 30 days vs the 30 before that).",
+        ],
+        definitions: [
+          { term: "Total Spend", body: "Sum of ad spend across all campaigns. Delta shows if you're spending more or less than before." },
+          { term: "Total Revenue", body: "Sales attributed to ads. Should grow faster than spend — otherwise ACoS climbs." },
+          { term: "Orders", body: "Units sold from ads. Useful to see trend when your AOV shifts." },
+          { term: "Impressions", body: "How many times an ad was shown. Drops mean lost reach (check bids or budget)." },
+          { term: "Clicks", body: "Shoppers who clicked. Trend tells you if your ad is still relevant." },
+          { term: "Average ROAS", body: "Revenue ÷ Spend. Should be higher than 1 ÷ (target ACoS)." },
+          { term: "Average ACoS", body: "Spend ÷ Revenue. Lower is better. Should be below your margin." },
+          { term: "Average CTR", body: "Clicks ÷ Impressions. Industry average is 0.3–0.5%; above 1% is excellent." },
+        ],
+      },
+      {
+        id: "chart",
+        title: "The 30-day chart",
+        paragraphs: [
+          "Green line = revenue. Orange line = spend. The area between them is gross profit from ads.",
+          "Look for days when the orange crosses above green — those are days you lost money on ads. One or two is normal (testing, stockouts). A pattern is a red flag.",
+        ],
+      },
+      {
+        id: "quick-summary",
+        title: "Quick Summary card",
+        paragraphs: [
+          "The side panel shows: active campaigns, best ROAS, lowest ACoS, average CPC, paused campaigns. Quick reality check before diving deeper.",
+        ],
+      },
+      {
+        id: "top-campaigns",
+        title: "Top Campaigns & Top Search Terms",
+        paragraphs: [
+          "Two tables at the bottom. Top Campaigns by Revenue shows what's working — clone their structure for new campaigns. Top Search Terms shows real queries that triggered your ads — mine it for new keyword ideas.",
+        ],
+      },
+    ],
+  },
+
+  /* ───────────────────────────── AI ASSISTANT ───────────────────────── */
+  {
+    id: "ai-assistant",
+    title: "Vikingo Brain™ AI Assistant",
+    icon: "BrainCircuit",
+    summary: "Ask anything about your campaigns and get strategic advice. Live campaign health, alerts, and chat-based Q&A.",
+    sections: [
+      {
+        id: "when-to-use",
+        title: "When to use the AI Assistant",
+        paragraphs: [
+          "Use it as a second brain, not a search engine. Best for: 'what should I pause?', 'how do I lower my ACoS?', 'why is campaign X underperforming?', 'which keyword has the best ROAS this week?'.",
+          "It reads live campaign data, so answers reflect your actual account, not generic advice.",
+        ],
+      },
+      {
+        id: "left-panel",
+        title: "The left panel (analysis)",
+        paragraphs: [
+          "The left side always shows: a health Score, up to 5 Alerts (things to act on), and up to 5 Recommendations (high-impact moves). Click the refresh icon to re-analyze.",
+        ],
+        definitions: [
+          { term: "Alert priority", body: "Alerts are sorted by urgency. The first alert is always the one costing you the most right now." },
+          { term: "Recommendation impact", body: "Shown as 'Save ~$X/week' or '+X% revenue'. These are AI estimates, not guarantees." },
+        ],
+      },
+      {
+        id: "chat",
+        title: "The chat (right panel)",
+        paragraphs: [
+          "Type a question at the bottom and press Enter. The AI will use your campaign data as context. Try the suggested questions at the bottom of the input to see the style of answers.",
+        ],
+        tip: "AI tip: be specific. 'Why is my ACoS high?' gives generic advice. 'Why did campaign SP-Main's ACoS jump from 18% to 31% this week?' gives targeted analysis.",
+      },
+      {
+        id: "good-questions",
+        title: "Great questions to ask",
+        paragraphs: [
+          "A curated list of prompts that unlock the most value from Vikingo Brain™.",
+        ],
+        definitions: [
+          { term: "Which campaigns should I pause right now?", body: "Returns a ranked list with reasoning — not just names." },
+          { term: "What 5 keywords are wasting the most money?", body: "Pulls last-7-day ACoS and flags the biggest leaks." },
+          { term: "How can I lower my average ACoS by 5 points?", body: "Gives a concrete multi-step plan." },
+          { term: "What's my best campaign and why?", body: "Explains the pattern so you can replicate it." },
+          { term: "Am I underspending on any keyword?", body: "Finds keywords with high impression share loss." },
+          { term: "Should I raise my budget?", body: "Checks budget utilization across campaigns before answering." },
+        ],
+      },
+      {
+        id: "limits",
+        title: "What the AI can and can't do",
+        paragraphs: [
+          "CAN: read your campaigns, keywords, ACoS, ROAS, impressions, budgets. Suggest concrete actions. Compare campaigns. Explain Amazon Ads concepts.",
+          "CAN'T: place orders, call vendors, change prices in Seller Central, talk to Amazon support, or predict the future with certainty. All estimates are based on 30-day history and typical market behavior.",
+        ],
+      },
+    ],
+  },
 ];

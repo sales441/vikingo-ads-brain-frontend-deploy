@@ -22,6 +22,71 @@ const typeBadge = {
   SD: "bg-indigo-100 text-indigo-700",
 };
 
+// AI analysis — classifies each campaign and returns suggested actions.
+// Severity: critical (needs action now) | warning (watch) | ok (performing).
+const TARGET_ACOS_DEFAULT = 25;
+
+function aiAnalyzeCampaign(c, targetAcos = TARGET_ACOS_DEFAULT) {
+  const issues = [];
+  const actions = [];
+  const budgetUsed = c.budget > 0 ? (c.spend / c.budget) * 100 : 0;
+
+  // ACoS too high
+  if (c.acos > targetAcos * 1.5) {
+    issues.push(`ACoS ${c.acos.toFixed(1)}% is ${(c.acos / targetAcos).toFixed(1)}× your target (${targetAcos}%).`);
+    actions.push({ type: "lower_bids", label: "Lower top keyword bids 20%", severity: "critical" });
+  } else if (c.acos > targetAcos) {
+    issues.push(`ACoS ${c.acos.toFixed(1)}% is above your target (${targetAcos}%).`);
+    actions.push({ type: "tune_bids", label: "Tune bids down on weak keywords", severity: "warning" });
+  }
+
+  // Poor ROAS
+  if (c.roas < 3 && c.status === "active") {
+    issues.push(`ROAS ${c.roas.toFixed(1)}× is below the 3× profitability floor.`);
+    actions.push({ type: "pause", label: "Pause until ROAS improves", severity: "critical" });
+  }
+
+  // Budget pacing
+  if (budgetUsed > 90 && c.status === "active") {
+    issues.push(`Spending ${budgetUsed.toFixed(0)}% of daily budget — may be missing impressions.`);
+    actions.push({ type: "raise_budget", label: "Raise daily budget 25%", severity: "warning" });
+  }
+  if (budgetUsed < 20 && c.status === "active" && c.spend > 0) {
+    issues.push(`Only ${budgetUsed.toFixed(0)}% of budget used — bids might be too low.`);
+    actions.push({ type: "raise_bids", label: "Raise bids 10–15%", severity: "warning" });
+  }
+
+  // Low CTR
+  if (c.ctr < 0.3 && c.impressions > 10000) {
+    issues.push(`CTR ${c.ctr.toFixed(2)}% suggests creative or keyword mismatch.`);
+    actions.push({ type: "review_keywords", label: "Review keyword relevance", severity: "warning" });
+  }
+
+  // Paused but spending
+  if (c.status === "paused" && c.spend > 0) {
+    issues.push("Campaign is paused.");
+  }
+
+  const severity = actions.some((a) => a.severity === "critical")
+    ? "critical"
+    : actions.some((a) => a.severity === "warning")
+    ? "warning"
+    : "ok";
+
+  const label =
+    severity === "critical" ? "Needs action now" :
+    severity === "warning" ? "Watch closely" :
+    c.status === "active" ? "Performing" : "Idle";
+
+  return { severity, label, issues, actions };
+}
+
+const severityStyle = {
+  critical: { bg: "bg-red-50 border-red-200", text: "text-red-700", icon: "text-red-500", pill: "bg-red-100 text-red-700 border-red-200" },
+  warning:  { bg: "bg-orange-50 border-orange-200", text: "text-orange-700", icon: "text-orange-500", pill: "bg-orange-100 text-orange-700 border-orange-200" },
+  ok:       { bg: "bg-green-50 border-green-200", text: "text-green-700", icon: "text-green-500", pill: "bg-green-100 text-green-700 border-green-200" },
+};
+
 function SortIcon({ col, sortCol, sortDir }) {
   if (sortCol !== col) return <ChevronUp size={12} className="opacity-20" />;
   return sortDir === "asc" ? <ChevronUp size={12} /> : <ChevronDown size={12} />;
@@ -59,6 +124,44 @@ export default function Campaigns() {
     runSync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCompany?.id]);
+
+  // AI analysis per campaign (memoised)
+  const analyses = useMemo(() => {
+    const map = {};
+    campaigns.forEach((c) => { map[c.id] = aiAnalyzeCampaign(c); });
+    return map;
+  }, [campaigns]);
+
+  const attentionCampaigns = useMemo(
+    () =>
+      campaigns
+        .filter((c) => analyses[c.id] && analyses[c.id].severity !== "ok")
+        .sort((a, b) => {
+          const order = { critical: 0, warning: 1, ok: 2 };
+          return order[analyses[a.id].severity] - order[analyses[b.id].severity];
+        })
+        .slice(0, 4),
+    [campaigns, analyses]
+  );
+
+  const handleAiAction = (campaignId, action) => {
+    // Apply the action to local state. Real backend call would go through
+    // services/api.js — this keeps the UX responsive in demo mode too.
+    setCampaigns((prev) =>
+      prev.map((c) => {
+        if (c.id !== campaignId) return c;
+        switch (action.type) {
+          case "pause":         return { ...c, status: "paused" };
+          case "lower_bids":    return { ...c };
+          case "tune_bids":     return { ...c };
+          case "raise_bids":    return { ...c };
+          case "raise_budget":  return { ...c, budget: Math.round(c.budget * 1.25 * 100) / 100 };
+          case "review_keywords": return { ...c };
+          default: return c;
+        }
+      })
+    );
+  };
   const [editBudget, setEditBudget] = useState(null); // { id, value }
 
   const filtered = useMemo(() => {
@@ -182,6 +285,69 @@ export default function Campaigns() {
         </div>
       </div>
 
+      {/* AI Recommendations across campaigns */}
+      {attentionCampaigns.length > 0 && (
+        <div className="bg-white border-2 border-orange-200 rounded-xl p-4 shadow-sm">
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            <BrainCircuit size={16} className="text-orange-500" />
+            <h2 className="text-sm font-bold text-gray-800">Vikingo Brain™ — Campaigns needing attention</h2>
+            <span className="text-xs bg-orange-100 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full font-medium">
+              {attentionCampaigns.length} found
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+            {attentionCampaigns.map((c) => {
+              const a = analyses[c.id];
+              const st = severityStyle[a.severity];
+              return (
+                <div key={c.id} className={`border rounded-lg p-3 ${st.bg}`}>
+                  <div className="flex items-start justify-between gap-2 mb-2 flex-wrap">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-gray-800 truncate">{c.name}</p>
+                      <p className="text-xs text-gray-500">{c.type} · {c.status}</p>
+                    </div>
+                    <span className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-semibold border ${st.pill}`}>
+                      {a.severity === "critical" ? <AlertTriangle size={10} /> : <AlertTriangle size={10} />}
+                      {a.label}
+                    </span>
+                  </div>
+
+                  {a.issues.length > 0 && (
+                    <ul className="space-y-0.5 mb-3">
+                      {a.issues.map((issue, i) => (
+                        <li key={i} className="text-xs text-gray-700 flex items-start gap-1">
+                          <span className={st.icon}>•</span>{issue}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {a.actions.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {a.actions.map((action, i) => (
+                        <button
+                          key={i}
+                          onClick={() => handleAiAction(c.id, action)}
+                          className={`text-xs px-2.5 py-1 rounded-lg font-medium flex items-center gap-1 transition-colors ${
+                            action.severity === "critical"
+                              ? "bg-red-500 hover:bg-red-600 text-white"
+                              : "bg-white border border-orange-300 text-orange-700 hover:bg-orange-50"
+                          }`}
+                        >
+                          <BrainCircuit size={10} />
+                          {action.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-48">
@@ -244,6 +410,7 @@ export default function Campaigns() {
             <thead>
               <tr className="bg-gray-50">
                 <th className="text-left px-4 py-3 text-gray-500 font-medium">Campaign</th>
+                <th className="text-left px-4 py-3 text-gray-500 font-medium">AI</th>
                 <th className="text-left px-4 py-3 text-gray-500 font-medium">Type</th>
                 <th className="text-left px-4 py-3 text-gray-500 font-medium">Status</th>
                 <th className="text-right px-4 py-3 text-gray-500 font-medium">Daily Budget</th>
@@ -263,9 +430,21 @@ export default function Campaigns() {
             <tbody className="divide-y divide-gray-50">
               {filtered.map((c) => {
                 const t = typeShort[c.type];
+                const ai = analyses[c.id];
                 return (
                   <tr key={c.id} className={`hover:bg-gray-50 transition-colors ${c.status === "paused" ? "opacity-60" : ""}`}>
                     <td className="px-4 py-3 font-medium text-gray-800 max-w-xs truncate">{c.name}</td>
+                    <td className="px-4 py-3">
+                      {ai && (
+                        <span
+                          title={ai.issues.join(" · ") || ai.label}
+                          className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-medium border ${severityStyle[ai.severity].pill}`}
+                        >
+                          {ai.severity === "ok" ? <CheckCircle size={10} /> : <AlertTriangle size={10} />}
+                          {ai.severity === "ok" ? "OK" : ai.severity === "warning" ? "Watch" : "Act"}
+                        </span>
+                      )}
+                    </td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex px-2 py-0.5 rounded text-xs font-semibold ${typeBadge[t]}`}>{t}</span>
                     </td>

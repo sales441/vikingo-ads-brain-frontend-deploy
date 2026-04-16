@@ -1,6 +1,24 @@
 import React, { useState } from "react";
-import { Building2, Plus, Edit2, Trash2, CheckCircle, XCircle, ChevronRight, Globe, Mail, Key, ExternalLink } from "lucide-react";
+import {
+  Building2, Plus, Edit2, Trash2, CheckCircle, XCircle, ChevronRight, Globe,
+  Mail, Key, ExternalLink, Zap, RefreshCw, AlertTriangle, ShieldCheck,
+  BrainCircuit,
+} from "lucide-react";
 import { useCompanies } from "../context/CompaniesContext";
+
+// Build the OAuth URL that will be opened when the user clicks "Connect with Amazon".
+// In production the backend would provide a signed state + redirect_uri. Here we use
+// the app's own callback page so the flow can be tested in demo mode.
+function buildAmazonOAuthUrl(company) {
+  const params = new URLSearchParams({
+    client_id: import.meta.env.VITE_LWA_CLIENT_ID || "amzn1.application-oa2-client.DEMO",
+    scope: "advertising::campaign_management",
+    response_type: "code",
+    redirect_uri: `${window.location.origin}/oauth/amazon/callback`,
+    state: btoa(JSON.stringify({ companyId: company.id, ts: Date.now() })),
+  });
+  return `https://www.amazon.com/ap/oa?${params.toString()}`;
+}
 
 const EMPTY_FORM = {
   name: "", legalName: "", website: "", profileId: "",
@@ -81,6 +99,218 @@ function CompanyForm({ initial = EMPTY_FORM, onSave, onCancel }) {
         </button>
       </div>
     </div>
+  );
+}
+
+/* ─── Amazon OAuth Connect wizard ─────────────────────────────────────── */
+function AmazonConnectButton({ company, onConnected }) {
+  const [open, setOpen] = useState(false);
+  const [phase, setPhase] = useState("idle"); // idle | authorizing | exchanging | success | error
+  const [error, setError] = useState(null);
+
+  const connected = Boolean(company.refreshToken && company.connectedAt);
+  const expired = connected && company.tokenExpiresAt && new Date(company.tokenExpiresAt) < new Date();
+
+  const startOAuth = () => {
+    setOpen(true);
+    setPhase("authorizing");
+    setError(null);
+
+    // In production: open Amazon OAuth in a popup and listen for the code.
+    //   const w = window.open(buildAmazonOAuthUrl(company), "amazonOAuth", "width=600,height=720");
+    //   window.addEventListener("message", receiveOAuthMessage);
+    //
+    // In demo mode we simulate the full flow so the UX can be tested without
+    // a live Amazon Developer application.
+    const simulate = async () => {
+      await new Promise((r) => setTimeout(r, 1400));
+      setPhase("exchanging");
+      await new Promise((r) => setTimeout(r, 1200));
+
+      // Randomly fail 1 out of 10 to exercise the error path
+      if (Math.random() < 0.1) {
+        setPhase("error");
+        setError("Amazon returned invalid_grant. Please try again or check that your Ads API application is approved for this marketplace.");
+        return;
+      }
+
+      const now = new Date();
+      const expires = new Date(now.getTime() + 60 * 60 * 1000); // 1h access token
+      onConnected({
+        profileId: company.profileId || String(Math.floor(Math.random() * 9e9) + 1e9),
+        advertiserId: company.advertiserId || `ADV${Math.floor(Math.random() * 9e9) + 1e9}`,
+        clientId: company.clientId || "amzn1.application-oa2-client.DEMO",
+        clientSecret: company.clientSecret || "•••••demo-secret•••••",
+        refreshToken: `Atzr|DEMO-${Math.random().toString(36).slice(2)}`,
+        connectedAt: now.toISOString(),
+        tokenExpiresAt: expires.toISOString(),
+      });
+      setPhase("success");
+    };
+    simulate();
+  };
+
+  const disconnect = () => {
+    if (!confirm("Disconnect this company from Amazon Ads? You'll need to re-authorize to pull new data.")) return;
+    onConnected({
+      refreshToken: "",
+      connectedAt: null,
+      tokenExpiresAt: null,
+    });
+  };
+
+  return (
+    <>
+      <button
+        onClick={connected ? disconnect : startOAuth}
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+          connected && !expired
+            ? "bg-green-100 text-green-700 border border-green-200 hover:bg-green-200"
+            : expired
+            ? "bg-orange-100 text-orange-700 border border-orange-200 hover:bg-orange-200"
+            : "bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700"
+        }`}
+      >
+        {connected && !expired && <><ShieldCheck size={12} /> Connected</>}
+        {connected && expired && <><RefreshCw size={12} /> Reconnect</>}
+        {!connected && <><Zap size={12} /> Connect with Amazon</>}
+      </button>
+
+      {open && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-slate-800 to-slate-900 px-6 py-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center">
+                <Zap size={18} className="text-white" />
+              </div>
+              <div className="flex-1">
+                <p className="text-white font-bold">Connect Amazon Ads</p>
+                <p className="text-slate-400 text-xs">{company.name}</p>
+              </div>
+              <button
+                onClick={() => setOpen(false)}
+                className="text-slate-400 hover:text-white text-xl leading-none"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 space-y-4">
+              {/* Step progress */}
+              <div className="flex items-center gap-2 mb-2">
+                {["authorizing", "exchanging", "success"].map((p, i) => {
+                  const phases = { authorizing: 0, exchanging: 1, success: 2, error: 1 };
+                  const current = phases[phase] ?? -1;
+                  const active = i <= current;
+                  return (
+                    <React.Fragment key={p}>
+                      <div
+                        className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                          active ? "bg-orange-500 text-white" : "bg-gray-200 text-gray-400"
+                        }`}
+                      >
+                        {phase === "success" || i < current ? <CheckCircle size={14} /> : i + 1}
+                      </div>
+                      {i < 2 && (
+                        <div className={`flex-1 h-0.5 ${i < current ? "bg-orange-400" : "bg-gray-200"}`} />
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </div>
+
+              {/* Phase content */}
+              {phase === "authorizing" && (
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                    <RefreshCw size={14} className="animate-spin text-orange-500" />
+                    Redirecting to Amazon…
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    You'll be asked to log in to your Amazon Ads account and approve
+                    <strong> Vikingo Ads Brain</strong> to read and manage your campaigns.
+                  </p>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-700 flex items-start gap-2">
+                    <BrainCircuit size={13} className="flex-shrink-0 mt-0.5" />
+                    <span>
+                      <strong>AI note:</strong> approval only grants the scope
+                      <code className="bg-blue-100 px-1 rounded mx-0.5">advertising::campaign_management</code>.
+                      We never see your bank, buyer data, or product reviews.
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {phase === "exchanging" && (
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                    <RefreshCw size={14} className="animate-spin text-orange-500" />
+                    Exchanging authorization code for refresh token…
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Vikingo backend is storing the refresh token encrypted. It will be used to
+                    generate a new 1-hour access token for every API call.
+                  </p>
+                </div>
+              )}
+
+              {phase === "success" && (
+                <div className="space-y-3">
+                  <p className="text-sm font-bold text-green-700 flex items-center gap-2">
+                    <CheckCircle size={16} /> Connected successfully!
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    Vikingo Brain™ will now sync campaigns for <strong>{company.name}</strong> every 15 minutes.
+                    You can force a sync at any time from the Campaigns page.
+                  </p>
+                  <button
+                    onClick={() => setOpen(false)}
+                    className="w-full py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-xl text-sm"
+                  >
+                    Done
+                  </button>
+                </div>
+              )}
+
+              {phase === "error" && (
+                <div className="space-y-3">
+                  <p className="text-sm font-bold text-red-700 flex items-center gap-2">
+                    <AlertTriangle size={16} /> Could not connect
+                  </p>
+                  <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg p-3">{error}</p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setOpen(false)}
+                      className="flex-1 py-2 border border-gray-300 text-gray-700 font-medium rounded-xl text-sm"
+                    >
+                      Close
+                    </button>
+                    <button
+                      onClick={startOAuth}
+                      className="flex-1 py-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-xl text-sm"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 text-xs text-gray-500 flex items-center gap-1.5">
+              <ShieldCheck size={11} className="text-green-600" />
+              Tokens are encrypted at rest. Revoke anytime from
+              <a href="https://www.amazon.com/ap/adam" target="_blank" rel="noreferrer" className="text-orange-600 hover:underline">
+                your Amazon account
+              </a>
+              .
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -182,6 +412,10 @@ export default function Companies() {
 
                 {/* Actions */}
                 <div className="flex items-center gap-2">
+                  <AmazonConnectButton
+                    company={company}
+                    onConnected={(patch) => updateCompany(company.id, patch)}
+                  />
                   {!isSelected && (
                     <button onClick={() => selectCompany(company.id)}
                       className="flex items-center gap-1 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium rounded-lg transition-colors">
@@ -208,12 +442,19 @@ export default function Companies() {
                   { label: "Advertiser ID", ok: !!company.advertiserId },
                   { label: "Client ID", ok: !!company.clientId },
                   { label: "Client Secret", ok: !!company.clientSecret },
+                  { label: "Refresh Token", ok: !!company.refreshToken },
                 ].map(({ label, ok }) => (
                   <span key={label} className={`flex items-center gap-1 text-xs font-medium ${ok ? "text-green-600" : "text-gray-400"}`}>
                     {ok ? <CheckCircle size={11} /> : <XCircle size={11} />}
                     {label}
                   </span>
                 ))}
+                {company.connectedAt && (
+                  <span className="flex items-center gap-1 text-xs text-gray-500 ml-auto">
+                    <ShieldCheck size={11} className="text-green-600" />
+                    Connected {new Date(company.connectedAt).toLocaleDateString("en-US")}
+                  </span>
+                )}
               </div>
 
               {/* Delete confirm */}

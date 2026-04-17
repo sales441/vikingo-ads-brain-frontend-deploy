@@ -6,7 +6,7 @@ import {
   BrainCircuit, FileText, Tag, FlaskConical, Star, Compass,
   Calculator, TrendingUp, BarChart3, Eye, Award, Calendar,
   Building2, Users, Settings, AlertTriangle, Send, RefreshCw,
-  MessageSquare, X,
+  MessageSquare, X, CreditCard,
 } from "lucide-react";
 import { helpTopics } from "../data/helpContent";
 
@@ -14,7 +14,7 @@ const ICONS = {
   Rocket, Package, Zap, Megaphone, KeyRound, LayoutDashboard,
   BrainCircuit, FileText, Tag, FlaskConical, Star, Compass,
   Calculator, TrendingUp, BarChart3, Eye, Award, Calendar,
-  Building2, Users, Settings, HelpCircle,
+  Building2, Users, Settings, HelpCircle, CreditCard,
 };
 
 function Highlight({ text, query }) {

@@ -54,6 +54,7 @@ export default function Landing() {
           <div className="flex items-center gap-3">
             <a href="#features" className="hidden sm:inline text-sm text-slate-300 hover:text-white">Features</a>
             <a href="#workflow" className="hidden sm:inline text-sm text-slate-300 hover:text-white">How it works</a>
+            <a href="#pricing" className="hidden sm:inline text-sm text-slate-300 hover:text-white">Pricing</a>
             <Link to="/login" className="text-sm text-slate-300 hover:text-white">Sign in</Link>
             <Link to="/login" className="text-sm px-4 py-1.5 bg-orange-500 hover:bg-orange-600 rounded-lg font-semibold">
               Get started
@@ -171,6 +172,87 @@ export default function Landing() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section id="pricing" className="bg-slate-900/50 border-y border-slate-800">
+        <div className="max-w-4xl mx-auto px-6 py-20">
+          <div className="text-center mb-10">
+            <span className="inline-flex items-center gap-1.5 bg-orange-500/10 text-orange-400 border border-orange-500/30 px-3 py-1 rounded-full text-xs font-semibold mb-3">
+              Simple pricing
+            </span>
+            <h2 className="text-3xl font-bold mb-3">Pay as your ads grow</h2>
+            <p className="text-slate-400 max-w-xl mx-auto">
+              One price per Amazon seller account you manage, plus a small fee on what you actually spend on ads.
+            </p>
+          </div>
+
+          <div className="bg-slate-900 border-2 border-orange-500/40 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-bl-xl">
+              Per company
+            </div>
+
+            <div className="flex items-baseline gap-2 mb-2">
+              <span className="text-5xl font-bold">$299</span>
+              <span className="text-xl text-slate-400">/ month</span>
+            </div>
+            <p className="text-slate-300 mb-6">
+              + <strong className="text-orange-400">2% of your Amazon ad spend</strong>, billed monthly.
+            </p>
+
+            <ul className="space-y-2.5 mb-7">
+              {[
+                "Every feature in the platform — no tiers, no upsells",
+                "Unlimited products, keywords, campaigns, and users",
+                "AI recommendations & one-click actions",
+                "Real Amazon Ads API sync (Sponsored Products, Brands, Display)",
+                "Full Help Center + AI assistant",
+                "Automation rules, negative keyword/product targeting",
+                "14-day free trial — no credit card required",
+                "Cancel anytime from the Billing page",
+              ].map((f) => (
+                <li key={f} className="flex items-start gap-2 text-sm text-slate-300">
+                  <CheckCircle size={14} className="text-green-400 flex-shrink-0 mt-0.5" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-7">
+              <div className="bg-slate-800 rounded-lg p-3 text-center">
+                <p className="text-xs text-slate-400">Monthly base</p>
+                <p className="text-lg font-bold text-white">$299</p>
+              </div>
+              <div className="bg-slate-800 rounded-lg p-3 text-center">
+                <p className="text-xs text-slate-400">Usage fee</p>
+                <p className="text-lg font-bold text-orange-400">2%</p>
+              </div>
+              <div className="bg-slate-800 rounded-lg p-3 text-center">
+                <p className="text-xs text-slate-400">Free trial</p>
+                <p className="text-lg font-bold text-green-400">14 days</p>
+              </div>
+            </div>
+
+            <Link
+              to="/signup"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 rounded-xl"
+            >
+              Start 14-day free trial <ArrowRight size={14} />
+            </Link>
+
+            <p className="text-center text-xs text-slate-500 mt-4">
+              Example: you manage one Amazon account and spend $5,000/month on ads →
+              your monthly bill is $299 + $100 = <strong className="text-slate-300">$399</strong>.
+            </p>
+          </div>
+
+          <div className="mt-8 text-center">
+            <p className="text-sm text-slate-400">
+              Multiple seller accounts? Each company is priced independently.
+              <Link to="/signup" className="text-orange-400 hover:underline ml-1">Contact us</Link> for 5+ seats.
+            </p>
+          </div>
         </div>
       </section>
 

@@ -188,6 +188,7 @@ const HELP_TOPIC_FOR_ROUTE = {
   "/products":      "my-products",
   "/companies":     "companies",
   "/users":         "users",
+  "/billing":       "billing",
 };
 
 function CompanySelector() {

@@ -1340,4 +1340,75 @@ export const helpTopics = [
       },
     ],
   },
+
+  /* ─────────────────────────────── BILLING ───────────────────────────── */
+  {
+    id: "billing",
+    title: "Billing & Pricing",
+    icon: "CreditCard",
+    summary: "How Vikingo charges: $299/month per company + 2% of Amazon ad spend. Free 14-day trial. Cancel anytime.",
+    sections: [
+      {
+        id: "model",
+        title: "Pricing model",
+        paragraphs: [
+          "Vikingo charges per company (per Amazon seller account) with a two-part fee:",
+        ],
+        definitions: [
+          { term: "$299 / month (base)",       body: "Flat monthly fee per registered company. Unlimited users, products, keywords, campaigns on that company." },
+          { term: "2% of ad spend (usage)",    body: "Additional fee proportional to the Amazon Ads spend synced for that company during the month. Computed automatically from the Ads API." },
+          { term: "14-day free trial",         body: "No credit card required to start. Your first invoice is issued only when the trial ends." },
+        ],
+        tip: "AI tip: if you manage several Amazon seller accounts, each one is priced separately. Contact support for 5+ company plans.",
+      },
+      {
+        id: "example",
+        title: "Example invoice",
+        paragraphs: [
+          "You manage one Amazon seller account and spend $5,000 on ads during June. Your July 1 invoice will look like this:",
+        ],
+        steps: [
+          { title: "Per-company subscription", body: "$299.00 (flat)" },
+          { title: "Usage fee (2% of $5,000)", body: "$100.00" },
+          { title: "Total", body: "$399.00" },
+        ],
+      },
+      {
+        id: "trial",
+        title: "The 14-day free trial",
+        paragraphs: [
+          "Every new company starts in a 14-day trial. During the trial the app is fully functional — you can connect Amazon, register products, create campaigns, everything.",
+          "You can add a payment method at any time during the trial; you won't be charged until the trial ends.",
+          "If you don't add a payment method, the company goes into an inactive state at day 15 — data is preserved but ad syncs pause until you subscribe.",
+        ],
+      },
+      {
+        id: "manage",
+        title: "Adding / changing payment method",
+        paragraphs: [
+          "Sidebar → Billing. Click 'Manage payment method' — this opens the Stripe Customer Portal in a new tab where you can add, change, or remove cards, download past invoices, or cancel the subscription.",
+        ],
+      },
+      {
+        id: "cancel",
+        title: "Canceling",
+        paragraphs: [
+          "Cancel anytime from the Stripe Customer Portal (Billing → Manage payment method). Cancellation takes effect at the end of the current billing period — you keep full access until then.",
+          "After cancellation, all your data (products, campaigns, history) remains accessible in read-only mode for 30 days, giving you time to export CSVs. After 30 days the company is archived.",
+        ],
+      },
+      {
+        id: "faq",
+        title: "Billing FAQ",
+        definitions: [
+          { term: "Are there hidden fees?", body: "No. The base $299 + 2% usage is all you pay. No onboarding fees, no per-user fees, no feature-gated upsells." },
+          { term: "Can I pay in my local currency?", body: "Billing is in USD today. Your card issuer converts at their rate." },
+          { term: "Is the 2% on gross or net ad spend?", body: "On gross — the same number Amazon shows in your Ads Console." },
+          { term: "What if I hit a huge ad spend month?", body: "You can pause automation and reduce ads anytime. The 2% only applies to actual spend — if you spend $0 you only pay $299." },
+          { term: "I'm an agency with 20 clients. Is there a discount?", body: "Contact us. We offer volume pricing starting at the 5th company." },
+          { term: "What if Amazon Ads API is down?", body: "You are only charged 2% on what was actually synced. If a sync fails, that spend isn't counted." },
+        ],
+      },
+    ],
+  },
 ];

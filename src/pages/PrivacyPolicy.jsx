@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Shield, ArrowLeft, Zap } from "lucide-react";
+import { BRANDING, addr } from "../config/branding.js";
 
 const SECTIONS = [
   {
@@ -54,7 +55,7 @@ const SECTIONS = [
       "Export: you can export all your data in JSON/CSV format at any time from Settings → Data Export.",
       "Delete: you can delete your account at any time. All data is purged within 30 days.",
       "Revoke Amazon access: you can disconnect any company from Amazon at any time from the Companies page. You can also revoke at amazon.com/ap/adam.",
-      "GDPR/CCPA: if you are in the EU or California, you have additional rights regarding access, rectification, and portability. Contact privacy@vikingo-ads.example to exercise them.",
+      `GDPR/CCPA: if you are in the EU or California, you have additional rights regarding access, rectification, and portability. Contact ${addr("privacy")} to exercise them.`,
     ],
   },
   {
@@ -89,9 +90,9 @@ const SECTIONS = [
   {
     title: "11. Contact",
     body: [
-      "Questions about this policy: privacy@vikingo-ads.example",
-      "Data Protection Officer: dpo@vikingo-ads.example",
-      "Amazon Ads API compliance: compliance@vikingo-ads.example",
+      `Questions about this policy: ${addr("privacy")}`,
+      `Data Protection Officer: ${addr("dpo")}`,
+      `Amazon Ads API compliance: ${addr("compliance")}`,
     ],
   },
 ];
@@ -131,8 +132,9 @@ export default function PrivacyPolicy() {
 
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-6">
           <p className="text-sm text-gray-700 leading-relaxed">
-            Vikingo Ads Brain™ ("Vikingo", "we", "our") operates an Amazon Ads management platform. This Privacy Policy explains what information we collect,
-            how we use it, how we secure it, and the rights you have regarding your data.
+            {BRANDING.productName} ("{BRANDING.companyName}", "we", "our") operates an Amazon Ads management platform.
+            This Privacy Policy explains what information we collect, how we use it, how we secure it, and the
+            rights you have regarding your data.
           </p>
 
           {SECTIONS.map((section, i) => (

@@ -1,19 +1,20 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FileText, ArrowLeft, Zap } from "lucide-react";
+import { BRANDING, addr } from "../config/branding.js";
 
 const SECTIONS = [
   {
     title: "1. Acceptance",
     body: [
-      "By creating an account on Vikingo Ads Brain™ ('the Service'), you agree to these Terms of Service. If you do not agree, do not use the Service.",
+      `By creating an account on ${BRANDING.productName} ('the Service'), you agree to these Terms of Service. If you do not agree, do not use the Service.`,
       "You must be at least 18 years old and legally able to enter binding contracts in your jurisdiction.",
     ],
   },
   {
     title: "2. The service",
     body: [
-      "Vikingo Ads Brain is a software-as-a-service platform that reads, analyzes, and manages Amazon Advertising campaigns on your behalf, via the Amazon Ads API.",
+      `${BRANDING.companyName} is a software-as-a-service platform that reads, analyzes, and manages Amazon Advertising campaigns on your behalf, via the Amazon Ads API.`,
       "We provide AI-generated recommendations. These recommendations are informational — you remain responsible for every action you take inside the product and on your Amazon account.",
     ],
   },
@@ -21,7 +22,7 @@ const SECTIONS = [
     title: "3. Your account",
     body: [
       "You are responsible for keeping your password confidential and for all activity under your account.",
-      "You must notify us immediately if you suspect unauthorized access: support@vikingo-ads.example.",
+      `You must notify us immediately if you suspect unauthorized access: ${addr("support")}.`,
       "You must not share your account with other people. Each seat requires its own login (see Users page for roles and invites).",
     ],
   },
@@ -86,7 +87,7 @@ const SECTIONS = [
   {
     title: "11. Indemnification",
     body: [
-      "You agree to indemnify Vikingo Ads Brain and its employees against any third-party claim arising from your misuse of the Service, your violation of these Terms, or your violation of any law.",
+      `You agree to indemnify ${BRANDING.companyName} and its employees against any third-party claim arising from your misuse of the Service, your violation of these Terms, or your violation of any law.`,
     ],
   },
   {
@@ -107,14 +108,14 @@ const SECTIONS = [
   {
     title: "14. Governing law",
     body: [
-      "These Terms are governed by the laws of the State of Delaware, USA, without regard to conflict-of-law principles. Disputes shall be resolved in the state or federal courts of Delaware, unless local consumer protection law applies.",
+      `These Terms are governed by the laws of the State of ${BRANDING.jurisdiction.state}, ${BRANDING.jurisdiction.country}, without regard to conflict-of-law principles. Disputes shall be resolved in the state or federal courts of ${BRANDING.jurisdiction.state}, unless local consumer protection law applies.`,
     ],
   },
   {
     title: "15. Contact",
     body: [
-      "Legal: legal@vikingo-ads.example",
-      "Support: support@vikingo-ads.example",
+      `Legal: ${addr("legal")}`,
+      `Support: ${addr("support")}`,
     ],
   },
 ];

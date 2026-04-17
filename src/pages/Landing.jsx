@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Zap, BrainCircuit, ShieldCheck, TrendingUp, Target, Package,
@@ -6,6 +6,24 @@ import {
   FileText, FlaskConical, Calendar,
 } from "lucide-react";
 import VikingShip from "../components/VikingShip";
+
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+// Default pricing — mirrors backend defaults. Overwritten at runtime by the
+// values returned from GET /billing/pricing so a change to env vars is
+// reflected on the Landing page without redeploying the frontend.
+const DEFAULT_PRICING = {
+  baseCents: 29900,
+  usagePctBps: 200,
+  trialDays: 14,
+  asinLimit: 10,
+  asinOverageCents: 1000,
+  currency: "USD",
+};
+
+function formatCents(cents) {
+  return `$${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: cents % 100 === 0 ? 0 : 2 })}`;
+}
 
 const FEATURES = [
   { icon: BrainCircuit, title: "AI that reads your campaigns", desc: "Vikingo Brain™ analyzes every metric and surfaces 1-click fixes." },
@@ -37,6 +55,20 @@ const AI_TOOLS = [
 ];
 
 export default function Landing() {
+  const [pricing, setPricing] = useState(DEFAULT_PRICING);
+  useEffect(() => {
+    fetch(`${BASE_URL}/billing/pricing`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((p) => p && setPricing({ ...DEFAULT_PRICING, ...p }))
+      .catch(() => {});
+  }, []);
+
+  const usagePct = (pricing.usagePctBps / 100).toFixed(pricing.usagePctBps % 100 === 0 ? 0 : 1);
+  const baseLabel = formatCents(pricing.baseCents);
+  const exampleSpendCents = 500000; // $5,000
+  const exampleUsageCents = Math.round(exampleSpendCents * pricing.usagePctBps / 10_000);
+  const exampleTotalCents = pricing.baseCents + exampleUsageCents;
+
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       {/* Nav */}
@@ -194,22 +226,23 @@ export default function Landing() {
             </div>
 
             <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-5xl font-bold">$299</span>
+              <span className="text-5xl font-bold">{baseLabel}</span>
               <span className="text-xl text-slate-400">/ month</span>
             </div>
             <p className="text-slate-300 mb-6">
-              + <strong className="text-orange-400">2% of your Amazon ad spend</strong>, billed monthly.
+              + <strong className="text-orange-400">{usagePct}% of your Amazon ad spend</strong>, billed monthly.
             </p>
 
             <ul className="space-y-2.5 mb-7">
               {[
                 "Every feature in the platform — no tiers, no upsells",
-                "Unlimited products, keywords, campaigns, and users",
+                `${pricing.asinLimit} ASINs included per company (${formatCents(pricing.asinOverageCents)}/month per extra ASIN)`,
+                "Unlimited users, keywords, campaigns",
                 "AI recommendations & one-click actions",
                 "Real Amazon Ads API sync (Sponsored Products, Brands, Display)",
                 "Full Help Center + AI assistant",
                 "Automation rules, negative keyword/product targeting",
-                "14-day free trial — no credit card required",
+                `${pricing.trialDays}-day free trial — no credit card required`,
                 "Cancel anytime from the Billing page",
               ].map((f) => (
                 <li key={f} className="flex items-start gap-2 text-sm text-slate-300">
@@ -219,18 +252,22 @@ export default function Landing() {
               ))}
             </ul>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-7">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-7">
               <div className="bg-slate-800 rounded-lg p-3 text-center">
                 <p className="text-xs text-slate-400">Monthly base</p>
-                <p className="text-lg font-bold text-white">$299</p>
+                <p className="text-lg font-bold text-white">{baseLabel}</p>
               </div>
               <div className="bg-slate-800 rounded-lg p-3 text-center">
                 <p className="text-xs text-slate-400">Usage fee</p>
-                <p className="text-lg font-bold text-orange-400">2%</p>
+                <p className="text-lg font-bold text-orange-400">{usagePct}%</p>
+              </div>
+              <div className="bg-slate-800 rounded-lg p-3 text-center">
+                <p className="text-xs text-slate-400">ASINs included</p>
+                <p className="text-lg font-bold text-white">{pricing.asinLimit}</p>
               </div>
               <div className="bg-slate-800 rounded-lg p-3 text-center">
                 <p className="text-xs text-slate-400">Free trial</p>
-                <p className="text-lg font-bold text-green-400">14 days</p>
+                <p className="text-lg font-bold text-green-400">{pricing.trialDays}d</p>
               </div>
             </div>
 
@@ -238,12 +275,13 @@ export default function Landing() {
               to="/signup"
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 rounded-xl"
             >
-              Start 14-day free trial <ArrowRight size={14} />
+              Start {pricing.trialDays}-day free trial <ArrowRight size={14} />
             </Link>
 
             <p className="text-center text-xs text-slate-500 mt-4">
-              Example: you manage one Amazon account and spend $5,000/month on ads →
-              your monthly bill is $299 + $100 = <strong className="text-slate-300">$399</strong>.
+              Example: one Amazon account, {pricing.asinLimit} ASINs, $5,000/month ad spend →
+              {" "}{baseLabel} + {formatCents(exampleUsageCents)} ={" "}
+              <strong className="text-slate-300">{formatCents(exampleTotalCents)}</strong> monthly.
             </p>
           </div>
 

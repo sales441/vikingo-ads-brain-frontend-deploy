@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   CreditCard, DollarSign, TrendingUp, Calendar, CheckCircle, AlertTriangle,
-  RefreshCw, ExternalLink, Building2, Info, Download, Zap,
+  RefreshCw, ExternalLink, Building2, Info, Download, Zap, Package,
 } from "lucide-react";
 import { useCompanies } from "../context/CompaniesContext";
+import { useProducts } from "../context/ProductsContext";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
@@ -32,14 +33,29 @@ const STATUS_COLORS = {
 
 export default function Billing() {
   const { selectedCompany } = useCompanies();
+  const { products } = useProducts();
   const [params] = useSearchParams();
   const companyId = selectedCompany?.id;
+
+  // ASIN count is the number of products the user has registered.
+  const asinCount = products.length;
 
   const [data, setData] = useState(null);
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [action, setAction] = useState(null); // "checkout" | "portal"
+
+  // Keep the backend in sync with the live ASIN count so the invoice
+  // reflects the user's current catalog.
+  useEffect(() => {
+    if (!companyId) return;
+    fetch(`${BASE_URL}/billing/${companyId}/asin-count`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...authHeader() },
+      body: JSON.stringify({ count: asinCount }),
+    }).catch(() => {});
+  }, [companyId, asinCount]);
 
   useEffect(() => {
     if (!companyId) return;
@@ -55,12 +71,15 @@ export default function Billing() {
       })
       .catch(() => {
         // Graceful demo fallback when the backend isn't reachable
+        const overage = Math.max(0, asinCount - 10);
         setData({
           subscription: {
             companyId,
             status: "trialing",
             baseCents: 29900,
             usagePctBps: 200,
+            asinLimit: 10,
+            asinOverageCents: 1000,
             currency: "USD",
             trialEndsAt: new Date(Date.now() + 14 * 86400_000).toISOString(),
             currentPeriodStart: new Date().toISOString(),
@@ -73,10 +92,12 @@ export default function Billing() {
             baseCents: 29900,
             usageSpendCents: 0,
             usageFeeCents: 0,
-            totalCents: 29900,
+            asinCount, asinLimit: 10, asinOverage: overage,
+            asinOverageCents: 1000, asinOverageTotalCents: overage * 1000,
+            totalCents: 29900 + overage * 1000,
             currency: "USD",
           },
-          pricing: { baseCents: 29900, usagePctBps: 200, trialDays: 14 },
+          pricing: { baseCents: 29900, usagePctBps: 200, trialDays: 14, asinLimit: 10, asinOverageCents: 1000 },
         });
         setInvoices([]);
       })
@@ -140,7 +161,8 @@ export default function Billing() {
         <div>
           <h1 className="text-xl font-bold text-gray-900">Billing — {selectedCompany.name}</h1>
           <p className="text-sm text-gray-500">
-            {formatUSD(pricing.baseCents)} / month per company + {usagePct}% of Amazon ad spend
+            {formatUSD(pricing.baseCents)} / month per company · {usagePct}% of Amazon ad spend · {pricing.asinLimit ?? 10} ASINs included
+            {pricing.asinOverageCents ? ` (${formatUSD(pricing.asinOverageCents)} per extra)` : ""}
           </p>
         </div>
       </div>
@@ -252,6 +274,27 @@ export default function Billing() {
                 </div>
               </div>
               <p className="text-sm font-semibold text-gray-900">{formatUSD(inv.usageFeeCents)}</p>
+            </div>
+
+            <div className="flex items-center justify-between py-2 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${inv.asinOverage > 0 ? "bg-red-50" : "bg-green-50"}`}>
+                  <Package size={14} className={inv.asinOverage > 0 ? "text-red-500" : "text-green-500"} />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-800">
+                    ASINs: {inv.asinCount} / {inv.asinLimit} included
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {inv.asinOverage > 0
+                      ? `${inv.asinOverage} extra ASIN${inv.asinOverage === 1 ? "" : "s"} × ${formatUSD(inv.asinOverageCents)} = ${formatUSD(inv.asinOverageTotalCents)}`
+                      : `You're within the ${inv.asinLimit}-ASIN allowance.`}
+                  </p>
+                </div>
+              </div>
+              <p className={`text-sm font-semibold ${inv.asinOverage > 0 ? "text-gray-900" : "text-gray-400"}`}>
+                {formatUSD(inv.asinOverageTotalCents || 0)}
+              </p>
             </div>
 
             <div className="flex items-center justify-between pt-2">

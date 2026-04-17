@@ -162,6 +162,7 @@ const titles = {
   "/help":          "Help Center",
   "/alerts":        "Alerts & Notifications",
   "/search-terms":  "Search Term Report",
+  "/billing":       "Billing",
 };
 
 // Maps the current route to the matching Help Center topic id.

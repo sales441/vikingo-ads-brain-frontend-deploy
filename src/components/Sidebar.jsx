@@ -23,6 +23,7 @@ import {
   DollarSign,
   Search,
   HelpCircle,
+  CreditCard,
 } from "lucide-react";
 
 const groups = [
@@ -76,6 +77,7 @@ const groups = [
     items: [
       { to: "/companies", label: "Companies",    icon: Building2 },
       { to: "/users",     label: "Users",        icon: Users },
+      { to: "/billing",   label: "Billing",      icon: CreditCard },
       { to: "/settings",  label: "Settings",     icon: Settings },
       { to: "/help",      label: "Help Center",  icon: HelpCircle },
     ],

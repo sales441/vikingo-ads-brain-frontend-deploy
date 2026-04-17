@@ -76,7 +76,7 @@ export default function Billing() {
           subscription: {
             companyId,
             status: "trialing",
-            baseCents: 29900,
+            baseCents: 49900,
             usagePctBps: 200,
             asinLimit: 10,
             asinOverageCents: 1000,
@@ -89,15 +89,16 @@ export default function Billing() {
           upcomingInvoice: {
             periodStart: new Date().toISOString(),
             periodEnd: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
-            baseCents: 29900,
+            baseCents: 49900,
             usageSpendCents: 0,
             usageFeeCents: 0,
             asinCount, asinLimit: 10, asinOverage: overage,
             asinOverageCents: 1000, asinOverageTotalCents: overage * 1000,
-            totalCents: 29900 + overage * 1000,
+            totalCents: 49900 + overage * 1000,
+            // (base 49900 = $499.00)
             currency: "USD",
           },
-          pricing: { baseCents: 29900, usagePctBps: 200, trialDays: 14, asinLimit: 10, asinOverageCents: 1000 },
+          pricing: { baseCents: 49900, usagePctBps: 200, trialDays: 14, asinLimit: 10, asinOverageCents: 1000 },
         });
         setInvoices([]);
       })

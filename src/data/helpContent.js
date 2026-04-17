@@ -1346,7 +1346,7 @@ export const helpTopics = [
     id: "billing",
     title: "Billing & Pricing",
     icon: "CreditCard",
-    summary: "How Vikingo charges: $299/month per company + 2% of Amazon ad spend. Free 14-day trial. Cancel anytime.",
+    summary: "How Vikingo charges: $499/month per company + 2% of Amazon ad spend. Free 14-day trial. Cancel anytime.",
     sections: [
       {
         id: "model",
@@ -1355,7 +1355,7 @@ export const helpTopics = [
           "Vikingo charges per company (per Amazon seller account) with a two-part fee:",
         ],
         definitions: [
-          { term: "$299 / month (base)",       body: "Flat monthly fee per registered company. Unlimited users, products, keywords, campaigns on that company." },
+          { term: "$499 / month (base)",       body: "Flat monthly fee per registered company. Unlimited users, products, keywords, campaigns on that company." },
           { term: "2% of ad spend (usage)",    body: "Additional fee proportional to the Amazon Ads spend synced for that company during the month. Computed automatically from the Ads API." },
           { term: "14-day free trial",         body: "No credit card required to start. Your first invoice is issued only when the trial ends." },
         ],
@@ -1368,9 +1368,9 @@ export const helpTopics = [
           "You manage one Amazon seller account and spend $5,000 on ads during June. Your July 1 invoice will look like this:",
         ],
         steps: [
-          { title: "Per-company subscription", body: "$299.00 (flat)" },
+          { title: "Per-company subscription", body: "$499.00 (flat)" },
           { title: "Usage fee (2% of $5,000)", body: "$100.00" },
-          { title: "Total", body: "$399.00" },
+          { title: "Total", body: "$599.00" },
         ],
       },
       {
@@ -1401,10 +1401,10 @@ export const helpTopics = [
         id: "faq",
         title: "Billing FAQ",
         definitions: [
-          { term: "Are there hidden fees?", body: "No. The base $299 + 2% usage is all you pay. No onboarding fees, no per-user fees, no feature-gated upsells." },
+          { term: "Are there hidden fees?", body: "No. The base $499 + 2% usage is all you pay. No onboarding fees, no per-user fees, no feature-gated upsells." },
           { term: "Can I pay in my local currency?", body: "Billing is in USD today. Your card issuer converts at their rate." },
           { term: "Is the 2% on gross or net ad spend?", body: "On gross — the same number Amazon shows in your Ads Console." },
-          { term: "What if I hit a huge ad spend month?", body: "You can pause automation and reduce ads anytime. The 2% only applies to actual spend — if you spend $0 you only pay $299." },
+          { term: "What if I hit a huge ad spend month?", body: "You can pause automation and reduce ads anytime. The 2% only applies to actual spend — if you spend $0 you only pay $499." },
           { term: "I'm an agency with 20 clients. Is there a discount?", body: "Contact us. We offer volume pricing starting at the 5th company." },
           { term: "What if Amazon Ads API is down?", body: "You are only charged 2% on what was actually synced. If a sync fails, that spend isn't counted." },
         ],

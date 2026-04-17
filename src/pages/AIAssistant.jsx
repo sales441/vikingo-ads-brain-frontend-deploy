@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Send, Bot, User, Zap, RefreshCw, TrendingUp, AlertTriangle, CheckCircle } from "lucide-react";
 import api from "../services/api";
+import { normalizeBackendResponse, normalizeLabel } from "../utils/i18n";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
@@ -8,7 +9,8 @@ async function fetchAnalysis() {
   try {
     const r = await fetch(`${BASE_URL}/ai/analyze`);
     const d = await r.json();
-    return d.analysis;
+    // Normalize Portuguese strings defensively — legacy backends return them.
+    return normalizeBackendResponse(d.analysis);
   } catch { return null; }
 }
 
@@ -139,7 +141,7 @@ export default function AIAssistant() {
                 <span className="text-gray-400 text-sm mb-1">/100</span>
               </div>
               <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${statusColor[analysis.status] || statusColor.attention}`}>
-                {analysis.status?.toUpperCase()}
+                {normalizeLabel(analysis.status)?.toUpperCase()}
               </div>
               <p className="text-xs text-gray-500 mt-2 leading-relaxed">{summary}</p>
             </>

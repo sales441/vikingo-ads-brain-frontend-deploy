@@ -13,7 +13,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 // values returned from GET /billing/pricing so a change to env vars is
 // reflected on the Landing page without redeploying the frontend.
 const DEFAULT_PRICING = {
-  baseCents: 29900,
+  baseCents: 49900,
   usagePctBps: 200,
   trialDays: 14,
   asinLimit: 10,

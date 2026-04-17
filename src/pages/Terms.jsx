@@ -52,10 +52,10 @@ const SECTIONS = [
   {
     title: "7. Fees and billing",
     body: [
-      "Subscription price: USD $299 per month per registered company, plus 2% of the total Amazon Ads spend that we sync for that company during the month. Both amounts are charged in the same monthly invoice.",
+      "Subscription price: USD $499 per month per registered company, plus 2% of the total Amazon Ads spend that we sync for that company during the month. Both amounts are charged in the same monthly invoice.",
       "Free trial: new companies receive a 14-day free trial. You will not be charged until the trial ends, and you may cancel at any time during the trial without being billed.",
       "Billing cycle: the monthly base fee covers the calendar month following the charge date. The 2% usage fee is computed from the prior calendar month's ad spend and included in the next invoice.",
-      "Multiple companies: the $299 + 2% pricing applies per company. If you manage 3 Amazon accounts through Vikingo, you are billed for 3 monthly subscriptions.",
+      "Multiple companies: the $499 + 2% pricing applies per company. If you manage 3 Amazon accounts through Vikingo, you are billed for 3 monthly subscriptions.",
       "Payment methods are managed through our payment processor (Stripe). You authorize us (and our processor) to charge the total amount shown on each invoice automatically on its due date.",
       "Refunds: all fees are non-refundable except where required by law. You may cancel at any time; cancellation stops future invoices but does not refund the current period.",
       "Price changes: we may change the base fee or the usage percentage with at least 30 days' written notice via email and in-app banner. Price changes do not affect an already-issued invoice.",

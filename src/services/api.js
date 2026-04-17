@@ -7,6 +7,7 @@ import {
   spendChartData,
   weeklyData,
 } from "../data/mockData";
+import { normalizeBackendResponse } from "../utils/i18n";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
@@ -96,7 +97,9 @@ export async function syncCampaignsFromAmazon() {
     const data = await api.get("/ads/campaigns");
     const list = data?.campaigns ?? data ?? [];
     if (Array.isArray(list) && list.length > 0) {
-      return { campaigns: list.map(adaptCampaign), source: "live", syncedAt };
+      // Normalize Portuguese strings defensively — legacy backends may return them.
+      const normalized = normalizeBackendResponse(list).map(adaptCampaign);
+      return { campaigns: normalized, source: "live", syncedAt };
     }
     return { campaigns: mockCampaigns, source: "demo", syncedAt, error: "Backend responded without campaigns — showing demo data." };
   } catch (e) {

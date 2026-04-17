@@ -1,0 +1,39 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Production build
+        env:
+          VITE_API_URL: https://api.vikingo-ads.example
+        run: npm run build
+
+      # Confirm the bundle is there and index.html references the entry asset.
+      - name: Verify dist
+        run: |
+          test -f dist/index.html || (echo "dist/index.html missing" && exit 1)
+          grep -q 'assets/index-' dist/index.html || (echo "No hashed asset in index.html" && exit 1)
+          ls -lh dist/assets/*.js dist/assets/*.css
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Docker build
+        run: docker build --build-arg VITE_API_URL=https://api.vikingo-ads.example -t vikingo-frontend:ci .
